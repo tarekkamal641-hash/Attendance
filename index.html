@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="أسرة الرسل">
-  <link rel="icon" type="image/png" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script src="config.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1384,10 +1384,16 @@
         })
         .catch(function (e) {
           if (timer) clearTimeout(timer);
-          var offline = new Error(OFFLINE_MSG);
-          offline.offline = true;
-          if (e && e.message && e.name !== "TypeError" && e.name !== "AbortError") offline = e;
-          if (fail) fail(offline);
+          var err;
+          if (typeof navigator !== "undefined" && navigator.onLine === false) {
+            err = new Error(OFFLINE_MSG); err.offline = true;       // الجهاز فعلاً مقطوع عن النت
+          } else if (e && e.name === "AbortError") {
+            err = new Error("السيرفر اتأخر في الرد. جرّبي تاني");
+          } else {
+            // النت شغال بس الطلب ما وصلش للسيرفر: غالباً رابط config.js غلط، أو الـ Deployment مش Anyone، أو مفيش New version
+            err = new Error("النت شغال بس ما قدرتش أوصل للسيرفر. راجعي رابط config.js (لازم ينتهي بـ /exec) وإن الـ Deployment Anyone وعملتي New version");
+          }
+          if (fail) fail(err);
         });
     }
 
