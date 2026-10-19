@@ -1,0 +1,3569 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#4a3620">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="أسرة الرسل">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <script src="config.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --bg-deep: #4a3620;
+      --bg-mid: #5c4428;
+      --card: #6b4f2d;
+      --card-alt: #7a5a35;
+      --border: #93764c;
+      --gold: #d9a85c;
+      --gold-light: #f0cb8f;
+      --sky: #8fc1e3;
+      --text: #fffaf1;
+      --text-dim: #e3d3b6;
+      --ok: #93d493;
+      --err: #f0a394;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+      direction: rtl;
+      margin: 0;
+      background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 100%);
+      color: var(--text);
+      padding: env(safe-area-inset-top, 0px) 14px env(safe-area-inset-bottom, 16px);
+      min-height: 100%;
+    }
+
+    .header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 6px 14px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--gold);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(200,148,79,0.15);
+    }
+
+    .header-text h1 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 0 0 2px;
+      color: var(--gold-light);
+    }
+
+    .header-text p {
+      font-size: 12px;
+      margin: 0;
+      color: var(--text-dim);
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      background: var(--card);
+      padding: 5px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1 1 calc(50% - 8px);
+      padding: 11px 6px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--gold) 0%, #a97a3a 100%);
+      color: #241a0f;
+      font-weight: 700;
+    }
+
+    .panel { display: none; animation: fadeIn .2s ease; }
+    .panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 16px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin: 0 0 4px;
+    }
+
+    label {
+      display: block;
+      font-size: 12.5px;
+      margin: 14px 0 5px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    input[type=text], input[type=tel], input[type=date], select, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-deep);
+      color: var(--text);
+      font-size: 14.5px;
+      font-family: inherit;
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'><path fill='%23c8944f' d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: left 12px center;
+    }
+
+    input:focus, textarea:focus { outline: none; border-color: var(--gold); }
+    textarea { resize: vertical; font-family: inherit; }
+
+    button.primary {
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold) 0%, #a97a3a 100%);
+      color: #241a0f;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14.5px;
+      cursor: pointer;
+    }
+
+    button.primary:disabled { background: #4a4034; color: var(--text-dim); cursor: not-allowed; }
+
+    button.secondary {
+      width: 100%;
+      margin-top: 4px;
+      padding: 11px;
+      border: 1px solid var(--sky);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--sky);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+
+    .student-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 4px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .student-row:last-child { border-bottom: none; }
+
+    .student-row input[type=checkbox] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--gold);
+    }
+
+    .msg { margin-top: 12px; font-size: 12.5px; text-align: center; min-height: 16px; }
+    .msg.ok { color: var(--ok); }
+    .msg.err { color: var(--err); }
+
+    .note {
+      font-size: 12px;
+      color: var(--sky);
+      text-align: center;
+      margin-bottom: 12px;
+      padding: 8px;
+      background: rgba(111,168,201,0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(111,168,201,0.25);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
+
+    /* ---------- نتائج البحث ---------- */
+    #student-matches { margin-top: 8px; }
+
+    .match-item {
+      display: block;
+      width: 100%;
+      text-align: right;
+      margin-top: 6px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-alt);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+    .match-item small { display: block; color: var(--text-dim); font-size: 11.5px; margin-top: 2px; }
+
+    /* ---------- شاشة الدخول ---------- */
+    #auth-screen { display: none; padding-top: 24px; }
+    .auth-brand { text-align: center; margin-bottom: 18px; }
+    .auth-brand .logo { width: 84px; height: 84px; margin: 0 auto 10px; display: block; }
+    .auth-brand h1 { font-size: 20px; margin: 0 0 4px; color: var(--gold-light); }
+    .auth-brand p { font-size: 12.5px; margin: 0; color: var(--text-dim); }
+
+    .auth-tabs {
+      display: flex; gap: 8px; margin-bottom: 16px;
+      background: var(--card); padding: 5px; border-radius: 14px; border: 1px solid var(--border);
+    }
+    .auth-tab {
+      flex: 1; padding: 11px 6px; border: none; border-radius: 10px; background: transparent;
+      color: var(--text-dim); font-family: inherit; font-size: 13.5px; font-weight: 500; cursor: pointer;
+    }
+    .auth-tab.active {
+      background: linear-gradient(135deg, var(--gold) 0%, #a97a3a 100%);
+      color: #241a0f; font-weight: 700;
+    }
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+    input[type=password] {
+      width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-deep); color: var(--text); font-size: 14.5px; font-family: inherit;
+    }
+    input[type=password]:focus { outline: none; border-color: var(--gold); }
+    .role-hint { font-size: 11.5px; color: var(--text-dim); margin-top: 6px; line-height: 1.6; }
+
+    .user-line-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: -6px 4px 14px;
+    }
+    .user-line { font-size: 12px; color: var(--sky); line-height: 1.6; }
+    .logout-btn {
+      flex-shrink: 0;
+      padding: 6px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text-dim);
+      font-family: inherit; font-size: 11.5px; cursor: pointer;
+    }
+
+    /* ---------- صف الرجوع/الرئيسية ---------- */
+    .subnav-row {
+      display: flex;
+      gap: 8px;
+      margin: -4px 4px 14px;
+    }
+    .subnav-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* ---------- الرئيسية (شبكة الاختصارات) ---------- */
+    .home-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .home-tile {
+      flex: unset;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px 10px;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+      color: var(--text);
+      font-size: 13.5px;
+      font-weight: 700;
+      white-space: normal;
+      text-align: center;
+    }
+    .home-tile:active { transform: scale(0.98); }
+
+    .home-tile-primary {
+      background: linear-gradient(160deg, rgba(200,148,79,0.22) 0%, var(--card) 70%);
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(200,148,79,0.5), 0 0 26px rgba(200,148,79,0.35);
+    }
+
+    .home-tile-wide { grid-column: 1 / -1; flex-direction: row; min-height: 76px; gap: 14px; }
+
+    .home-tile.active { background: var(--card); color: var(--text); }
+    .home-tile-primary.active { background: linear-gradient(160deg, rgba(200,148,79,0.22) 0%, var(--card) 70%); }
+
+    .home-tile-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(200,148,79,0.14);
+      color: var(--gold-light);
+      flex-shrink: 0;
+    }
+    .home-tile-icon svg { width: 24px; height: 24px; }
+    .home-tile-label { line-height: 1.3; }
+
+    /* ---------- الشريط السفلي ---------- */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -6px 20px rgba(0,0,0,0.35);
+    }
+
+    .bottom-nav-btn {
+      flex: unset;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 4px 6px;
+      border-radius: 0;
+      width: 19%;
+    }
+    .bottom-nav-btn svg { width: 22px; height: 22px; }
+    .bottom-nav-btn.active { background: transparent; color: var(--gold-light); font-weight: 700; }
+
+    .bottom-nav-btn-primary {
+      margin-top: -26px;
+      color: var(--gold-light);
+    }
+    .bottom-nav-primary-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--gold) 0%, #a97a3a 100%);
+      color: #241a0f;
+      box-shadow: 0 4px 14px rgba(200,148,79,0.5);
+      margin-bottom: 2px;
+    }
+    .bottom-nav-primary-circle svg { width: 26px; height: 26px; }
+    .bottom-nav-btn-primary.active,
+    .bottom-nav-btn-primary { color: var(--gold-light); }
+
+    /* مساحة تحت المحتوى عشان الشريط السفلي ما يغطيش آخر حاجة */
+    #app { padding-bottom: 78px; }
+
+    /* ---------- قائمة المخدومين ---------- */
+    .roster-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 2px;
+      border-bottom: 1px solid var(--border);
+    }
+    .roster-item:last-child { border-bottom: none; }
+
+    .roster-text { flex: 1; min-width: 0; }
+    .roster-text-clickable { cursor: pointer; }
+    .roster-text-clickable:active { opacity: .7; }
+    .roster-name { font-size: 14.5px; font-weight: 700; }
+    .roster-address {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .roster-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .roster-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .roster-icon.wa { background: rgba(37,211,102,0.14); border: 1px solid rgba(37,211,102,0.5); color: #25d366; }
+    .roster-icon.call { background: rgba(111,168,201,0.14); border: 1px solid rgba(111,168,201,0.5); color: var(--sky); }
+    .roster-icon.disabled { opacity: .3; pointer-events: none; }
+    .roster-icon.danger {
+      background: rgba(240,163,148,0.14);
+      border: 1px solid rgba(240,163,148,0.5);
+      color: var(--err);
+      padding: 0;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .roster-icon.danger:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ---------- أسماء الحاضرين في الإحصائيات ---------- */
+    .stat-week-main { cursor: pointer; }
+    .stat-week-main:active { opacity: .75; }
+    .stat-hint { color: var(--gold-light); font-size: 11px; }
+    .stat-day { display: none; padding: 10px 2px 2px; }
+    .stat-day.open { display: block; }
+    .stat-group-title {
+      margin: 8px 0 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+    .stat-group-title:first-child { margin-top: 0; }
+    .stat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .stat-chip {
+      padding: 5px 11px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+    }
+    .stat-empty { font-size: 12.5px; color: var(--text-dim); padding: 4px 2px; }
+
+    /* ---------- متابعة الخدام ---------- */
+    .year-tag {
+      display: inline-block;
+      margin-inline-start: 8px;
+      padding: 1px 9px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 500;
+      vertical-align: middle;
+    }
+    #panel-servants-hub .home-grid { padding-top: 6px; }
+    .sa-person { border-bottom: 1px solid var(--border); }
+    .sa-person:last-child { border-bottom: none; }
+    .sa-person .roster-item { border-bottom: none; cursor: pointer; }
+    .sa-counts { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+    .sa-counts b { color: var(--text); }
+    .sa-bar { margin: 2px 2px 10px; }
+    .sa-details { display: none; padding: 0 4px 12px; }
+    .sa-details.open { display: block; }
+    .sa-day {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      font-size: 12.5px;
+      border-radius: 8px;
+    }
+    .sa-day:nth-child(odd) { background: rgba(0,0,0,0.12); }
+    .sa-day .ok { color: var(--ok); font-weight: 700; }
+    .sa-day .no { color: var(--err); font-weight: 700; }
+    .sa-empty { padding: 6px 4px; font-size: 12.5px; color: var(--text-dim); }
+
+    /* ---------- أعياد الميلاد ---------- */
+    .bday-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 2px;
+      border-bottom: 1px solid var(--border);
+    }
+    .bday-item:last-child { border-bottom: none; }
+
+    .bday-text { flex: 1; min-width: 0; }
+    .bday-name { font-size: 14.5px; font-weight: 700; }
+    .bday-sub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+
+    .bday-date {
+      flex-shrink: 0;
+      text-align: center;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: rgba(200,148,79,0.14);
+      border: 1px solid rgba(200,148,79,0.4);
+      color: var(--gold-light);
+      font-size: 12.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* ---------- الجرس والإشعارات ---------- */
+    .bell-wrap { margin-inline-start: 8px; }
+
+    .bell-btn {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .bell-badge {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 9px;
+      background: #d9534f;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notif-panel {
+      display: none;
+      position: absolute;
+      top: 72px;
+      left: 6px;
+      width: min(340px, calc(100vw - 28px));
+      max-height: 70vh;
+      overflow-y: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 50;
+    }
+    .notif-panel.open { display: block; }
+
+    .notif-title {
+      padding: 12px 14px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--gold-light);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .notif-empty { padding: 18px 14px; font-size: 13px; color: var(--text-dim); text-align: center; }
+
+    .notif-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-item:last-child { border-bottom: none; }
+
+    .notif-text { flex: 1; min-width: 0; }
+    .notif-name { font-size: 14px; font-weight: 700; }
+    .notif-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .notif-sub b { color: var(--err); }
+    .notif-section {
+      padding: 8px 14px 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      background: rgba(0,0,0,0.12);
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-item.clickable { cursor: pointer; }
+    .notif-item.clickable:active { opacity: .7; }
+    .tag-new {
+      display: inline-block;
+      margin-inline-start: 6px;
+      padding: 1px 7px;
+      border-radius: 8px;
+      background: var(--err);
+      color: #3a1a14;
+      font-size: 10.5px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    .notif-footer-link {
+      display: block;
+      width: 100%;
+      padding: 11px 14px;
+      border: none;
+      border-top: 1px solid var(--border);
+      background: transparent;
+      color: var(--gold-light);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .wa-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(37,211,102,0.14);
+      border: 1px solid rgba(37,211,102,0.5);
+      color: #25d366;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .wa-btn.disabled { opacity: .4; pointer-events: none; }
+
+    /* ---------- إحصائيات ---------- */
+    .subtabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .subtab-btn {
+      flex: 1 1 calc(50% - 8px);
+      padding: 9px 6px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--card-alt);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .subtab-btn.active {
+      background: rgba(200,148,79,0.18);
+      border-color: var(--gold);
+      color: var(--gold-light);
+      font-weight: 700;
+    }
+
+    .subpanel { display: none; }
+    .subpanel.active { display: block; }
+
+
+    /* حضور المخدومين في جمع الشهر */
+    .month-head { margin-bottom: 6px; color: var(--gold-light); font-size: 15px; }
+    .month-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; align-items: center; }
+    .month-legend .lg { display: inline-flex; align-items: center; gap: 5px; }
+    .month-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 9px 2px; border-bottom: 1px solid var(--border); }
+    .month-row:last-child { border-bottom: none; }
+    .month-name { flex: 1 1 150px; min-width: 0; cursor: pointer; }
+    .month-nm { font-size: 14px; font-weight: 600; }
+    .month-cls { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .month-dots { display: flex; gap: 6px; flex-shrink: 0; }
+    .dot { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; box-sizing: border-box; }
+    .dot-p { background: var(--ok); }
+    .dot-a { background: var(--err); }
+    .dot-n { background: transparent; border: 1.5px solid var(--border); }
+
+    .stats-result { margin-top: 14px; }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 2px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-row:last-of-type { border-bottom: none; }
+    .stat-row b { color: var(--gold-light); font-size: 15px; }
+
+    .bar-bg {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-deep);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+      border-radius: 6px;
+      transition: width .3s ease;
+    }
+
+    .stat-week {
+      padding: 12px 2px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-week:last-child { border-bottom: none; }
+
+    .stat-week-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13.5px;
+      margin-bottom: 6px;
+    }
+    .stat-week-head b { color: var(--gold-light); }
+
+    .stat-week-sub {
+      font-size: 11.5px;
+      color: var(--text-dim);
+      margin-top: 5px;
+    }
+
+    /* ===== PWA: شريط عدم الاتصال / التثبيت / التحديث ===== */
+    #offline-bar {
+      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      background: #7a2e22; color: #fff; text-align: center; font-size: 13px; font-weight: 700;
+      padding: calc(6px + env(safe-area-inset-top, 0px)) 12px 6px; line-height: 1.6;
+    }
+    .pwa-bar {
+      display: none; position: fixed; left: 12px; right: 12px; z-index: 9998;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      background: var(--card-alt); color: var(--text); border: 1px solid var(--gold);
+      border-radius: 14px; padding: 12px 14px; box-shadow: 0 6px 24px rgba(0,0,0,.45);
+      align-items: center; gap: 10px; font-size: 14px; line-height: 1.7;
+    }
+    .pwa-bar.show { display: flex; }
+    .pwa-bar .pwa-text { flex: 1; }
+    .pwa-bar button { width: auto; margin: 0; padding: 8px 14px; font-size: 14px; }
+    .pwa-bar .pwa-close { background: transparent; border: none; color: var(--text-dim); font-size: 20px; padding: 4px 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="offline-bar" role="status"></div>
+  <div id="install-bar" class="pwa-bar" role="dialog" aria-label="تثبيت التطبيق">
+    <div class="pwa-text" id="install-text">ثبّتي التطبيق على الموبايل عشان يفتح بسرعة ويشتغل بشكل أحسن</div>
+    <button class="primary" id="install-btn" type="button">تثبيت</button>
+    <button class="pwa-close" id="install-close" type="button" aria-label="إغلاق">×</button>
+  </div>
+
+
+  <div id="boot-msg" style="text-align:center;margin-top:35vh;color:var(--text-dim);font-size:14px;">جاري التحميل...</div>
+
+  <!-- ============ شاشة الدخول / إنشاء حساب ============ -->
+  <div id="auth-screen">
+    <div class="auth-brand">
+      <img class="logo" id="auth-logo" alt="logo">
+      <h1>أسرة الرسل</h1>
+      <p>سجّل دخولك عشان تفتح التطبيق</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-auth="signin">تسجيل الدخول</button>
+      <button class="auth-tab" data-auth="signup">حساب جديد</button>
+    </div>
+
+    <div class="card">
+      <div class="auth-form active" id="auth-signin">
+        <label>اسم المستخدم</label>
+        <input type="text" id="si-username" autocomplete="username">
+        <label>كلمة السر</label>
+        <input type="password" id="si-password" autocomplete="current-password">
+        <button class="primary" id="si-submit">دخول</button>
+        <div class="msg" id="si-msg"></div>
+        <button type="button" class="secondary" id="si-forgot" style="margin-top:12px; border-color:var(--border); color:var(--text-dim);">نسيت كلمة السر؟</button>
+      </div>
+
+      <div class="auth-form" id="auth-forgot">
+        <p class="card-title">نسيت كلمة السر</p>
+        <label>اسم المستخدم</label>
+        <input type="text" id="fg-username" autocomplete="username">
+        <label>كلمة السر الجديدة (6 حروف أو أرقام على الأقل)</label>
+        <input type="password" id="fg-pass1" autocomplete="new-password">
+        <label>أكّد كلمة السر الجديدة</label>
+        <input type="password" id="fg-pass2" autocomplete="new-password">
+        <button class="primary" id="fg-send">إرسال طلب تغيير كلمة السر</button>
+        <div class="msg" id="fg-msg"></div>
+        <div class="role-hint">الكلمة الجديدة بتشتغل أول ما أمينك يوافق على طلبك من التطبيق.</div>
+        <button type="button" class="secondary" id="fg-back" style="margin-top:12px; border-color:var(--border); color:var(--text-dim);">رجوع لتسجيل الدخول</button>
+      </div>
+
+      <div class="auth-form" id="auth-signup">
+        <label>الاسم بالكامل</label>
+        <input type="text" id="su-name">
+        <label>اسم المستخدم (للدخول)</label>
+        <input type="text" id="su-username" autocomplete="username" placeholder="حروف إنجليزي أو أرقام">
+        <label>كلمة السر (6 حروف أو أرقام على الأقل)</label>
+        <input type="password" id="su-password" autocomplete="new-password">
+        <label>رقم التليفون</label>
+        <input type="tel" id="su-phone" autocomplete="tel" placeholder="01xxxxxxxxx">
+        <label>تاريخ الميلاد</label>
+        <input type="date" id="su-birth">
+        <label>العنوان</label>
+        <input type="text" id="su-address">
+        <label>المؤهل الدراسي</label>
+        <input type="text" id="su-qual" placeholder="مثال: بكالوريوس تجارة">
+        <label>نوع الخدمة</label>
+        <select id="su-role">
+          <option value="">اختار نوع الخدمة</option>
+          <option value="خادم فصل">خادم فصل</option>
+          <option value="أمين مرحلة">أمين مرحلة</option>
+          <option value="أمين خدمة">أمين خدمة</option>
+        </select>
+        <div id="su-stage-wrap" style="display:none;">
+          <label>المرحلة</label>
+          <select id="su-stage">
+            <option value="">اختار المرحلة</option>
+            <option value="أولى ثانوي">أولى ثانوي</option>
+            <option value="ثانية ثانوي">ثانية ثانوي</option>
+            <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+          </select>
+        </div>
+        <div id="su-class-wrap" style="display:none;">
+          <label>الفصل</label>
+          <select id="su-class-select"><option value="">اختار المرحلة الأول</option></select>
+          <input type="text" id="su-class-new" placeholder="اكتب اسم الفصل الجديد" style="display:none; margin-top:8px;">
+        </div>
+        <label>كود التسجيل</label>
+        <input type="password" id="su-code" autocomplete="off">
+        <div class="role-hint" id="su-hint">كود التسجيل بتاخديه من أمين الخدمة، وكل نوع خدمة ليه كود.</div>
+        <button class="primary" id="su-submit">إنشاء الحساب</button>
+        <div class="msg" id="su-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" style="display:none;">
+
+  <div class="header">
+    <img class="logo" id="home-link" style="cursor:pointer;" src="data:image/jpeg;base64,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" alt="logo">
+    <div class="header-text" id="home-link-text" style="cursor:pointer;">
+      <h1>أسرة الرسل</h1>
+      <p>نظام الحضور وبيانات المخدومين</p>
+    </div>
+
+    <div class="bell-wrap">
+      <button class="bell-btn" id="trophy-btn" aria-label="الأكثر حضورًا">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4h14v2h2v2a4 4 0 0 1-4 4h-.35A5.5 5.5 0 0 1 13 15.9V18h3v2H8v-2h3v-2.1A5.5 5.5 0 0 1 7.35 12H7a4 4 0 0 1-4-4V6h2V4zm0 4v0a2 2 0 0 0 2 2h.09A5.98 5.98 0 0 1 7 9V6H5v2zm14 0V6h-2v3c0 .34-.02.68-.09 1H17a2 2 0 0 0 2-2z"/></svg>
+      </button>
+    </div>
+
+    <div class="bell-wrap" style="margin-inline-start:8px;">
+      <button class="bell-btn" id="bell-btn" aria-label="الإشعارات">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2z"/></svg>
+        <span class="bell-badge" id="bell-badge" style="display:none;">0</span>
+      </button>
+    </div>
+
+    <div class="bell-wrap" style="margin-inline-start:8px;">
+      <button class="bell-btn" id="requests-btn" aria-label="رسائل واردة">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM7 9h10v2H7V9zm0 4h6v2H7v-2z"/></svg>
+        <span class="bell-badge" id="requests-badge" style="display:none;">0</span>
+      </button>
+    </div>
+
+    <div class="notif-panel" id="trophy-panel">
+      <div class="notif-title">الأكثر حضورًا</div>
+      <div id="trophy-content"><div class="notif-empty">جاري التحميل...</div></div>
+    </div>
+    <div class="notif-panel" id="notif-panel">
+      <div class="notif-title">إشعارات الغياب</div>
+      <div id="notif-list"><div class="notif-empty">جاري التحميل...</div></div>
+    </div>
+    <div class="notif-panel" id="requests-panel">
+      <div class="notif-title">رسائل واردة</div>
+      <div id="requests-list"><div class="notif-empty">جاري التحميل...</div></div>
+    </div>
+  </div>
+
+  <div class="user-line-row">
+    <span class="user-line" id="user-line"></span>
+    <button class="logout-btn" id="logout-btn">خروج</button>
+  </div>
+
+  <!-- ============ الرئيسية (شبكة الاختصارات) ============ -->
+  <div class="panel active" id="panel-home">
+    <div class="home-grid">
+      <button class="tab-btn home-tile home-tile-primary" data-tab="attendance">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="m8.5 15 2 2 4.5-4.5"/></svg>
+        </span>
+        <span class="home-tile-label">تسجيل الحضور</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="roster">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M16 14.2c2.6.3 4.5 2.3 4.5 5.3"/></svg>
+        </span>
+        <span class="home-tile-label">قائمة المخدومين</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="student">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5 16c.5-1.8 2-2.8 3.5-2.8s3 1 3.5 2.8M14.5 9.5h4M14.5 13h4"/></svg>
+        </span>
+        <span class="home-tile-label">بيانات مخدوم</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="stats">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2.5 20h19"/></svg>
+        </span>
+        <span class="home-tile-label">إحصائيات</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="birthdays">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21v-8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8"/><path d="M2.5 13h19M8 10V6.5c0-1 .8-1.8 1.8-1.8.7 0 1.2.5 1.2 1.2 0-.7.5-1.2 1.2-1.2 1 0 1.8.8 1.8 1.8V10"/><path d="M3 21h18"/></svg>
+        </span>
+        <span class="home-tile-label">أعياد الميلاد</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="servants-hub" id="home-tile-servants">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M12.5 19v-1.5a3.5 3.5 0 0 1 3.5-3.5h2a3.5 3.5 0 0 1 3.5 3.5V19"/><path d="M9 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M2.5 19v-1.5A3.5 3.5 0 0 1 6 14h2a3.5 3.5 0 0 1 2.3.86"/></svg>
+        </span>
+        <span class="home-tile-label">الخدام</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="newyear" id="home-tile-newyear" style="display:none;">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></svg>
+        </span>
+        <span class="home-tile-label">بداية سنة جديدة</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="subnav-row" id="subnav-row" style="display:none;">
+    <button class="subnav-btn" id="back-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"/></svg>
+      رجوع
+    </button>
+    <button class="subnav-btn" id="gohome-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z"/></svg>
+      الرئيسية
+    </button>
+  </div>
+
+  <!-- ============ تسجيل الحضور ============ -->
+  <div class="panel" id="panel-attendance">
+    <div class="card">
+      <p class="card-title">تسجيل حضور الجمعة</p>
+      <div class="note" id="friday-note">جاري التحقق من اليوم...</div>
+      <label>اختار المرحلة</label>
+      <select id="stage-select">
+        <option value="">كل المراحل</option>
+        <option value="أولى ثانوي">أولى ثانوي</option>
+        <option value="ثانية ثانوي">ثانية ثانوي</option>
+        <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+      </select>
+      <label>اختار الفصل</label>
+      <select id="class-select"><option value="">جاري تحميل الفصول...</option></select>
+      <label>ابحث بالاسم</label>
+      <input type="text" id="attendance-search" placeholder="اكتب الاسم أو جزء منه" autocomplete="off">
+      <div id="students-list" style="margin-top:14px;">جاري تحميل الأسماء...</div>
+      <button class="primary" id="submit-attendance">تسجيل الحضور للمحددين</button>
+      <div class="msg" id="attendance-msg"></div>
+    </div>
+  </div>
+
+  <!-- ============ قائمة المخدومين ============ -->
+  <div class="panel" id="panel-roster">
+    <div class="card">
+      <p class="card-title">قائمة المخدومين</p>
+      <label>اختار المرحلة</label>
+      <select id="roster-stage-select">
+        <option value="">كل المراحل</option>
+        <option value="أولى ثانوي">أولى ثانوي</option>
+        <option value="ثانية ثانوي">ثانية ثانوي</option>
+        <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+      </select>
+      <label>اختار الفصل</label>
+      <select id="roster-class-select"><option value="">جاري تحميل الفصول...</option></select>
+      <label>ابحث بالاسم</label>
+      <input type="text" id="roster-search" placeholder="اكتب الاسم أو جزء منه">
+      <div id="roster-list" style="margin-top:14px;">جاري تحميل القائمة...</div>
+    </div>
+  </div>
+
+  <!-- ============ الخدام ============ -->
+  <!-- ============ الخدام: القائمة الرئيسية للأقسام الأربعة ============ -->
+  <div class="panel" id="panel-newyear">
+    <div class="card">
+      <h2>بداية سنة جديدة</h2>
+      <div class="note" id="ny-intro">بتعمل نسخة أرشيف كاملة من الشيت، وتنقل ثالثة ثانوي لشيت "الخريجين"، وترقّي أولى وثانية، وتصفّر علامات الحضور وتظبّط أرقام الجمع لسنة الخدمة الجديدة.</div>
+      <div class="msg err" id="ny-blocked" style="display:none;"></div>
+      <div id="ny-preview"></div>
+      <div id="ny-confirm-wrap" style="display:none;">
+        <label id="ny-confirm-label"></label>
+        <input type="text" id="ny-confirm" autocomplete="off">
+        <button id="ny-run" class="secondary">ابدأ سنة جديدة</button>
+      </div>
+      <div class="msg" id="ny-msg"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-servants-hub">
+    <div class="home-grid">
+      <button class="tab-btn home-tile" data-tab="servants">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="11" r="2.2"/><path d="M5.5 17c.4-1.8 1.8-2.8 3.5-2.8s3.1 1 3.5 2.8M14.5 9.5H18M14.5 13H18"/></svg>
+        </span>
+        <span class="home-tile-label">بيانات الخدام</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="servants-attendance" id="hub-tile-attendance">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="m8.5 15 2 2 4.5-4.5"/></svg>
+        </span>
+        <span class="home-tile-label">حضور الخدام</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="servants-visits">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10.5V19h12v-8.5"/><path d="M10 19v-4.5h4V19"/></svg>
+        </span>
+        <span class="home-tile-label">إحصائيات الخادم</span>
+      </button>
+      <button class="tab-btn home-tile" data-tab="servants-birthdays">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h16v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2z"/><path d="M4 16c1.5 1.2 3 1.2 4 0s3-1.2 4 0 3 1.2 4 0 2.5 1.2 4 0"/><path d="M12 12V8M12 5.2c.8-.8.8-1.6 0-2.4-.8.8-.8 1.6 0 2.4z"/></svg>
+        </span>
+        <span class="home-tile-label">أعياد ميلاد الخدام</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ حضور الخدام ============ -->
+  <div class="panel" id="panel-servants-attendance">
+    <div class="card">
+      <p class="card-title">حضور الخدام <span class="year-tag" id="sa-year"></span></p>
+
+      <div id="sa-record" style="display:none;">
+        <div class="note" id="sa-date-note"></div>
+        <input type="hidden" id="sa-date">
+        <div id="sa-checklist" style="margin-top:10px;"></div>
+        <button class="primary" id="sa-save" style="margin-top:12px;">حفظ حضور الخدام</button>
+        <div class="msg" id="sa-msg"></div>
+      </div>
+      <div id="sa-note" class="stat-empty" style="display:none;">تسجيل حضور الخدام متاح لأمين المرحلة وأمين الخدمة بس.</div>
+    </div>
+  </div>
+
+  <!-- ============ إحصائيات الخادم (حضور + افتقاد) ============ -->
+  <div class="panel" id="panel-servants-visits">
+    <div class="card">
+      <p class="card-title">إحصائيات الخادم <span class="year-tag" id="sv-year"></span></p>
+      <div id="sv-list">جاري تحميل القائمة...</div>
+    </div>
+  </div>
+
+  <!-- ============ أعياد ميلاد الخدام ============ -->
+  <div class="panel" id="panel-servants-birthdays">
+    <div class="card">
+      <p class="card-title">أعياد ميلاد الخدام</p>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label>من تاريخ</label>
+          <input type="date" id="sb-from">
+        </div>
+        <div style="flex:1;">
+          <label>لحد تاريخ</label>
+          <input type="date" id="sb-to">
+        </div>
+      </div>
+      <button class="secondary" id="sb-clear" style="margin-top:10px;">مسح الفترة (عرض الكل)</button>
+      <div id="sb-list" style="margin-top:14px;">جاري تحميل القائمة...</div>
+    </div>
+  </div>
+
+  <!-- ============ بيانات الخدام ============ -->
+  <div class="panel" id="panel-servants">
+    <div class="card">
+      <p class="card-title">بيانات الخدام</p>
+      <button class="secondary" id="add-servant-btn" style="display:none; margin-bottom:10px;">+ إضافة خادم</button>
+      <div id="add-servant-form" style="display:none; background:var(--card-alt); border:1px solid var(--border); border-radius:12px; padding:4px 12px 12px; margin-bottom:12px;">
+        <label>الاسم بالكامل</label>
+        <input type="text" id="as-name">
+        <label>رقم التليفون</label>
+        <input type="tel" id="as-phone" placeholder="01xxxxxxxxx">
+        <label>تاريخ الميلاد</label>
+        <input type="date" id="as-birth">
+        <label>العنوان</label>
+        <input type="text" id="as-address">
+        <label>المؤهل الدراسي</label>
+        <input type="text" id="as-qual">
+        <div id="as-stage-wrap" style="display:none;">
+          <label>المرحلة</label>
+          <select id="as-stage">
+            <option value="">اختار المرحلة</option>
+            <option value="أولى ثانوي">أولى ثانوي</option>
+            <option value="ثانية ثانوي">ثانية ثانوي</option>
+            <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+          </select>
+        </div>
+        <label>الفصل</label>
+        <input type="text" id="as-class" list="as-class-list" placeholder="اختار فصل أو اكتب فصل جديد" autocomplete="off">
+        <datalist id="as-class-list"></datalist>
+        <button class="primary" id="as-save" style="margin-top:12px;">حفظ الخادم</button>
+        <button class="secondary" id="as-cancel" style="margin-top:8px;">إلغاء</button>
+        <div class="msg" id="as-msg"></div>
+        <div class="role-hint">الخادم ده هيتسجل في الشيت من غير حساب دخول، وتقدري تتابعي حضوره وبياناته من التطبيق. لو عمل حساب بعد كده بنفس الاسم بيتربط بيه تلقائي.</div>
+      </div>
+      <div id="servants-list" style="margin-top:4px;">جاري تحميل القائمة...</div>
+    </div>
+  </div>
+
+  <!-- ============ المخدومين اللي تم افتقادهم (من رسائل واردة) ============ -->
+  <div class="panel" id="panel-visits">
+    <div class="card">
+      <p class="card-title">المخدومين الذين تم افتقادهم</p>
+      <div id="visits-list" style="margin-top:4px;">جاري تحميل القائمة...</div>
+    </div>
+  </div>
+
+  <!-- ============ أعياد الميلاد ============ -->
+  <div class="panel" id="panel-birthdays">
+    <div class="card">
+      <p class="card-title">أعياد الميلاد</p>
+      <label>اختار المرحلة</label>
+      <select id="bday-stage-select">
+        <option value="">كل المراحل</option>
+        <option value="أولى ثانوي">أولى ثانوي</option>
+        <option value="ثانية ثانوي">ثانية ثانوي</option>
+        <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+      </select>
+      <label>اختار الفصل</label>
+      <select id="bday-class-select"><option value="">جاري تحميل الفصول...</option></select>
+
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label>من تاريخ</label>
+          <input type="date" id="bday-from">
+        </div>
+        <div style="flex:1;">
+          <label>لحد تاريخ</label>
+          <input type="date" id="bday-to">
+        </div>
+      </div>
+      <button class="secondary" id="bday-clear" style="margin-top:10px;">مسح الفترة (عرض الكل)</button>
+
+      <div id="bday-list" style="margin-top:14px;">جاري تحميل أعياد الميلاد...</div>
+    </div>
+  </div>
+
+  <!-- ============ تعديل/إضافة بيانات مخدوم ============ -->
+  <div class="panel" id="panel-student">
+    <div class="card">
+      <p class="card-title">بيانات مخدوم</p>
+      <label>المرحلة (اختاريها الأول: البحث بيتم جواها، والمخدوم الجديد بيتسجل فيها)</label>
+      <select id="student-stage">
+        <option value="">كل المراحل</option>
+        <option value="أولى ثانوي">أولى ثانوي</option>
+        <option value="ثانية ثانوي">ثانية ثانوي</option>
+        <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+      </select>
+      <label>ابحث بالاسم (لو موجود هيتحمّل بياناته، لو مش موجود هيتضاف جديد)</label>
+      <input type="text" id="student-search" placeholder="اكتب الاسم أو جزء منه">
+      <button class="secondary" id="load-student">بحث</button>
+      <div id="student-matches"></div>
+
+      <div class="divider"></div>
+
+      <label>الاسم</label>
+      <input type="text" id="student-name">
+      <label>رقم التليفون</label>
+      <input type="tel" id="student-phone">
+      <label>تاريخ الميلاد</label>
+      <input type="date" id="student-birth">
+      <label>العنوان</label>
+      <input type="text" id="student-address">
+      <label>أب الاعتراف</label>
+      <input type="text" id="student-confessor">
+      <div id="student-class-wrap">
+        <label>الفصل</label>
+        <select id="student-class-select"><option value="">اختار الفصل</option></select>
+        <input type="text" id="student-class-new" placeholder="اكتب اسم الفصل الجديد" style="display:none; margin-top:8px;">
+      </div>
+      <button class="primary" id="save-student">حفظ بيانات المخدوم</button>
+      <div class="msg" id="student-msg"></div>
+
+      <div class="divider"></div>
+
+      <p class="card-title">تعليق عن المخدوم</p>
+      <label>التعليق</label>
+      <textarea id="student-comment" rows="3" placeholder="اكتب ملاحظاتك عن المخدوم هنا"></textarea>
+      <label>تاريخ الافتقاد</label>
+      <input type="date" id="student-comment-date">
+      <label>نوع الافتقاد</label>
+      <select id="student-comment-type">
+        <option value="">اختار نوع الافتقاد</option>
+        <option value="تليفون">تليفون</option>
+        <option value="منزل">منزل</option>
+      </select>
+      <button class="secondary" id="save-comment" style="margin-top:10px;">حفظ التعليق</button>
+      <div class="msg" id="comment-msg"></div>
+    </div>
+  </div>
+
+  <!-- ============ إحصائيات ============ -->
+  <div class="panel" id="panel-stats">
+    <div class="card">
+      <div class="subtabs">
+        <button class="subtab-btn active" data-subtab="student-stats">إحصائيات مخدوم</button>
+        <button class="subtab-btn" data-subtab="service-stats">إحصائيات الخدمة</button>
+        <button class="subtab-btn" data-subtab="class-stats">إحصائيات الفصل</button>
+        <button class="subtab-btn" data-subtab="stage-stats">إحصائيات المرحلة</button>
+      </div>
+
+      <div class="subpanel active" id="subpanel-student-stats">
+        <label>اسم المخدوم</label>
+        <input type="text" id="stats-student-search" placeholder="اكتب الاسم أو جزء منه">
+        <button class="secondary" id="load-student-stats">عرض الإحصائيات</button>
+        <div class="stats-result" id="student-stats-result"></div>
+        <div class="divider"></div>
+        <div id="student-month-list">جاري تحميل الحضور...</div>
+      </div>
+
+      <div class="subpanel" id="subpanel-service-stats">
+        <div class="msg err" id="sheet-warning" style="display:none; text-align:right; line-height:1.9;"></div>
+        <button class="secondary" id="load-service-stats">تحميل إحصائيات الخدمة</button>
+        <div class="stats-result" id="service-stats-result"></div>
+      </div>
+
+      <div class="subpanel" id="subpanel-class-stats">
+        <label>اختار الفصل</label>
+        <select id="class-stats-select"><option value="">جاري تحميل الفصول...</option></select>
+        <button class="secondary" id="load-class-stats" style="margin-top:10px;">عرض إحصائيات الفصل</button>
+        <div class="stats-result" id="class-stats-result"></div>
+      </div>
+
+      <div class="subpanel" id="subpanel-stage-stats">
+        <label>اختار المرحلة</label>
+        <select id="stage-stats-select">
+          <option value="أولى ثانوي">أولى ثانوي</option>
+          <option value="ثانية ثانوي">ثانية ثانوي</option>
+          <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+        </select>
+        <button class="secondary" id="load-stage-stats" style="margin-top:10px;">عرض إحصائيات المرحلة</button>
+        <div class="stats-result" id="stage-stats-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ الشريط السفلي ============ -->
+  <nav class="bottom-nav">
+    <button class="tab-btn bottom-nav-btn" data-tab="birthdays">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21v-8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8"/><path d="M2.5 13h19M8 10V6.5c0-1 .8-1.8 1.8-1.8.7 0 1.2.5 1.2 1.2 0-.7.5-1.2 1.2-1.2 1 0 1.8.8 1.8 1.8V10"/><path d="M3 21h18"/></svg>
+      <span>أعياد الميلاد</span>
+    </button>
+    <button class="tab-btn bottom-nav-btn" data-tab="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2.5 20h19"/></svg>
+      <span>إحصائيات</span>
+    </button>
+    <button class="tab-btn bottom-nav-btn bottom-nav-btn-primary" data-tab="attendance">
+      <span class="bottom-nav-primary-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="m8.5 15 2 2 4.5-4.5"/></svg>
+      </span>
+      <span>تسجيل الحضور</span>
+    </button>
+    <button class="tab-btn bottom-nav-btn" data-tab="student">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5 16c.5-1.8 2-2.8 3.5-2.8s3 1 3.5 2.8M14.5 9.5h4M14.5 13h4"/></svg>
+      <span>بيانات مخدوم</span>
+    </button>
+    <button class="tab-btn bottom-nav-btn" data-tab="roster">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M16 14.2c2.6.3 4.5 2.3 4.5 5.3"/></svg>
+      <span>قائمة المخدومين</span>
+    </button>
+  </nav>
+
+  </div><!-- /#app -->
+
+  <script>
+    // ============ الحساب والجلسة ============
+    var ROLE_CLASS = "خادم فصل", ROLE_STAGE = "أمين مرحلة", ROLE_ADMIN = "أمين خدمة";
+    var TOKEN = "";
+    var ME = null;
+
+    function saveSession(t) { try { localStorage.setItem("att_token", t); } catch (e) {} }
+    function loadSession() { try { return localStorage.getItem("att_token") || ""; } catch (e) { return ""; } }
+    function clearSession() { try { localStorage.removeItem("att_token"); } catch (e) {} }
+
+    // بوابة موحّدة: كل نداء للسيرفر بيروح لدالة api مع توكن الجلسة
+    var API_METHODS = ["getClasses", "getStudentsByFilter", "getRoster", "getBirthdays", "submitAttendance", "searchStudents",
+      "addOrUpdateStudent", "getStudentStats", "getStudentsMonthAttendance", "getClassStats", "getStageStats",
+      "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
+      "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
+      "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
+      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear"];
+
+    // ============ طبقة الاتصال بالسيرفر ============
+    // جوه Apps Script: google.script.run زي الأول. وكمان PWA على استضافة تانية: fetch (POST) لرابط الـ Web App (APPS_SCRIPT_URL في config.js)
+    var IN_APPS_SCRIPT = (typeof google !== "undefined" && google.script && google.script.run);
+    var APPS_SCRIPT_URL = (typeof window.APPS_SCRIPT_URL === "string") ? window.APPS_SCRIPT_URL.trim() : "";
+    var OFFLINE_MSG = "مفيش اتصال بالإنترنت. التطبيق محتاج نت عشان يشتغل";
+
+    // الدوال العامة اللي بتتنادي مباشرة (من غير توكن) وباقي النداءات بتعدّي على api
+    function rpc(fn, args, ok, fail) {
+      if (IN_APPS_SCRIPT) {
+        var r = google.script.run.withSuccessHandler(function (res) { if (ok) ok(res); }).withFailureHandler(function (err) { if (fail) fail(err); });
+        r[fn].apply(r, args);
+        return;
+      }
+      if (!APPS_SCRIPT_URL) { if (fail) fail(new Error("رابط السيرفر مش متظبط (config.js)")); return; }
+      var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 60000) : null;
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        // text/plain عشان الطلب يبقى "بسيط" ومحتاجش preflight (Apps Script مش بيرد على OPTIONS)
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ fn: fn, args: args }),
+        redirect: "follow",
+        credentials: "omit",
+        signal: ctl ? ctl.signal : undefined
+      }).then(function (resp) { return resp.text(); })
+        .then(function (txt) {
+          if (timer) clearTimeout(timer);
+          var data;
+          try { data = JSON.parse(txt); } catch (e) { throw new Error("رد غير متوقع من السيرفر. اتأكدي إن الـ Deployment مفتوح لـ Anyone"); }
+          if (data && data.ok) { if (ok) ok(data.data); }
+          else if (fail) fail(new Error((data && data.error) || "حصل خطأ"));
+        })
+        .catch(function (e) {
+          if (timer) clearTimeout(timer);
+          var offline = new Error(OFFLINE_MSG);
+          offline.offline = true;
+          if (e && e.message && e.name !== "TypeError" && e.name !== "AbortError") offline = e;
+          if (fail) fail(offline);
+        });
+    }
+
+    // ---------- حالة الاتصال ----------
+    function setOfflineBar(show, text) {
+      var b = document.getElementById("offline-bar");
+      if (!b) return;
+      b.textContent = text || "";
+      b.style.display = show ? "block" : "none";
+    }
+    function refreshOnlineState() {
+      if (navigator.onLine === false) setOfflineBar(true, "مفيش اتصال بالإنترنت. التطبيق محتاج نت عشان يشتغل");
+      else setOfflineBar(false);
+    }
+    window.addEventListener("online", refreshOnlineState);
+    window.addEventListener("offline", refreshOnlineState);
+
+    function callApi(action, args, ok, fail) {
+      rpc("api", [TOKEN, action, args], function (res) {
+        if (ok) ok(res);
+      }, function (err) {
+        var m = (err && err.message) || "";
+        if (m.indexOf("AUTH_REQUIRED") !== -1) { logout("انتهت الجلسة، سجّل دخول تاني"); return; }
+        if (fail) fail(err);
+      });
+    }
+
+    function makeRunner(h) {
+      var r = {
+        withSuccessHandler: function (fn) { h.ok = fn; return r; },
+        withFailureHandler: function (fn) { h.fail = fn; return r; }
+      };
+      API_METHODS.forEach(function (name) {
+        r[name] = function () { callApi(name, Array.prototype.slice.call(arguments), h.ok, h.fail); };
+      });
+      return r;
+    }
+    var gs = {
+      withSuccessHandler: function (fn) { return makeRunner({ ok: fn }); },
+      withFailureHandler: function (fn) { return makeRunner({ fail: fn }); }
+    };
+
+    // نداءات من غير توكن (تسجيل دخول/حساب جديد/نسيان كلمة السر/فصول المرحلة)
+    var PUBLIC_METHODS = ["signIn", "signUp", "requestPasswordReset", "getPublicClasses"];
+    function makePublicRunner(h) {
+      var r = {
+        withSuccessHandler: function (fn) { h.ok = fn; return r; },
+        withFailureHandler: function (fn) { h.fail = fn; return r; }
+      };
+      PUBLIC_METHODS.forEach(function (name) {
+        r[name] = function () { rpc(name, Array.prototype.slice.call(arguments), h.ok, h.fail); };
+      });
+      return r;
+    }
+    var pub = {
+      withSuccessHandler: function (fn) { return makePublicRunner({ ok: fn }); },
+      withFailureHandler: function (fn) { return makePublicRunner({ fail: fn }); }
+    };
+
+    // ---------- التنقل بين التابات ----------
+    // بتحتفظ بتاريخ التنقل عشان زرار "رجوع" يرجّع للصفحة اللي قبلها بالظبط
+    var navStack = [];
+
+    function currentTabName() {
+      var active = document.querySelector(".panel.active");
+      return active ? active.id.replace("panel-", "") : "home";
+    }
+
+    // كل قسم ليه أكتر من زرار (بلاطة في الرئيسية + أيقونة في الشريط السفلي)،
+    // فلما حد منهم يتدوس، بنفعّل كل الأزرار اللي ليها نفس data-tab مش بس اللي اتدوس
+    function goToTab(tabName, opts) {
+      opts = opts || {};
+      var current = currentTabName();
+      if (!opts.skipHistory && current !== tabName) navStack.push(current);
+
+      document.querySelectorAll(".tab-btn").forEach(function (b) {
+        b.classList.toggle("active", b.dataset.tab === tabName);
+      });
+      document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("active"); });
+      document.getElementById("panel-" + tabName).classList.add("active");
+      document.getElementById("subnav-row").style.display = tabName === "home" ? "none" : "flex";
+      if (tabHooks[tabName] && ME) tabHooks[tabName]();
+    }
+
+    // أقسام بتحمّل بياناتها كل مرة تتفتح (عشان تبقى محدّثة)
+    var tabHooks = {};
+
+    function goBack() {
+      var prev = navStack.pop();
+      goToTab(prev || "home", { skipHistory: true });
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () { goToTab(btn.dataset.tab); });
+    });
+
+    document.getElementById("back-btn").addEventListener("click", goBack);
+    document.getElementById("gohome-btn").addEventListener("click", function () {
+      navStack = [];
+      goToTab("home", { skipHistory: true });
+    });
+
+    // الشعار/الاسم في الهيدر بيرجّع للرئيسية (شبكة الاختصارات)
+    function goHome() {
+      navStack = [];
+      document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+      document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("active"); });
+      document.getElementById("panel-home").classList.add("active");
+      document.getElementById("subnav-row").style.display = "none";
+    }
+    document.getElementById("home-link").addEventListener("click", goHome);
+    document.getElementById("home-link-text").addEventListener("click", goHome);
+
+    // ---------- تسجيل الحضور ----------
+    var AR_MONTHS = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+    // "2026-10-09" -> "9 أكتوبر 2026"، ومعاها (النهاردة) لو هي النهاردة
+    function fridayLabel(iso, today) {
+      var p = (iso || "").split("-");
+      if (p.length !== 3) return iso;
+      return Number(p[2]) + " " + AR_MONTHS[Number(p[1]) - 1] + " " + p[0] + (iso === today ? " (النهاردة)" : "");
+    }
+
+    // الجمعة اللي هيتسجل عليها الحضور بيحددها السيرفر: الجمعة = النهاردة، من السبت للخميس = الجمعة اللي قبلها (لأمين المرحلة/الخدمة)
+    var attendanceInfo = { today: "", date: "", canRecord: true };
+
+    function loadAttendanceDates() {
+      var note = byId("friday-note");
+      gs.withSuccessHandler(function (res) {
+        attendanceInfo = res;
+        if (res.canRecord) {
+          note.textContent = res.isFriday
+            ? "النهاردة جمعة - التسجيل شغال"
+            : "بتسجّل أو بتعدّل حضور جمعة " + fridayLabel(res.date, "") + " (الجمعة اللي فاتت)";
+        } else {
+          note.textContent = res.reason || "التسجيل مش متاح دلوقتي";
+        }
+        loadStudentsList();
+      }).withFailureHandler(function (err) {
+        note.textContent = "خطأ: " + err.message;
+      }).getAttendanceDates();
+    }
+    tabHooks["attendance"] = loadAttendanceDates;
+
+    // توحيد الحروف العربية في الواجهة (نفس فكرة السيرفر) عشان البحث ما يتأثرش بالهمزات والتاء المربوطة
+    function normAr(s) {
+      return (s || "").toString()
+        .replace(/[\u064B-\u065F\u0670\u0640]/g, "")
+        .replace(/[أإآٱ]/g, "ا")
+        .replace(/ى/g, "ي")
+        .replace(/ة/g, "ه")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    // بتخفي الأسماء اللي مش مطابقة للبحث (من غير ما تمسحها، فالتحديدات بتفضل زي ما هي)
+    function filterStudentsList() {
+      var q = normAr(document.getElementById("attendance-search").value);
+      var tokens = q ? q.split(" ") : [];
+      var rows = document.querySelectorAll("#students-list .student-row");
+      var shown = 0;
+      rows.forEach(function (row) {
+        var n = row.getAttribute("data-norm") || "";
+        var ok = tokens.every(function (t) { return n.indexOf(t) !== -1; });
+        row.style.display = ok ? "" : "none";
+        if (ok) shown++;
+      });
+      var empty = document.getElementById("students-empty");
+      if (empty) empty.style.display = (rows.length && !shown) ? "" : "none";
+    }
+
+    // presentNames: الأسماء اللي اتسجل حضورها النهاردة فعلاً، بتظهر متعلّم عليها ومكتوب جنبها "مسجل"
+    function renderStudentsList(names, presentNames) {
+      var list = document.getElementById("students-list");
+      if (!names.length) {
+        list.textContent = "مفيش أسماء في الاختيار ده.";
+        return;
+      }
+      var done = {};
+      (presentNames || []).forEach(function (n) { done[n.toString().trim()] = true; });
+
+      list.innerHTML = "";
+      names.forEach(function (name) {
+        var row = document.createElement("div");
+        row.className = "student-row";
+        row.setAttribute("data-norm", normAr(name));
+
+        var label = document.createElement("span");
+        label.textContent = name;
+        var saved = !!done[name.toString().trim()];
+        if (saved) row.setAttribute("data-saved", "1");
+        if (saved) {
+          var tag = document.createElement("small");
+          tag.textContent = " · مسجل";
+          tag.style.color = "var(--ok)";
+          label.appendChild(tag);
+        }
+
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = name;
+        cb.checked = saved;
+
+        row.appendChild(label);
+        row.appendChild(cb);
+        list.appendChild(row);
+      });
+
+      var empty = document.createElement("div");
+      empty.id = "students-empty";
+      empty.className = "stat-empty";
+      empty.style.display = "none";
+      empty.textContent = "مفيش اسم بالشكل ده في الاختيار الحالي.";
+      list.appendChild(empty);
+
+      filterStudentsList();
+    }
+
+    function loadStudentsList() {
+      document.getElementById("students-list").textContent = "جاري تحميل الأسماء...";
+      var stage = document.getElementById("stage-select").value;
+      var cls = document.getElementById("class-select").value;
+      gs
+        .withSuccessHandler(function (names) {
+          // بنجيب كمان اللي اتسجل حضورهم النهاردة، عشان لو رجعتي تسجلي اسم تاني الأسماء القديمة تفضل ظاهرة ومتعلّم عليها
+          gs.withSuccessHandler(function (present) {
+            renderStudentsList(names, present);
+          }).withFailureHandler(function () {
+            renderStudentsList(names, []);
+          }).getPresentOnDate(stage, cls);
+        })
+        .withFailureHandler(function (err) {
+          document.getElementById("students-list").textContent = "خطأ: " + err.message;
+        })
+        .getStudentsByFilter(stage, cls);
+    }
+
+    // بتحمّل فصول المرحلة المختارة (أو كل الفصول) في القائمة، وبعدها بتحدّث الأسماء
+    function loadClassOptions(keepSelection) {
+      gs.withSuccessHandler(function (classes) {
+        var select = document.getElementById("class-select");
+        var current = keepSelection ? select.value : "";
+        select.innerHTML = '<option value="">كل الفصول</option>';
+        classes.forEach(function (c) {
+          var opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          select.appendChild(opt);
+        });
+        select.value = current;
+        if (select.value !== current) select.value = "";
+        loadStudentsList();
+      }).withFailureHandler(function (err) {
+        document.getElementById("students-list").textContent = "خطأ: " + err.message;
+      }).getClasses(document.getElementById("stage-select").value);
+    }
+
+
+    document.getElementById("attendance-search").addEventListener("input", filterStudentsList);
+
+    document.getElementById("stage-select").addEventListener("change", function () {
+      loadClassOptions(false);
+    });
+
+    document.getElementById("class-select").addEventListener("change", function () {
+      loadStudentsList();
+    });
+
+    // ---------- قائمة المخدومين ----------
+    var WA_ICON_ROSTER = '<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.54-3.7 8.24-8.24 8.24z"/><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/></svg>';
+    var CALL_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>';
+    var TRASH_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3a1 1 0 0 0-1 1v1H4.5a1 1 0 0 0 0 2H5v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7h.5a1 1 0 0 0 0-2H16V4a1 1 0 0 0-1-1H9zm1 2h4V4h-4v1zM8 7h8v12H8V7zm2 2a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"/></svg>';
+function dialNumber(num, e) {
+  if (e) e.preventDefault();
+  var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (!isMobile) {
+    window.prompt("الكمبيوتر مش بيعمل مكالمات. انسخي الرقم واتصلي بيه من موبايلك:", "+" + num);
+    return;
+  }
+  var a = document.createElement("a");
+  a.href = "tel:+" + num;
+  a.target = "_blank";
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+    function renderRoster(items) {
+      var list = document.getElementById("roster-list");
+      if (!items.length) {
+        list.textContent = "مفيش مخدومين في الاختيار ده.";
+        return;
+      }
+      list.innerHTML = "";
+      items.forEach(function (p) {
+        var row = document.createElement("div");
+        row.className = "roster-item";
+
+        var del = document.createElement("button");
+        del.type = "button";
+        del.className = "roster-icon danger";
+        del.innerHTML = TRASH_ICON;
+        del.title = "حذف المخدوم";
+        del.addEventListener("click", function () { deleteStudentFromRoster(p.name, del); });
+
+        var text = document.createElement("div");
+        text.className = "roster-text roster-text-clickable";
+        text.title = "اضغط لعرض/تعديل بيانات المخدوم";
+        var nameEl = document.createElement("div");
+        nameEl.className = "roster-name";
+        nameEl.textContent = p.name;
+        var addrEl = document.createElement("div");
+        addrEl.className = "roster-address";
+        addrEl.textContent = p.address || "بدون عنوان";
+        text.appendChild(nameEl);
+        text.appendChild(addrEl);
+        text.addEventListener("click", function () {
+          goToTab("student");
+          searchAndLoadStudent(p.name, p.stage);
+        });
+
+        var actions = document.createElement("div");
+        actions.className = "roster-actions";
+
+        var wa = document.createElement("a");
+        wa.className = "roster-icon wa" + (p.waPhone ? "" : " disabled");
+        wa.innerHTML = WA_ICON_ROSTER;
+        if (p.waPhone) { wa.href = "https://wa.me/" + p.waPhone; wa.target = "_blank"; wa.rel = "noopener"; }
+
+        var call = document.createElement("a");
+        call.className = "roster-icon call" + (p.waPhone ? "" : " disabled");
+        call.innerHTML = CALL_ICON;
+        if (p.waPhone) { call.href = "#"; call.addEventListener("click", function (e) { dialNumber(p.waPhone, e); }); }
+
+        actions.appendChild(wa);
+        actions.appendChild(call);
+        row.appendChild(del);
+        row.appendChild(text);
+        row.appendChild(actions);
+        list.appendChild(row);
+      });
+    }
+
+    // بتحذف مخدوم نهائيًا بعد تأكيد، وبترجّع تحديث كل القوائم المرتبطة بيه في التطبيق
+    function deleteStudentFromRoster(name, btn) {
+      var confirmed = window.confirm("متأكد إنك عايز تحذف \"" + name + "\" نهائيًا؟ ده هيشيله من شيت المخدومين وكل سجلات الحضور، ومينفعش يترجع.");
+      if (!confirmed) return;
+
+      btn.disabled = true;
+      gs.withSuccessHandler(function () {
+        loadRoster();
+        loadRosterClassOptions(true);
+        loadClassOptions(true);
+        loadBdayClassOptions(true);
+        loadTrophy();
+        loadRequests();
+      }).withFailureHandler(function (err) {
+        btn.disabled = false;
+        window.alert("تعذر الحذف: " + err.message);
+      }).deleteStudent(name);
+    }
+
+    // ---------- بيانات الخدام (للأمناء بس) ----------
+    function renderServants(items) {
+      var list = document.getElementById("servants-list");
+      if (!items.length) {
+        list.textContent = "مفيش خدام متسجلين لسه.";
+        return;
+      }
+      list.innerHTML = "";
+      items.forEach(function (s) {
+        var wrap = document.createElement("div");
+        wrap.className = "sa-person";
+
+        var row = document.createElement("div");
+        row.className = "roster-item";
+
+        var text = document.createElement("div");
+        text.className = "roster-text";
+        var nameEl = document.createElement("div");
+        nameEl.className = "roster-name";
+        nameEl.textContent = s.name;
+        var subEl = document.createElement("div");
+        subEl.className = "roster-address";
+        subEl.textContent = [s.roleLabel, s.stage].filter(Boolean).join(" · ");
+        text.appendChild(nameEl);
+        text.appendChild(subEl);
+
+        var actions = document.createElement("div");
+        actions.className = "roster-actions";
+        // الدوس على واتساب/اتصال ما يفتحش التفاصيل
+        actions.addEventListener("click", function (e) { e.stopPropagation(); });
+
+        var wa = document.createElement("a");
+        wa.className = "roster-icon wa" + (s.waPhone ? "" : " disabled");
+        wa.innerHTML = WA_ICON_ROSTER;
+        if (s.waPhone) { wa.href = "https://wa.me/" + s.waPhone; wa.target = "_blank"; wa.rel = "noopener"; }
+
+        var call = document.createElement("a");
+        call.className = "roster-icon call" + (s.waPhone ? "" : " disabled");
+        call.innerHTML = CALL_ICON;
+        if (s.waPhone) { call.href = "#"; call.addEventListener("click", function (e) { dialNumber(s.waPhone, e); }); }
+
+        actions.appendChild(wa);
+        actions.appendChild(call);
+        row.appendChild(text);
+        row.appendChild(actions);
+        wrap.appendChild(row);
+
+        // كل بيانات الخادم (بتظهر لما تدوسي على الاسم)
+        var details = document.createElement("div");
+        details.className = "sa-details";
+        [
+          ["الاسم", s.name],
+          ["الدور في الخدمة", s.role],
+          ["المرحلة", s.stage],
+          ["الفصل", s.cls],
+          ["رقم التليفون", s.phone],
+          ["تاريخ الميلاد", s.birth],
+          ["العنوان", s.address],
+          ["المؤهل الدراسي", s.qualification],
+          ["اسم المستخدم", s.hasAccount === false ? "بدون حساب على التطبيق" : s.username]
+        ].forEach(function (f) {
+          var d = document.createElement("div");
+          d.className = "sa-day";
+          var k = document.createElement("span");
+          k.textContent = f[0];
+          var v = document.createElement("span");
+          v.textContent = f[1] || "—";
+          d.appendChild(k);
+          d.appendChild(v);
+          details.appendChild(d);
+        });
+        wrap.appendChild(details);
+
+        row.addEventListener("click", function () { details.classList.toggle("open"); });
+        list.appendChild(wrap);
+      });
+    }
+
+    // ================= متابعة الخدام: حضور / افتقاد / أعياد ميلاد =================
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+
+    // ---------- حضور الخدام ----------
+    // الجمعة بيحددها السيرفر (النهاردة لو جمعة، وإلا الجمعة اللي فاتت)، والقيمة بتتحفظ في حقل مخفي
+    function setSaDate(date, isFriday) {
+      byId("sa-date").value = date || "";
+      byId("sa-date-note").textContent = date
+        ? "حضور جمعة " + fridayLabel(date, "") + (isFriday ? " (النهاردة)" : " (الجمعة اللي فاتت)")
+        : "";
+    }
+    function loadSaDay() {
+      var d = byId("sa-date").value;
+      var box = byId("sa-checklist");
+      if (!d) { box.innerHTML = ""; return; }
+      box.textContent = "جاري تحميل الأسماء...";
+      gs.withSuccessHandler(function (res) {
+        box.innerHTML = "";
+        if (!res.servants.length) { box.textContent = "مفيش خدام في نطاقك."; return; }
+        res.servants.forEach(function (s) {
+          var row = el("div", "student-row");
+          var label = el("span", "", s.name);
+          var sub = el("small", "", " · " + s.roleLabel + (s.stage ? " · " + s.stage : ""));
+          sub.style.color = "var(--text-dim)";
+          label.appendChild(sub);
+          var cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.setAttribute("data-username", s.username);
+          cb.checked = !!s.present;
+          row.appendChild(label);
+          row.appendChild(cb);
+          box.appendChild(row);
+        });
+      }).withFailureHandler(function (err) {
+        box.textContent = "خطأ: " + err.message;
+      }).getServantsAttendanceDay(d);
+    }
+
+    byId("sa-save").addEventListener("click", function () {
+      var msg = byId("sa-msg");
+      var d = byId("sa-date").value;
+      if (!d) return;
+      var present = Array.prototype.slice
+        .call(document.querySelectorAll("#sa-checklist input[type=checkbox]:checked"))
+        .map(function (c) { return c.getAttribute("data-username"); });
+      msg.textContent = "جاري الحفظ..."; msg.className = "msg";
+      gs.withSuccessHandler(function (res) {
+        msg.textContent = "تم حفظ حضور " + res.present + " من " + res.total + " خادم يوم " + fridayLabel(d, "");
+        msg.className = "msg ok";
+        loadServantsAttendance();
+      }).withFailureHandler(function (err) {
+        msg.textContent = "خطأ: " + err.message; msg.className = "msg err";
+      }).saveServantsAttendanceDay(d, present);
+    });
+
+    function loadServantsAttendance() {
+      gs.withSuccessHandler(function (res) {
+        byId("sa-year").textContent = "سنة الخدمة " + res.yearLabel;
+        var open = res.canRecord && !!res.date;
+        byId("sa-record").style.display = open ? "block" : "none";
+        byId("sa-note").style.display = open ? "none" : "block";
+        byId("sa-note").textContent = !res.canRecord
+          ? "تسجيل حضور الخدام متاح لأمين المرحلة وأمين الخدمة بس."
+          : (res.reason || "التسجيل مش متاح دلوقتي");
+        if (open) { setSaDate(res.date, res.isFriday); loadSaDay(); }
+      }).withFailureHandler(function (err) {
+        byId("sa-msg").textContent = "خطأ: " + err.message;
+        byId("sa-msg").className = "msg err";
+      }).getServantsAttendance();
+    }
+
+    // ---------- إحصائيات الخادم: نسبة حضور الخدمة + افتقاد تليفون + افتقاد منزل ----------
+    function loadServantVisits() {
+      var box = byId("sv-list");
+      box.textContent = "جاري التحميل...";
+      gs.withSuccessHandler(function (res) {
+        byId("sv-year").textContent = "سنة الخدمة " + res.yearLabel;
+        box.innerHTML = "";
+        if (!res.servants.length) { box.textContent = "مفيش خدام متسجلين لسه."; return; }
+        res.servants.forEach(function (s) {
+          var wrap = el("div", "sa-person");
+          var row = el("div", "roster-item");
+
+          var text = el("div", "roster-text");
+          text.appendChild(el("div", "roster-name", s.name));
+          text.appendChild(el("div", "roster-address", s.roleLabel + (s.stage ? " · " + s.stage : "")));
+
+          var total = s.present + s.absent;
+          var att = el("div", "sa-counts");
+          att.appendChild(document.createTextNode("نسبة حضور الخدمة "));
+          att.appendChild(el("b", "", total ? s.percentage + "%" : "-"));
+          if (total) att.appendChild(document.createTextNode(" (حضر " + s.present + " · غاب " + s.absent + ")"));
+          text.appendChild(att);
+
+          var vis = el("div", "sa-counts");
+          vis.appendChild(document.createTextNode("افتقاد تليفون "));
+          vis.appendChild(el("b", "", String(s.phone)));
+          vis.appendChild(document.createTextNode(" · افتقاد منزل "));
+          vis.appendChild(el("b", "", String(s.home)));
+          text.appendChild(vis);
+
+          row.appendChild(text);
+          row.appendChild(el("div", "bday-date", total ? s.percentage + "%" : "-"));
+          wrap.appendChild(row);
+
+          var bar = el("div", "bar-bg sa-bar");
+          var fill = el("div", "bar-fill");
+          fill.style.width = (total ? s.percentage : 0) + "%";
+          bar.appendChild(fill);
+          wrap.appendChild(bar);
+
+          // تفاصيل الجمع (بتتفتح بالدوس على الاسم)
+          var details = el("div", "sa-details" + (ME && ME.role === ROLE_CLASS ? " open" : ""));
+          if (!s.sessions.length) {
+            details.appendChild(el("div", "sa-empty", "مفيش جمع اتسجل فيها حضور لسه."));
+          } else {
+            s.sessions.slice().reverse().forEach(function (x) {
+              var d = el("div", "sa-day");
+              d.appendChild(el("span", "", x.date));
+              d.appendChild(el("span", x.present ? "ok" : "no", x.present ? "✓ حضر" : "✗ غاب"));
+              details.appendChild(d);
+            });
+          }
+          wrap.appendChild(details);
+          row.addEventListener("click", function () { details.classList.toggle("open"); });
+          box.appendChild(wrap);
+        });
+      }).withFailureHandler(function (err) {
+        box.textContent = "خطأ: " + err.message;
+      }).getServantStats();
+    }
+
+    // ---------- أعياد ميلاد الخدام ----------
+    function loadServantBirthdays() {
+      var box = byId("sb-list");
+      box.textContent = "جاري التحميل...";
+      gs.withSuccessHandler(function (items) {
+        box.innerHTML = "";
+        if (!items.length) { box.textContent = "مفيش أعياد ميلاد في الفترة دي (أو الخدام ماكتبوش تاريخ ميلادهم)."; return; }
+        items.forEach(function (p) {
+          var row = el("div", "bday-item");
+          var text = el("div", "bday-text");
+          text.appendChild(el("div", "bday-name", p.name));
+          text.appendChild(el("div", "bday-sub", p.roleLabel + (p.stage ? " · " + p.stage : "")));
+          row.appendChild(text);
+          row.appendChild(el("div", "bday-date", p.day + " " + p.monthName));
+          box.appendChild(row);
+        });
+      }).withFailureHandler(function (err) {
+        box.textContent = "خطأ: " + err.message;
+      }).getServantBirthdays(byId("sb-from").value, byId("sb-to").value);
+    }
+
+    byId("sb-from").addEventListener("change", loadServantBirthdays);
+    byId("sb-to").addEventListener("change", loadServantBirthdays);
+    byId("sb-clear").addEventListener("click", function () {
+      byId("sb-from").value = "";
+      byId("sb-to").value = "";
+      loadServantBirthdays();
+    });
+
+    tabHooks["servants-attendance"] = loadServantsAttendance;
+    tabHooks["servants-visits"] = loadServantVisits;
+    tabHooks["servants-birthdays"] = loadServantBirthdays;
+
+    // ---------- إضافة خادم من غير حساب ----------
+    function loadAddServantClasses() {
+      var stage = ME.role === ROLE_ADMIN ? byId("as-stage").value : ME.stage;
+      var dl = byId("as-class-list");
+      dl.innerHTML = "";
+      if (!stage) return;
+      rpc("getPublicClasses", [stage], function (classes) {
+        (classes || []).forEach(function (c) {
+          var o = document.createElement("option");
+          o.value = c;
+          dl.appendChild(o);
+        });
+      });
+    }
+
+    byId("add-servant-btn").addEventListener("click", function () {
+      var form = byId("add-servant-form");
+      var willOpen = form.style.display === "none";
+      form.style.display = willOpen ? "block" : "none";
+      if (willOpen) loadAddServantClasses();
+    });
+    byId("as-stage").addEventListener("change", loadAddServantClasses);
+    byId("as-cancel").addEventListener("click", function () { byId("add-servant-form").style.display = "none"; });
+
+    byId("as-save").addEventListener("click", function () {
+      var btn = this, msg = byId("as-msg");
+      var payload = {
+        name: byId("as-name").value.trim(),
+        phone: byId("as-phone").value.trim(),
+        birth: byId("as-birth").value,
+        address: byId("as-address").value.trim(),
+        qualification: byId("as-qual").value.trim(),
+        stage: byId("as-stage").value,
+        cls: byId("as-class").value.trim()
+      };
+      msg.textContent = "جاري الحفظ..."; msg.className = "msg"; btn.disabled = true;
+      gs.withSuccessHandler(function (res) {
+        btn.disabled = false;
+        ["as-name", "as-phone", "as-birth", "as-address", "as-qual", "as-class"].forEach(function (id) { byId(id).value = ""; });
+        msg.textContent = "تم إضافة " + res.name; msg.className = "msg ok";
+        loadServants();
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+      }).addServant(payload);
+    });
+
+    function loadServants() {
+      document.getElementById("servants-list").textContent = "جاري تحميل القائمة...";
+      gs.withSuccessHandler(renderServants).withFailureHandler(function (err) {
+        document.getElementById("servants-list").textContent = "خطأ: " + err.message;
+      }).getServants();
+    }
+
+    function loadRoster() {
+      document.getElementById("roster-list").textContent = "جاري تحميل القائمة...";
+      gs
+        .withSuccessHandler(renderRoster)
+        .withFailureHandler(function (err) {
+          document.getElementById("roster-list").textContent = "خطأ: " + err.message;
+        })
+        .getRoster(
+          document.getElementById("roster-stage-select").value,
+          document.getElementById("roster-class-select").value,
+          document.getElementById("roster-search").value.trim()
+        );
+    }
+
+    var rosterSearchTimer = null;
+    document.getElementById("roster-search").addEventListener("input", function () {
+      clearTimeout(rosterSearchTimer);
+      rosterSearchTimer = setTimeout(loadRoster, 300); // بحث فوري من غير ما نضغط زرار
+    });
+
+    function loadRosterClassOptions(keepSelection) {
+      gs.withSuccessHandler(function (classes) {
+        var select = document.getElementById("roster-class-select");
+        var current = keepSelection ? select.value : "";
+        select.innerHTML = '<option value="">كل الفصول</option>';
+        classes.forEach(function (c) {
+          var opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          select.appendChild(opt);
+        });
+        select.value = current;
+        if (select.value !== current) select.value = "";
+        loadRoster();
+      }).withFailureHandler(function (err) {
+        document.getElementById("roster-list").textContent = "خطأ: " + err.message;
+      }).getClasses(document.getElementById("roster-stage-select").value);
+    }
+
+    document.getElementById("roster-stage-select").addEventListener("change", function () {
+      loadRosterClassOptions(false);
+    });
+
+    document.getElementById("roster-class-select").addEventListener("change", function () {
+      loadRoster();
+    });
+
+    // ---------- أعياد الميلاد ----------
+    function renderBirthdays(items) {
+      var list = document.getElementById("bday-list");
+      if (!items.length) {
+        list.textContent = "مفيش أعياد ميلاد في الفترة/الاختيار ده.";
+        return;
+      }
+      list.innerHTML = "";
+      items.forEach(function (p) {
+        var row = document.createElement("div");
+        row.className = "bday-item";
+
+        var text = document.createElement("div");
+        text.className = "bday-text";
+        var nameEl = document.createElement("div");
+        nameEl.className = "bday-name";
+        nameEl.textContent = p.name;
+        var subEl = document.createElement("div");
+        subEl.className = "bday-sub";
+        subEl.textContent = [p.stage, p.className].filter(Boolean).join(" · ") || " ";
+        text.appendChild(nameEl);
+        text.appendChild(subEl);
+
+        var dateEl = document.createElement("div");
+        dateEl.className = "bday-date";
+        dateEl.textContent = p.day + " " + p.monthName;
+
+        row.appendChild(text);
+        row.appendChild(dateEl);
+        list.appendChild(row);
+      });
+    }
+
+    function loadBirthdays() {
+      document.getElementById("bday-list").textContent = "جاري تحميل أعياد الميلاد...";
+      gs
+        .withSuccessHandler(renderBirthdays)
+        .withFailureHandler(function (err) {
+          document.getElementById("bday-list").textContent = "خطأ: " + err.message;
+        })
+        .getBirthdays(
+          document.getElementById("bday-stage-select").value,
+          document.getElementById("bday-class-select").value,
+          "",
+          document.getElementById("bday-from").value,
+          document.getElementById("bday-to").value
+        );
+    }
+
+    function loadBdayClassOptions(keepSelection) {
+      gs.withSuccessHandler(function (classes) {
+        var select = document.getElementById("bday-class-select");
+        var current = keepSelection ? select.value : "";
+        select.innerHTML = '<option value="">كل الفصول</option>';
+        classes.forEach(function (c) {
+          var opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          select.appendChild(opt);
+        });
+        select.value = current;
+        if (select.value !== current) select.value = "";
+        loadBirthdays();
+      }).withFailureHandler(function (err) {
+        document.getElementById("bday-list").textContent = "خطأ: " + err.message;
+      }).getClasses(document.getElementById("bday-stage-select").value);
+    }
+
+    document.getElementById("bday-stage-select").addEventListener("change", function () {
+      loadBdayClassOptions(false);
+    });
+    document.getElementById("bday-class-select").addEventListener("change", loadBirthdays);
+    document.getElementById("bday-from").addEventListener("change", loadBirthdays);
+    document.getElementById("bday-to").addEventListener("change", loadBirthdays);
+    document.getElementById("bday-clear").addEventListener("click", function () {
+      document.getElementById("bday-from").value = "";
+      document.getElementById("bday-to").value = "";
+      loadBirthdays();
+    });
+
+    document.getElementById("submit-attendance").addEventListener("click", function () {
+      var checked = Array.prototype.slice
+        .call(document.querySelectorAll("#students-list input[type=checkbox]:checked"))
+        .map(function (cb) { return cb.value; });
+
+      // اللي كان متسجل حضوره قبل كده واتشال منه التعليم = إلغاء حضور (بيتحوّل غايب في الشيت)
+      var unchecked = Array.prototype.slice
+        .call(document.querySelectorAll('#students-list .student-row[data-saved="1"] input[type=checkbox]:not(:checked)'))
+        .map(function (cb) { return cb.value; });
+
+      var msg = document.getElementById("attendance-msg");
+      if (!attendanceInfo.canRecord) { msg.textContent = attendanceInfo.reason || "التسجيل مش متاح دلوقتي"; msg.className = "msg err"; return; }
+      if (!checked.length && !unchecked.length) { msg.textContent = "اختار طالب واحد على الأقل"; msg.className = "msg err"; return; }
+      if (unchecked.length && !window.confirm("هتلغي حضور " + unchecked.length + " اسم اتسجل قبل كده. متأكد؟")) return;
+
+      msg.textContent = "جاري الحفظ..."; msg.className = "msg";
+      gs.withSuccessHandler(function (res) {
+        if (res.status === "success") {
+          msg.textContent = "تم تسجيل حضور " + res.marked.length + " طالب" +
+            (res.date && res.date !== attendanceInfo.today ? " ليوم " + fridayLabel(res.date, "") : "") +
+            (res.unmarked && res.unmarked.length ? " - وإلغاء حضور " + res.unmarked.length : "") +
+            (res.notFound.length ? (" - ملحوظة: " + res.notFound.length + " مش موجودين في شيت الحضور") : "");
+          msg.className = "msg ok";
+          loadStudentsList(); // تحديث القائمة: كل اللي اتسجل النهاردة يفضل متعلّم عليه
+        } else {
+          msg.textContent = res.message;
+          msg.className = "msg err";
+        }
+      }).withFailureHandler(function (err) {
+        msg.textContent = "خطأ: " + err.message; msg.className = "msg err";
+      }).submitAttendance(checked, unchecked);
+    });
+
+    // ---------- بحث/تعديل/إضافة مخدوم ----------
+    // اسم المخدوم اللي اتحمّل بالبحث (لو فاضي يبقى الحفظ تسجيل جديد)
+    var loadedStudentName = "";
+    var loadedStudentStage = ""; // المرحلة وقت تحميل السجل، عشان نكتشف لو اتغيرت (نقل حقيقي بين المراحل)
+
+    // loaded = true لما البيانات جاية من سجل موجود؛ ساعتها المرحلة بتتحدّث من السجل
+    // وغير كده المرحلة المختارة فوق بتفضل زي ما هي
+    // بتملا قائمة اختيار الفصل بفصول مرحلة معيّنة، وتختار قيمة معيّنة بعد ما تحمّل (أو تضيفها لو مش موجودة في القائمة)
+    function loadStudentClassOptions(stage, selectValue) {
+      var select = document.getElementById("student-class-select");
+      gs.withSuccessHandler(function (classes) {
+        select.innerHTML = '<option value="">اختار الفصل</option>';
+        classes.forEach(function (c) {
+          var opt = document.createElement("option");
+          opt.value = c; opt.textContent = c;
+          select.appendChild(opt);
+        });
+        var addOpt = document.createElement("option");
+        addOpt.value = "__new__"; addOpt.textContent = "+ فصل جديد";
+        select.appendChild(addOpt);
+        applyStudentClassValue(selectValue || "");
+      }).withFailureHandler(function () {
+        select.innerHTML = '<option value="">اختار الفصل</option><option value="__new__">+ فصل جديد</option>';
+        applyStudentClassValue(selectValue || "");
+      }).getClasses(stage);
+    }
+
+    // بتحط قيمة معيّنة في قائمة اختيار الفصل، وتضيفها كاختيار مؤقت لو مش موجودة أصلاً في القائمة
+    function applyStudentClassValue(value) {
+      var select = document.getElementById("student-class-select");
+      var newInput = document.getElementById("student-class-new");
+      if (!value) { select.value = ""; newInput.style.display = "none"; newInput.value = ""; return; }
+      var found = Array.prototype.some.call(select.options, function (o) { return o.value === value; });
+      if (!found) {
+        var opt = document.createElement("option");
+        opt.value = value; opt.textContent = value;
+        select.insertBefore(opt, select.lastElementChild); // قبل اختيار "+ فصل جديد"
+      }
+      select.value = value;
+      newInput.style.display = "none";
+      newInput.value = "";
+    }
+
+    // بترجع قيمة الفصل المختارة فعليًا، سواء من القائمة أو من خانة "فصل جديد"
+    function getStudentClassValue() {
+      var select = document.getElementById("student-class-select");
+      if (select.value === "__new__") return document.getElementById("student-class-new").value.trim();
+      return select.value;
+    }
+
+    document.getElementById("student-class-select").addEventListener("change", function () {
+      var isNewChoice = this.value === "__new__";
+      var newInput = document.getElementById("student-class-new");
+      newInput.style.display = isNewChoice ? "" : "none";
+      if (isNewChoice) newInput.focus();
+    });
+
+    document.getElementById("student-stage").addEventListener("change", function () {
+      loadStudentClassOptions(this.value, "");
+    });
+
+    function clearCommentForm() {
+      document.getElementById("student-comment").value = "";
+      document.getElementById("student-comment-date").value = "";
+      document.getElementById("student-comment-type").value = "";
+      document.getElementById("comment-msg").textContent = "";
+    }
+
+    function loadCommentForm(name) {
+      clearCommentForm();
+      if (!name) return;
+      gs.withSuccessHandler(function (res) {
+        if (res) {
+          document.getElementById("student-comment").value = res.comment || "";
+          document.getElementById("student-comment-date").value = res.visitDate || "";
+          document.getElementById("student-comment-type").value = res.visitType || "";
+        }
+      }).getComment(name);
+    }
+
+    function setStudentForm(rec, loaded) {
+      rec = rec || {};
+      document.getElementById("student-name").value = rec["الاسم"] || "";
+      document.getElementById("student-phone").value = rec["رقم التليفون"] || "";
+      document.getElementById("student-birth").value = rec["تاريخ الميلاد"] || "";
+      document.getElementById("student-address").value = rec["العنوان"] || "";
+      document.getElementById("student-confessor").value = rec["أب الاعتراف"] || "";
+      if (loaded) {
+        document.getElementById("student-stage").value = rec["المرحلة"] || "";
+        loadStudentClassOptions(rec["المرحلة"] || "", rec["الفصل"] || "");
+        loadedStudentName = (rec["الاسم"] || "").toString().trim();
+        loadedStudentStage = (rec["المرحلة"] || "").toString().trim();
+        loadCommentForm(loadedStudentName);
+      } else {
+        applyStudentClassValue("");
+        loadedStudentName = "";
+        loadedStudentStage = "";
+        clearCommentForm();
+      }
+    }
+
+    // بتدوّر على مخدوم وتحمّل بياناته في الفورم، ومتستخدمة من زرار البحث ومن الدوس على اسم في قائمة المخدومين
+    function searchAndLoadStudent(query, stage) {
+      document.getElementById("student-search").value = query;
+      if (stage) document.getElementById("student-stage").value = stage;
+
+      var msg = document.getElementById("student-msg");
+      var box = document.getElementById("student-matches");
+      box.innerHTML = "";
+      if (!query) { msg.textContent = "اكتب اسم للبحث"; msg.className = "msg err"; return; }
+
+      msg.textContent = "جاري البحث..."; msg.className = "msg";
+      gs.withSuccessHandler(function (matches) {
+        if (!matches.length) {
+          setStudentForm({ "الاسم": query }, false);
+          msg.textContent = stage
+            ? "مفيش مخدوم بالاسم ده في " + stage + " - املأ البيانات وهيتضاف في " + stage
+            : "مفيش مخدوم بالاسم ده - اختار المرحلة واملأ البيانات وهيتضاف كسجل جديد";
+          msg.className = "msg ok";
+        } else if (matches.length === 1) {
+          setStudentForm(matches[0], true);
+          msg.textContent = "تم تحميل بيانات " + matches[0]["الاسم"] + " - تقدر تعدّل وتحفظ";
+          msg.className = "msg ok";
+        } else {
+          msg.textContent = "لقيت " + matches.length + " أسماء - اختار المخدوم:";
+          msg.className = "msg ok";
+          matches.forEach(function (m) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "match-item";
+            b.textContent = m["الاسم"];
+            var extra = [m["المرحلة"], m["الفصل"]].filter(Boolean).join(" · ");
+            if (extra) {
+              var s = document.createElement("small");
+              s.textContent = extra;
+              b.appendChild(s);
+            }
+            b.addEventListener("click", function () {
+              setStudentForm(m, true);
+              box.innerHTML = "";
+              msg.textContent = "تم تحميل بيانات " + m["الاسم"] + " - تقدر تعدّل وتحفظ";
+            });
+            box.appendChild(b);
+          });
+        }
+      }).withFailureHandler(function (err) {
+        msg.textContent = "خطأ: " + err.message; msg.className = "msg err";
+      }).searchStudents(query, stage);
+    }
+
+    document.getElementById("load-student").addEventListener("click", function () {
+      searchAndLoadStudent(
+        document.getElementById("student-search").value.trim(),
+        document.getElementById("student-stage").value
+      );
+    });
+
+    document.getElementById("save-student").addEventListener("click", function () {
+      var data = {
+        "الاسم": document.getElementById("student-name").value.trim(),
+        "رقم التليفون": document.getElementById("student-phone").value.trim(),
+        "تاريخ الميلاد": document.getElementById("student-birth").value,
+        "العنوان": document.getElementById("student-address").value.trim(),
+        "أب الاعتراف": document.getElementById("student-confessor").value.trim(),
+        "الفصل": getStudentClassValue(),
+        "المرحلة": document.getElementById("student-stage").value
+      };
+      var msg = document.getElementById("student-msg");
+      if (!data["الاسم"]) { msg.textContent = "الاسم مطلوب"; msg.className = "msg err"; return; }
+      if (!data["المرحلة"]) { msg.textContent = "اختار المرحلة (من فوق) قبل الحفظ"; msg.className = "msg err"; return; }
+      if (ME && ME.role === ROLE_CLASS) data["الفصل"] = ME.cls || "";
+else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو اكتب اسم فصل جديد"; msg.className = "msg err"; return; }
+
+      // لو الاسم مش هو اللي اتحمّل بالبحث يبقى ده تسجيل جديد
+      data.isNew = (data["الاسم"] !== loadedStudentName);
+      // تعديل لسجل محمّل واتغيرت مرحلته: ابعت المرحلة القديمة عشان السيرفر ينقله بدل ما يكرره
+      if (!data.isNew && loadedStudentStage && loadedStudentStage !== data["المرحلة"]) {
+        data.originalStage = loadedStudentStage;
+      }
+
+      msg.textContent = "جاري الحفظ..."; msg.className = "msg";
+      gs.withSuccessHandler(function (res) { handleSaveResult(res, data, msg); })
+        .withFailureHandler(function (err) {
+          msg.textContent = "خطأ: " + err.message; msg.className = "msg err";
+        }).addOrUpdateStudent(data);
+    });
+
+    // حفظ التعليق مستقل تمامًا عن حفظ بيانات المخدوم: مش بيأثر على بياناته الأساسية، والعكس صحيح.
+    // أي تعليق جديد بيمسح القديم (تعليق واحد بس محفوظ للمخدوم في كل وقت)
+    document.getElementById("save-comment").addEventListener("click", function () {
+      var msg = document.getElementById("comment-msg");
+      if (!loadedStudentName) { msg.textContent = "لازم تحمّلي بيانات مخدوم موجود الأول"; msg.className = "msg err"; return; }
+
+      var comment = document.getElementById("student-comment").value.trim();
+      var visitDate = document.getElementById("student-comment-date").value;
+      var visitType = document.getElementById("student-comment-type").value;
+
+      msg.textContent = "جاري الحفظ..."; msg.className = "msg";
+      gs.withSuccessHandler(function () {
+        msg.textContent = "تم حفظ التعليق"; msg.className = "msg ok";
+      }).withFailureHandler(function (err) {
+        msg.textContent = "خطأ: " + err.message; msg.className = "msg err";
+      }).saveComment(loadedStudentName, comment, visitDate, visitType);
+    });
+
+    // بعد الحفظ، التطبيق يفضّي الفورم ويحدّث قوائم الفصول في الشاشات التانية
+    function finishSave(message) {
+      var msg = document.getElementById("student-msg");
+      setStudentForm({}, false);
+      document.getElementById("student-search").value = "";
+      document.getElementById("student-matches").innerHTML = "";
+      msg.textContent = message;
+      msg.className = "msg ok";
+      // حدّث قائمة الفصول (لو اتضاف فصل جديد لتوه يبقى جاهز يتختار من غير ما يتكتب تاني)
+      loadStudentClassOptions(document.getElementById("student-stage").value, "");
+      loadClassOptions(true);
+      loadRosterClassOptions(true);
+      loadBdayClassOptions(true);
+      loadTrophy();
+    }
+
+    // بتعالج كل الحالات اللي ممكن ترجع من addOrUpdateStudent، بما فيها تعارض الاسم مع فصل تاني في نفس المرحلة
+    function handleSaveResult(res, data, msg) {
+      if (res.status === "added" || res.status === "updated") {
+        finishSave(res.status === "added"
+          ? "تمت إضافة \"" + data["الاسم"] + "\" في " + data["المرحلة"] + " - جاهز لمخدوم جديد"
+          : "تم تحديث بيانات \"" + data["الاسم"] + "\"");
+        return;
+      }
+
+      if (res.status === "exists") {
+        msg.textContent = "الاسم ده موجود بالفعل" + (res.stage ? " في " + res.stage : " (من غير مرحلة)") +
+          " - اختار \"كل المراحل\" وابحث عنه عشان تعدّل بياناته";
+        msg.className = "msg err";
+        return;
+      }
+
+      if (res.status === "requested") {
+        finishSave("الاسم ده موجود في فصل \"" + res.fromClass + "\" بنفس مرحلتك - اتبعت طلب نقل لخادم الفصل ده، وهيتضاف عندك لما يوافق");
+        return;
+      }
+
+      if (res.status === "already_requested") {
+        msg.textContent = "في طلب نقل اتبعت قبل كده لنفس المخدوم من فصل \"" + res.fromClass + "\" ولسه مستني رد";
+        msg.className = "msg err";
+        return;
+      }
+
+      if (res.status === "moved") {
+        finishSave("الاسم ده كان في فصل \"" + res.fromClass + "\" وتم نقله لفصل \"" + res.toClass + "\"");
+        return;
+      }
+
+      if (res.status === "ambiguous") {
+        msg.textContent = "الاسم ده موجود في أكتر من فصل بنفس مرحلتك - اختار الفصل الصح:";
+        msg.className = "msg ok";
+        var box = document.getElementById("student-matches");
+        box.innerHTML = "";
+        res.classes.forEach(function (cls) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "match-item";
+          b.textContent = cls;
+          b.addEventListener("click", function () {
+            msg.textContent = "جاري المعالجة...";
+            var call = gs.withSuccessHandler(function (res2) { handleSaveResult(res2, data, msg); })
+              .withFailureHandler(function (err) { msg.textContent = "خطأ: " + err.message; msg.className = "msg err"; });
+            if (ME.role === ROLE_CLASS) {
+              call.confirmTransferRequest(data["الاسم"], cls, data["رقم التليفون"]);
+            } else {
+              call.confirmMoveStudent(data["الاسم"], res.stage, cls, res.toClass, data["رقم التليفون"]);
+            }
+          });
+          box.appendChild(b);
+        });
+        return;
+      }
+
+      msg.textContent = "تم"; msg.className = "msg ok";
+    }
+
+    // ---------- التنقل بين تابات الإحصائيات الفرعية ----------
+    document.querySelectorAll(".subtab-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll(".subtab-btn").forEach(function (b) { b.classList.remove("active"); });
+        document.querySelectorAll(".subpanel").forEach(function (p) { p.classList.remove("active"); });
+        btn.classList.add("active");
+        document.getElementById("subpanel-" + btn.dataset.subtab).classList.add("active");
+        if (btn.dataset.subtab === "student-stats") loadStudentMonth();
+        if (btn.dataset.subtab === "service-stats") loadSheetWarnings();
+      });
+    });
+
+    // ---------- إحصائيات مخدوم ----------
+    document.getElementById("load-student-stats").addEventListener("click", function () {
+      var name = document.getElementById("stats-student-search").value.trim();
+      var result = document.getElementById("student-stats-result");
+      if (!name) { result.innerHTML = "<div class='msg err'>اكتب اسم للبحث</div>"; return; }
+
+      result.innerHTML = "<div class='msg'>جاري التحميل...</div>";
+      gs.withSuccessHandler(function (stats) {
+        if (stats.ambiguous) {
+          result.innerHTML = "";
+          var note = document.createElement("div");
+          note.className = "msg ok";
+          note.textContent = "لقيت أكتر من اسم - اضغط على المخدوم المطلوب:";
+          result.appendChild(note);
+          stats.ambiguous.forEach(function (n) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "match-item";
+            b.textContent = n;
+            b.addEventListener("click", function () {
+              document.getElementById("stats-student-search").value = n;
+              document.getElementById("load-student-stats").click();
+            });
+            result.appendChild(b);
+          });
+          return;
+        }
+        if (!stats.found) {
+          result.innerHTML = "<div class='msg err'>الاسم مش موجود في شيتات الحضور</div>";
+          return;
+        }
+        result.innerHTML =
+          '<div class="stat-row"><span>المخدوم</span><b></b></div>' +
+          '<div class="stat-row"><span>عدد مرات الحضور</span><b>' + stats.present + "</b></div>" +
+          '<div class="stat-row"><span>عدد مرات الغياب</span><b>' + stats.absent + "</b></div>" +
+          '<div class="stat-row"><span>نسبة الحضور</span><b>' + stats.percentage + "%</b></div>" +
+          '<div class="bar-bg"><div class="bar-fill" style="width:' + stats.percentage + '%"></div></div>';
+        result.querySelector(".stat-row b").textContent = stats.name;
+
+        var openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "secondary";
+        openBtn.style.marginTop = "14px";
+        openBtn.textContent = "فتح بيانات المخدوم (تعديل / تعليق)";
+        openBtn.addEventListener("click", function () {
+          goToTab("student");
+          searchAndLoadStudent(stats.name, "");
+        });
+        result.appendChild(openBtn);
+      }).withFailureHandler(function (err) {
+        result.innerHTML = "<div class='msg err'>خطأ: " + err.message + "</div>";
+      }).getStudentStats(name);
+    });
+
+    // ---------- حضور كل المخدومين في جمع الشهر (أخضر حاضر / أحمر غايب / بدون لون لسه) ----------
+    function loadStudentMonth() {
+      var box = byId("student-month-list");
+      if (!box || !ME) return;
+      box.textContent = "جاري تحميل الحضور...";
+      gs.withSuccessHandler(function (res) {
+        box.innerHTML = "";
+        box.appendChild(el("div", "month-head", "حضور المخدومين - شهر " + res.monthName));
+
+        var legend = el("div", "month-legend");
+        [["dot-p", "✓", "حاضر"], ["dot-a", "✕", "غايب"], ["dot-n", "", "لسه ماجتش / مفيش حضور مسجل"]].forEach(function (x) {
+          var item = el("span", "lg");
+          item.appendChild(el("span", "dot " + x[0], x[1]));
+          item.appendChild(document.createTextNode(x[2]));
+          legend.appendChild(item);
+        });
+        box.appendChild(legend);
+        box.appendChild(el("div", "month-legend", "الجمع: " + res.fridays.map(function (f) { return f.day; }).join(" ، ")));
+
+        if (!res.students.length) { box.appendChild(el("div", "stat-empty", "مفيش مخدومين في نطاقك.")); return; }
+        res.students.forEach(function (s) {
+          var row = el("div", "month-row");
+          var left = el("div", "month-name");
+          left.appendChild(el("div", "month-nm", s.name));
+          var sub = ME.role === ROLE_ADMIN ? [s.stage, s.cls] : (ME.role === ROLE_STAGE ? [s.cls] : []);
+          sub = sub.filter(Boolean).join(" · ");
+          if (sub) left.appendChild(el("div", "month-cls", sub));
+          // الدوس على الاسم بيعرض إحصائياته الكاملة
+          left.addEventListener("click", function () {
+            byId("stats-student-search").value = s.name;
+            byId("load-student-stats").click();
+            byId("stats-student-search").scrollIntoView({ block: "center" });
+          });
+          var dots = el("div", "month-dots");
+          s.marks.forEach(function (m, i) {
+            var d = el("span", "dot dot-" + m, m === "p" ? "✓" : (m === "a" ? "✕" : ""));
+            d.title = res.fridays[i].day + " " + res.monthName;
+            dots.appendChild(d);
+          });
+          row.appendChild(left);
+          row.appendChild(dots);
+          box.appendChild(row);
+        });
+      }).withFailureHandler(function (err) {
+        box.textContent = "خطأ: " + err.message;
+      }).getStudentsMonthAttendance();
+    }
+    tabHooks["stats"] = loadStudentMonth;
+
+    // قائمة الجمع في الإحصائيات (خدمة / فصل / مرحلة): الدوس على أي جمعة بيفتح أسماء اللي حضروا فيها
+    // kind: "service" | "class" | "stage"  و key: اسم الفصل أو المرحلة (فاضي للخدمة)
+    function renderWeeklyStats(result, rows, kind, key, emptyMsg) {
+      if (!rows.length) {
+        result.innerHTML = "<div class='msg err'>" + emptyMsg + "</div>";
+        return;
+      }
+      result.innerHTML = "";
+      rows.forEach(function (r) {
+        var week = el("div", "stat-week");
+
+        var main = el("div", "stat-week-main");
+        var head = el("div", "stat-week-head");
+        head.appendChild(el("span", "", r.day + " " + r.month));
+        head.appendChild(el("b", "", r.percentage + "%"));
+        main.appendChild(head);
+        var bar = el("div", "bar-bg");
+        var fill = el("div", "bar-fill");
+        fill.style.width = r.percentage + "%";
+        bar.appendChild(fill);
+        main.appendChild(bar);
+        var sub = el("div", "stat-week-sub", r.present + " من " + r.total + " حضروا");
+        sub.appendChild(el("span", "stat-hint", " · اضغط لعرض الأسماء"));
+        main.appendChild(sub);
+        week.appendChild(main);
+
+        var details = el("div", "stat-day");
+        week.appendChild(details);
+
+        var loaded = false;
+        main.addEventListener("click", function () {
+          details.classList.toggle("open");
+          if (!details.classList.contains("open") || loaded) return;
+          details.textContent = "جاري تحميل الأسماء...";
+          gs.withSuccessHandler(function (res) {
+            loaded = true;
+            details.innerHTML = "";
+            if (!res.groups.length) {
+              details.appendChild(el("div", "stat-empty", "محدش اتسجل حاضر في اليوم ده."));
+              return;
+            }
+            res.groups.forEach(function (g) {
+              var title = el("div", "stat-group-title", g.label + " (" + g.names.length + ")");
+              details.appendChild(title);
+              var chips = el("div", "stat-chips");
+              g.names.forEach(function (n) { chips.appendChild(el("span", "stat-chip", n)); });
+              details.appendChild(chips);
+            });
+          }).withFailureHandler(function (err) {
+            details.innerHTML = "";
+            details.appendChild(el("div", "stat-empty", "خطأ: " + err.message));
+          }).getAttendanceDay(kind, key, r.month, r.col);
+        });
+
+        result.appendChild(week);
+      });
+    }
+
+    // ---------- بداية سنة جديدة (أمين الخدمة) ----------
+    function loadNewYear() {
+      var prev = byId("ny-preview"), blocked = byId("ny-blocked"), wrap = byId("ny-confirm-wrap"), msg = byId("ny-msg");
+      prev.textContent = "جاري التحميل..."; blocked.style.display = "none"; wrap.style.display = "none"; msg.textContent = ""; msg.className = "msg";
+      gs.withSuccessHandler(function (p) {
+        prev.innerHTML = "";
+        prev.appendChild(el("div", "", "السنة اللي خلصت: " + p.oldLabel + " ← السنة الجديدة: " + p.newLabel));
+        Object.keys(p.stageCounts).forEach(function (s) { prev.appendChild(el("div", "", s + ": " + (p.stageCounts[s] || 0) + " مخدوم")); });
+        prev.appendChild(el("div", "", "هيتأرشفوا كخريجين: " + p.graduates + " (ثالثة ثانوي)"));
+        if (p.noStage) prev.appendChild(el("div", "", "مخدومين من غير مرحلة (مش هيتغيروا): " + p.noStage));
+        prev.appendChild(el("div", "", "طلبات نقل معلّقة هتتلغي: " + p.pendingRequests));
+        p.months.forEach(function (m) {
+          if (m.from !== m.to) prev.appendChild(el("div", "", "شيت " + m.sheet + ": أعمدة الجمع " + m.from + " ← " + m.to));
+        });
+        if (p.resuming) prev.appendChild(el("div", "", "فيه عملية سابقة وقفت في النص، هتكمّل من مكانها. الخطوات اللي خلصت: " + (p.done.join("، ") || "ولا واحدة")));
+        if (p.archiveUrl) prev.appendChild(el("div", "", "نسخة الأرشيف اتعملت بالفعل في Drive"));
+        if (!p.allowed) { blocked.textContent = p.reason; blocked.style.display = "block"; return; }
+        byId("ny-confirm-label").textContent = "للتأكيد اكتبي: " + p.confirmWord;
+        byId("ny-confirm").value = "";
+        wrap.style.display = "block";
+      }).withFailureHandler(function (err) {
+        prev.textContent = ""; blocked.textContent = "خطأ: " + err.message; blocked.style.display = "block";
+      }).getNewYearPreview();
+    }
+    tabHooks["newyear"] = loadNewYear;
+
+    byId("ny-run").addEventListener("click", function () {
+      var btn = byId("ny-run"), msg = byId("ny-msg");
+      btn.disabled = true; msg.className = "msg"; msg.textContent = "جاري التنفيذ... متقفليش الصفحة";
+      gs.withSuccessHandler(function (r) {
+        btn.disabled = false; msg.className = "msg ok";
+        msg.textContent = "تمت بداية سنة " + r.newLabel + ". الخريجين: " + r.graduates + (r.archiveUrl ? " | الأرشيف: " + r.archiveUrl : "");
+        byId("ny-confirm-wrap").style.display = "none";
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; msg.className = "msg err"; msg.textContent = "خطأ: " + err.message + " (لو وقفت في النص اضغطي تاني وهتكمّل)";
+      }).runNewYear(byId("ny-confirm").value);
+    });
+
+    // ---------- إحصائيات الخدمة ----------
+    // تنبيه لأمين الخدمة لو تابات الشهور لسه فيها أرقام أيام من سنة تانية (مش جمع في سنة الخدمة الحالية)
+    function loadSheetWarnings() {
+      var box = byId("sheet-warning");
+      if (!ME || ME.role !== ROLE_ADMIN) { box.style.display = "none"; return; }
+      gs.withSuccessHandler(function (list) {
+        if (!list.length) { box.style.display = "none"; return; }
+        box.innerHTML = "";
+        box.appendChild(el("b", "", "تنبيه: لازم تحدّثي أرقام الجمع في شيتات الشهور دي لسنة الخدمة الحالية، لأن الأيام اللي فيها مش جمع فيها وبالتالي مش بتتحسب:"));
+        list.forEach(function (w) {
+          var t = "شيت " + w.sheet + " (" + w.year + "): ";
+          if (w.bad.length) t += "أيام مش جمع: " + w.bad.join("، ") + ". ";
+          if (w.missing && w.missing.length) t += "جمع ملهاش عمود: " + w.missing.join("، ") + ". ";
+          box.appendChild(el("div", "", t + "الجمع الصحيحة: " + w.fridays.join("، ")));
+        });
+        box.style.display = "block";
+      }).withFailureHandler(function () { box.style.display = "none"; }).getSheetWarnings();
+    }
+
+    document.getElementById("load-service-stats").addEventListener("click", function () {
+      var result = document.getElementById("service-stats-result");
+      result.innerHTML = "<div class='msg'>جاري التحميل...</div>";
+
+      gs.withSuccessHandler(function (rows) {
+        renderWeeklyStats(result, rows, "service", "", "مفيش بيانات حضور مسجلة لسه");
+      }).withFailureHandler(function (err) {
+        result.innerHTML = "<div class='msg err'>خطأ: " + err.message + "</div>";
+      }).getServiceStats();
+    });
+
+    // ---------- إحصائيات الفصل ----------
+    function loadClassStatsOptions() {
+    gs.withSuccessHandler(function (classes) {
+      var select = document.getElementById("class-stats-select");
+      if (!classes.length) {
+        select.innerHTML = '<option value="">مفيش فصول متسجلة لسه</option>';
+        return;
+      }
+      select.innerHTML = "";
+      classes.forEach(function (c) {
+        var opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        select.appendChild(opt);
+      });
+    }).getClasses();
+    }
+
+    document.getElementById("load-class-stats").addEventListener("click", function () {
+      var className = document.getElementById("class-stats-select").value;
+      var result = document.getElementById("class-stats-result");
+      if (!className) { result.innerHTML = "<div class='msg err'>اختار فصل الأول</div>"; return; }
+
+      result.innerHTML = "<div class='msg'>جاري التحميل...</div>";
+      gs.withSuccessHandler(function (rows) {
+        renderWeeklyStats(result, rows, "class", className, "مفيش بيانات حضور مسجلة للفصل ده لسه");
+      }).withFailureHandler(function (err) {
+        result.innerHTML = "<div class='msg err'>خطأ: " + err.message + "</div>";
+      }).getClassStats(className);
+    });
+
+    // ---------- إحصائيات المرحلة ----------
+    document.getElementById("load-stage-stats").addEventListener("click", function () {
+      var stage = document.getElementById("stage-stats-select").value;
+      var result = document.getElementById("stage-stats-result");
+
+      result.innerHTML = "<div class='msg'>جاري التحميل...</div>";
+      gs.withSuccessHandler(function (rows) {
+        renderWeeklyStats(result, rows, "stage", stage, "مفيش بيانات حضور مسجلة للمرحلة دي لسه");
+      }).withFailureHandler(function (err) {
+        result.innerHTML = "<div class='msg err'>خطأ: " + err.message + "</div>";
+      }).getStageStats(stage);
+    });
+
+    // ---------- الجرس: إشعارات الغياب + افتقاد واتساب ----------
+    var WA_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.54-3.7 8.24-8.24 8.24z"/><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/></svg>';
+
+    var bellBtn = document.getElementById("bell-btn");
+    var notifPanel = document.getElementById("notif-panel");
+    var trophyBtn = document.getElementById("trophy-btn");
+    var trophyPanel = document.getElementById("trophy-panel");
+    var requestsBtn = document.getElementById("requests-btn");
+    var requestsPanel = document.getElementById("requests-panel");
+    var allTopPanels = [notifPanel, trophyPanel, requestsPanel];
+
+    // إشعارات الافتقاد اللي المستخدم شافها: بتفضل ظاهرة وهو فاتح "رسائل واردة"، وأول ما يقفلها بتختفي من عنده هو بس
+    var visitsPendingClear = false;
+
+    function finishVisitsSeen() {
+      if (!visitsPendingClear) return;
+      visitsPendingClear = false;
+      inboxVisits.forEach(function (v) { v.isNew = false; });
+      renderInbox();
+    }
+
+    function toggleTopPanel(panel) {
+      var wasOpen = panel.classList.contains("open");
+      allTopPanels.forEach(function (p) { p.classList.remove("open"); });
+      if (!wasOpen) panel.classList.add("open");
+      if (!requestsPanel.classList.contains("open")) finishVisitsSeen();
+    }
+
+    function closeRequestsPanel() {
+      requestsPanel.classList.remove("open");
+      finishVisitsSeen();
+    }
+
+    bellBtn.addEventListener("click", function (e) { e.stopPropagation(); toggleTopPanel(notifPanel); });
+    trophyBtn.addEventListener("click", function (e) { e.stopPropagation(); toggleTopPanel(trophyPanel); });
+    requestsBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var willOpen = !requestsPanel.classList.contains("open");
+      toggleTopPanel(requestsPanel);
+      var fresh = inboxVisits.filter(function (v) { return v.isNew; });
+      if (willOpen && fresh.length) {
+        updateInboxBadge(false);
+        visitsPendingClear = true;
+        var upTo = fresh.reduce(function (m, v) { return v.loggedAt > m ? v.loggedAt : m; }, "");
+        gs.withSuccessHandler(function () {}).markVisitsSeen(upTo);
+      }
+    });
+    document.addEventListener("click", function (e) {
+      allTopPanels.forEach(function (p) { if (!p.contains(e.target)) p.classList.remove("open"); });
+      if (!requestsPanel.classList.contains("open")) finishVisitsSeen();
+    });
+
+    // ---------- الكأس: الأكثر حضورًا حسب نطاق كل دور ----------
+    function renderTrophy(r) {
+      var box = document.getElementById("trophy-content");
+      if (!r) {
+        box.innerHTML = '<div class="notif-empty">مفيش بيانات حضور كفاية لسه لحساب الأكثر حضورًا</div>';
+        return;
+      }
+      var title, sub;
+      if (r.kind === "student") {
+        title = "🏆 " + r.name;
+        sub = "أكثر مخدوم حضورًا في فصلك - حضر " + r.present + " مرة (نسبة " + r.percentage + "%)";
+      } else if (r.kind === "class") {
+        title = "🏆 فصل " + r.name;
+        sub = "أعلى نسبة حضور في مرحلتك - " + r.percentage + "% (" + r.present + " من " + r.total + ")";
+      } else {
+        title = "🏆 مرحلة " + r.name;
+        sub = "أعلى نسبة حضور في الخدمة كلها - " + r.percentage + "% (" + r.present + " من " + r.total + ")";
+      }
+      box.innerHTML =
+        '<div class="notif-item" style="border-bottom:none;">' +
+          '<div class="notif-text">' +
+            '<div class="notif-name">' + title + "</div>" +
+            '<div class="notif-sub">' + sub + "</div>" +
+          "</div>" +
+        "</div>";
+    }
+
+    function loadTrophy() {
+      document.getElementById("trophy-content").innerHTML = '<div class="notif-empty">جاري التحميل...</div>';
+      gs.withSuccessHandler(renderTrophy).withFailureHandler(function (err) {
+        document.getElementById("trophy-content").innerHTML =
+          '<div class="notif-empty">تعذر التحميل: ' + err.message + "</div>";
+      }).getTopPerformer();
+    }
+
+    // ---------- رسائل واردة: طلبات نقل + إشعارات افتقاد ----------
+    var inboxRequests = [];
+    var inboxVisits = [];
+    var inboxResets = [];
+
+    function updateInboxBadge(useNewOnly) {
+      var badge = document.getElementById("requests-badge");
+      var visitCount = inboxVisits.filter(function (v) { return v.isNew; }).length;
+      var total = inboxRequests.length + inboxResets.length + (useNewOnly === false ? 0 : visitCount);
+      if (total > 0) { badge.textContent = total; badge.style.display = "flex"; }
+      else { badge.style.display = "none"; }
+    }
+
+    function sectionHeader(text) {
+      var el = document.createElement("div");
+      el.className = "notif-section";
+      el.textContent = text;
+      return el;
+    }
+
+    // بتفتح بيانات مخدوم من أي مكان (نفس طريقة قائمة المخدومين)
+    function openStudentData(name) {
+      goToTab("student");
+      searchAndLoadStudent(name, ""); // الاسم كامل فمش محتاجين نقيّد بالمرحلة (السيرفر بيقيّد حسب صلاحيتك)
+    }
+
+    function renderTransferItem(r, list) {
+      var item = document.createElement("div");
+      item.className = "notif-item";
+
+      var text = document.createElement("div");
+      text.className = "notif-text";
+      var nameEl = document.createElement("div");
+      nameEl.className = "notif-name";
+      nameEl.textContent = r.name;
+      var sub = document.createElement("div");
+      sub.className = "notif-sub";
+      sub.innerHTML = "طلب نقل من فصل <b>" + r.fromClass + "</b> لفصل \"" + r.toClass + "\" - بواسطة " + r.requestedBy;
+      text.appendChild(nameEl);
+      text.appendChild(sub);
+
+      var actions = document.createElement("div");
+      actions.style.cssText = "display:flex; flex-direction:column; gap:6px; flex-shrink:0;";
+
+      var accept = document.createElement("button");
+      accept.type = "button";
+      accept.className = "wa-btn";
+      accept.style.background = "rgba(34,197,94,0.14)";
+      accept.style.borderColor = "rgba(34,197,94,0.5)";
+      accept.style.color = "#4ade80";
+      accept.innerHTML = "<span>قبول</span>";
+
+      var reject = document.createElement("button");
+      reject.type = "button";
+      reject.className = "wa-btn";
+      reject.style.background = "rgba(224,138,125,0.14)";
+      reject.style.borderColor = "rgba(224,138,125,0.5)";
+      reject.style.color = "var(--err)";
+      reject.innerHTML = "<span>رفض</span>";
+
+      function respond(decision, btn) {
+        accept.disabled = true; reject.disabled = true;
+        btn.innerHTML = "<span>جاري...</span>";
+        gs.withSuccessHandler(function () {
+          loadRequests();
+          loadClassOptions(true);
+          loadRosterClassOptions(true);
+          loadBdayClassOptions(true);
+          loadTrophy();
+        }).withFailureHandler(function (err) {
+          sub.innerHTML = "<b style='color:var(--err);'>خطأ: " + err.message + "</b>";
+          accept.disabled = false; reject.disabled = false;
+        }).respondTransferRequest(r.id, decision);
+      }
+
+      accept.addEventListener("click", function () { respond("accept", accept); });
+      reject.addEventListener("click", function () { respond("reject", reject); });
+
+      actions.appendChild(accept);
+      actions.appendChild(reject);
+      item.appendChild(text);
+      item.appendChild(actions);
+      list.appendChild(item);
+    }
+
+    // "بالتليفون" / "بزيارة منزلية" حسب نوع الافتقاد (فاضي لو النوع مش متسجل)
+    function visitTypePhrase(type) {
+      if (type === "تليفون") return " بالتليفون";
+      if (type === "منزل") return " بزيارة منزلية";
+      return "";
+    }
+
+    function visitLine(v, withDate) {
+      return "تم افتقاد" + visitTypePhrase(v.visitType) + " في فصل " + (v.cls || "-") + " · " + (v.stage || "-") +
+        " — الخادم " + v.servant + (withDate && v.visitDate ? " · " + v.visitDate : "");
+    }
+
+    // إشعار افتقاد: الدوس عليه بيفتح قائمة المخدومين اللي تم افتقادهم
+    function renderVisitItem(v, list) {
+      var item = document.createElement("div");
+      item.className = "notif-item clickable";
+
+      var text = document.createElement("div");
+      text.className = "notif-text";
+      var nameEl = document.createElement("div");
+      nameEl.className = "notif-name";
+      nameEl.textContent = v.name;
+      if (v.isNew) {
+        var tag = document.createElement("span");
+        tag.className = "tag-new";
+        tag.textContent = "جديد";
+        nameEl.appendChild(tag);
+      }
+      var sub = document.createElement("div");
+      sub.className = "notif-sub";
+      sub.textContent = visitLine(v, true);
+      text.appendChild(nameEl);
+      text.appendChild(sub);
+      item.appendChild(text);
+
+      item.addEventListener("click", function () {
+        closeRequestsPanel();
+        goToTab("visits");
+        renderVisitsPage();
+      });
+      list.appendChild(item);
+    }
+
+    function renderInbox() {
+      var list = document.getElementById("requests-list");
+      list.innerHTML = "";
+
+      // الإشعارات بتظهر للمستخدم لحد ما يشوفها (بتختفي من عنده هو بس)، والسجل الكامل بيفضل متاح من اللينك اللي تحت
+      var freshVisits = inboxVisits.filter(function (v) { return v.isNew; });
+
+      if (!inboxRequests.length && !inboxResets.length && !freshVisits.length) {
+        list.innerHTML = '<div class="notif-empty">مفيش رسائل واردة</div>';
+      }
+
+      if (inboxRequests.length) {
+        list.appendChild(sectionHeader("طلبات نقل المخدومين (" + inboxRequests.length + ")"));
+        inboxRequests.forEach(function (r) { renderTransferItem(r, list); });
+      }
+
+      if (inboxResets.length) {
+        list.appendChild(sectionHeader("طلبات تغيير كلمة السر (" + inboxResets.length + ")"));
+        inboxResets.forEach(function (r) { renderResetItem(r, list); });
+      }
+
+      if (freshVisits.length) {
+        list.appendChild(sectionHeader("إشعارات افتقاد (" + freshVisits.length + " جديد)"));
+        freshVisits.forEach(function (v) { renderVisitItem(v, list); });
+      }
+
+      if (inboxVisits.length) {
+        var all = document.createElement("button");
+        all.type = "button";
+        all.className = "notif-footer-link";
+        all.textContent = "عرض كل المخدومين الذين تم افتقادهم (" + inboxVisits.length + ")";
+        all.addEventListener("click", function () {
+          closeRequestsPanel();
+          goToTab("visits");
+          renderVisitsPage();
+        });
+        list.appendChild(all);
+      }
+
+      updateInboxBadge();
+    }
+
+    // صفحة "المخدومين الذين تم افتقادهم": الدوس على الاسم بيفتح بياناته
+    function renderVisitsPage() {
+      var list = document.getElementById("visits-list");
+      list.innerHTML = "";
+      if (!inboxVisits.length) {
+        list.textContent = "مفيش افتقاد متسجل لسه.";
+        return;
+      }
+      inboxVisits.forEach(function (v) {
+        var row = document.createElement("div");
+        row.className = "roster-item";
+
+        var text = document.createElement("div");
+        text.className = "roster-text roster-text-clickable";
+        var nameEl = document.createElement("div");
+        nameEl.className = "roster-name";
+        nameEl.textContent = v.name;
+        var sub = document.createElement("div");
+        sub.className = "roster-address";
+        sub.style.whiteSpace = "normal";
+        sub.textContent = visitLine(v, false); // التاريخ ظاهر في الشارة اللي جنبها
+        text.appendChild(nameEl);
+        text.appendChild(sub);
+        text.addEventListener("click", function () { openStudentData(v.name); });
+
+        var date = document.createElement("div");
+        date.className = "bday-date";
+        date.textContent = v.visitDate || "بدون تاريخ";
+
+        row.appendChild(text);
+        row.appendChild(date);
+        list.appendChild(row);
+      });
+    }
+
+    // طلب تغيير كلمة سر: الأمين بيتأكد من صاحب الحساب الأول (تليفون/مقابلة) وبعدها يوافق
+    function renderResetItem(r, list) {
+      var item = document.createElement("div");
+      item.className = "notif-item";
+
+      var text = document.createElement("div");
+      text.className = "notif-text";
+      var nameEl = document.createElement("div");
+      nameEl.className = "notif-name";
+      nameEl.textContent = r.name;
+      var sub = document.createElement("div");
+      sub.className = "notif-sub";
+      sub.textContent = r.role + (r.stage ? " · " + r.stage : "") + " — طلب تغيير كلمة السر. اتأكد إن صاحب الحساب هو اللي طلب قبل ما توافق.";
+      text.appendChild(nameEl);
+      text.appendChild(sub);
+
+      var actions = document.createElement("div");
+      actions.style.cssText = "display:flex; flex-direction:column; gap:6px; flex-shrink:0;";
+
+      var accept = document.createElement("button");
+      accept.type = "button";
+      accept.className = "wa-btn";
+      accept.style.background = "rgba(34,197,94,0.14)";
+      accept.style.borderColor = "rgba(34,197,94,0.5)";
+      accept.style.color = "#4ade80";
+      accept.innerHTML = "<span>موافقة</span>";
+
+      var reject = document.createElement("button");
+      reject.type = "button";
+      reject.className = "wa-btn";
+      reject.style.background = "rgba(224,138,125,0.14)";
+      reject.style.borderColor = "rgba(224,138,125,0.5)";
+      reject.style.color = "var(--err)";
+      reject.innerHTML = "<span>رفض</span>";
+
+      function respond(decision, btn) {
+        accept.disabled = true; reject.disabled = true;
+        btn.innerHTML = "<span>جاري...</span>";
+        gs.withSuccessHandler(function () {
+          loadRequests();
+        }).withFailureHandler(function (err) {
+          sub.textContent = "خطأ: " + cleanErr(err);
+          sub.style.color = "var(--err)";
+          accept.disabled = false; reject.disabled = false;
+        }).respondPasswordReset(r.id, decision);
+      }
+      accept.addEventListener("click", function () { respond("accept", accept); });
+      reject.addEventListener("click", function () { respond("reject", reject); });
+
+      actions.appendChild(accept);
+      actions.appendChild(reject);
+      item.appendChild(text);
+      item.appendChild(actions);
+      list.appendChild(item);
+    }
+
+    function loadRequests() {
+      gs.withSuccessHandler(function (requests) {
+        inboxRequests = requests || [];
+        // طلبات كلمة السر (للأمناء بس) - لو فشلت ما نبوّظش باقي الرسائل
+        gs.withSuccessHandler(function (resets) {
+          inboxResets = resets || [];
+          renderInbox();
+        }).withFailureHandler(function () {
+          inboxResets = [];
+        }).getPasswordResets();
+        // إشعارات الافتقاد (للأمناء بس؛ خادم الفصل بيرجع له فاضي) - لو فشلت ما نبوّظش طلبات النقل
+        gs.withSuccessHandler(function (visits) {
+          inboxVisits = visits || [];
+          renderInbox();
+          renderVisitsPage();
+        }).withFailureHandler(function () {
+          inboxVisits = [];
+          renderInbox();
+        }).getVisitNotifications();
+      }).withFailureHandler(function (err) {
+        document.getElementById("requests-list").innerHTML =
+          '<div class="notif-empty">تعذر تحميل الرسائل: ' + err.message + "</div>";
+      }).getPendingTransferRequests();
+    }
+
+    function updateAlertsBadge() {
+      var n = document.querySelectorAll("#notif-list .notif-item").length;
+      var badge = document.getElementById("bell-badge");
+      if (n > 0) { badge.textContent = n; badge.style.display = "flex"; }
+      else {
+        badge.style.display = "none";
+        document.getElementById("notif-list").innerHTML = '<div class="notif-empty">مفيش حد غاب جمعتين ورا بعض</div>';
+      }
+    }
+
+    function renderAlerts(alerts) {
+      var list = document.getElementById("notif-list");
+      list.innerHTML = "";
+
+      if (!alerts.length) { updateAlertsBadge(); return; }
+
+      alerts.forEach(function (a) {
+        var item = document.createElement("div");
+        item.className = "notif-item";
+
+        var text = document.createElement("div");
+        text.className = "notif-text";
+
+        var nameEl = document.createElement("div");
+        nameEl.className = "notif-name";
+        nameEl.textContent = a.name;
+
+        var sub = document.createElement("div");
+        sub.className = "notif-sub";
+        var times = a.streak === 2 ? "غاب مرتين ورا بعض" : "غاب " + a.streak + " مرات ورا بعض";
+        var b = document.createElement("b");
+        b.textContent = times;
+        sub.appendChild(b);
+        if (a.className) sub.appendChild(document.createTextNode(" · " + a.className));
+        sub.appendChild(document.createElement("br"));
+        sub.appendChild(document.createTextNode(a.missed.join(" ، ")));
+
+        text.appendChild(nameEl);
+        text.appendChild(sub);
+
+        var wa = document.createElement("a");
+        wa.className = "wa-btn" + (a.phone ? "" : " disabled");
+        wa.innerHTML = WA_ICON + "<span>" + (a.phone ? "افتقاد" : "مفيش رقم") + "</span>";
+        if (a.phone) {
+          wa.href = "https://wa.me/" + a.phone + "?text=" + encodeURIComponent(a.message);
+          wa.target = "_blank";
+          wa.rel = "noopener";
+          // الدوس بيفتح الواتس زي الأول، وبنفس الوقت بنسجّل إنها اتبعتت ونشيل الإشعار
+          wa.addEventListener("click", function () {
+            if (wa.dataset.busy) return;
+            wa.dataset.busy = "1";
+            gs.withSuccessHandler(function () {
+              item.remove();
+              updateAlertsBadge();
+            }).withFailureHandler(function (err) {
+              delete wa.dataset.busy;
+              var e = document.createElement("div");
+              e.className = "notif-sub";
+              e.style.color = "var(--err)";
+              e.textContent = "اتفتح الواتس بس ما اتسجلش الإرسال: " + cleanErr(err);
+              text.appendChild(e);
+            }).markAbsenceSent(a.name, a.lastMissed);
+          });
+        }
+
+        item.appendChild(text);
+        item.appendChild(wa);
+        list.appendChild(item);
+      });
+
+      updateAlertsBadge();
+    }
+
+    function loadAlerts() {
+      gs.withSuccessHandler(renderAlerts).withFailureHandler(function (err) {
+        document.getElementById("notif-list").innerHTML =
+          '<div class="notif-empty">تعذر تحميل الإشعارات: ' + err.message + "</div>";
+      }).getAbsenceAlerts();
+    }
+
+    // ============ شاشة الدخول + الصلاحيات ============
+    function byId(id) { return document.getElementById(id); }
+
+    function setShown(id, shown, withLabel) {
+      var el = byId(id);
+      if (!el) return;
+      el.style.display = shown ? "" : "none";
+      if (withLabel) {
+        var l = el.previousElementSibling;
+        if (l && l.tagName === "LABEL") l.style.display = shown ? "" : "none";
+      }
+    }
+
+    function cleanErr(err) {
+      return ((err && err.message) || "حصل خطأ").replace(/^(Error|Exception):\s*/, "");
+    }
+
+    function roleLabelOf(u) {
+      if (u.role === ROLE_CLASS) return u.role + " · " + u.stage + " · " + u.cls;
+      if (u.role === ROLE_STAGE) return u.role + " · " + u.stage;
+      return u.role;
+    }
+
+    function showAuth(msg) {
+      byId("boot-msg").style.display = "none";
+      byId("app").style.display = "none";
+      byId("auth-screen").style.display = "block";
+      document.querySelector('.auth-tab[data-auth="signin"]').click(); // الافتراضي: تسجيل الدخول
+      var m = byId("si-msg");
+      m.textContent = msg || "";
+      m.className = msg ? "msg err" : "msg";
+    }
+
+    function showApp() {
+      byId("boot-msg").style.display = "none";
+      byId("auth-screen").style.display = "none";
+      byId("app").style.display = "block";
+    }
+
+    // بتمسح أي بيانات ظاهرة من الشاشة (عشان المستخدم اللي بعده ما يشوفهاش)
+    function clearAppState() {
+      inboxRequests = [];
+      inboxVisits = [];
+      inboxResets = [];
+      ["students-list", "student-matches", "student-stats-result", "service-stats-result",
+       "class-stats-result", "stage-stats-result", "notif-list", "roster-list", "bday-list", "trophy-content", "requests-list", "servants-list", "visits-list", "student-month-list",
+       "sa-checklist", "sv-list", "sb-list"].forEach(function (id) { byId(id).innerHTML = ""; });
+      ["student-search", "student-name", "student-phone", "student-birth", "student-address",
+       "student-confessor", "stats-student-search", "roster-search",
+       "bday-from", "bday-to", "attendance-search", "student-comment", "student-comment-date", "student-comment-type"].forEach(function (id) { byId(id).value = ""; });
+      byId("comment-msg").textContent = "";
+      byId("sa-msg").textContent = "";
+      byId("sa-date").value = "";
+      byId("ny-preview").textContent = ""; byId("ny-confirm").value = ""; byId("ny-msg").textContent = "";
+      byId("sa-date-note").textContent = "";
+      byId("sheet-warning").style.display = "none";
+      attendanceInfo = { today: "", date: "", canRecord: true };
+      ["as-name", "as-phone", "as-birth", "as-address", "as-qual", "as-stage", "as-class"].forEach(function (id) { byId(id).value = ""; });
+      byId("add-servant-form").style.display = "none";
+      byId("as-msg").textContent = "";
+      byId("sb-from").value = "";
+      byId("sb-to").value = "";
+      applyStudentClassValue("");
+      byId("student-stage").value = "";
+      byId("stage-select").value = "";
+      byId("roster-stage-select").value = "";
+      byId("bday-stage-select").value = "";
+      ["attendance-msg", "student-msg"].forEach(function (id) { byId(id).textContent = ""; });
+      byId("bell-badge").style.display = "none";
+      byId("requests-badge").style.display = "none";
+      byId("notif-panel").classList.remove("open");
+      byId("trophy-panel").classList.remove("open");
+      byId("requests-panel").classList.remove("open");
+      loadedStudentName = "";
+      loadedStudentStage = "";
+      goHome();
+      document.querySelector('[data-subtab="student-stats"]').click();
+    }
+
+    // بتظبط اللي بيظهر حسب نوع الخدمة (والسيرفر كمان بيفرض نفس الصلاحيات)
+    function applyRole() {
+      var admin = ME.role === ROLE_ADMIN;
+      var isClass = ME.role === ROLE_CLASS;
+
+      // تسجيل الحضور
+      setShown("stage-select", admin, true);
+      setShown("class-select", !isClass, true);
+
+      // قائمة المخدومين
+      setShown("roster-stage-select", admin, true);
+      setShown("roster-class-select", !isClass, true);
+
+      // أعياد الميلاد
+      setShown("bday-stage-select", admin, true);
+      setShown("bday-class-select", !isClass, true);
+
+      // بيانات المخدوم
+      setShown("student-stage", admin, true);
+      setShown("student-class-wrap", !isClass, false);
+      if (!admin) byId("student-stage").value = ME.stage;
+
+      // الخدام: ظاهرة لكل الأدوار. خادم الفصل بيشوف خدام مرحلته بس (مفروضة من السيرفر برضو)
+      setShown("home-tile-servants", true, false);
+      setShown("home-tile-newyear", admin, false);
+      setShown("hub-tile-attendance", !isClass, false); // تسجيل حضور الخدام للأمناء بس
+      setShown("add-servant-btn", !isClass, false);      // إضافة خادم للأمناء بس
+      byId("as-stage-wrap").style.display = ME.role === ROLE_ADMIN ? "block" : "none"; // أمين المرحلة بيضيف لمرحلته بس
+
+      // الإحصائيات
+      document.querySelector('[data-subtab="service-stats"]').style.display = admin ? "" : "none";
+      document.querySelector('[data-subtab="stage-stats"]').style.display = isClass ? "none" : "";
+      setShown("stage-stats-select", admin, true);
+      if (!admin) byId("stage-stats-select").value = ME.stage;
+    }
+
+    function startApp() {
+      applyRole();
+      loadClassOptions(false);
+      loadRosterClassOptions(false);
+      loadBdayClassOptions(false);
+      loadStudentClassOptions(byId("student-stage").value, "");
+      loadClassStatsOptions();
+      loadAlerts();
+      loadTrophy();
+      loadRequests();
+      loadServants();
+    }
+
+    function enter() {
+      byId("user-line").textContent = ME.name + " · " + roleLabelOf(ME);
+      showApp();
+      startApp();
+    }
+
+    function logout(msg) {
+      TOKEN = "";
+      ME = null;
+      clearSession();
+      clearAppState();
+      showAuth(msg);
+    }
+
+    function afterAuth(res) {
+      TOKEN = res.token;
+      ME = res.user;
+      saveSession(TOKEN);
+      enter();
+    }
+
+    byId("logout-btn").addEventListener("click", function () { logout(); });
+
+    // تابات الدخول / حساب جديد
+    document.querySelectorAll(".auth-tab").forEach(function (b) {
+      b.addEventListener("click", function () {
+        document.querySelectorAll(".auth-tab").forEach(function (x) { x.classList.remove("active"); });
+        document.querySelectorAll(".auth-form").forEach(function (x) { x.classList.remove("active"); });
+        b.classList.add("active");
+        byId("auth-" + b.dataset.auth).classList.add("active");
+      });
+    });
+
+    // نسيت كلمة السر: اسم المستخدم + الكلمة الجديدة، وبتتفعّل بموافقة الأمين
+    function openForgot() {
+      document.querySelectorAll(".auth-tab").forEach(function (x) { x.classList.remove("active"); });
+      document.querySelectorAll(".auth-form").forEach(function (x) { x.classList.remove("active"); });
+      byId("auth-forgot").classList.add("active");
+      byId("fg-username").value = byId("si-username").value.trim();
+      byId("fg-pass1").value = ""; byId("fg-pass2").value = "";
+      byId("fg-msg").textContent = ""; byId("fg-msg").className = "msg";
+    }
+    byId("si-forgot").addEventListener("click", openForgot);
+    byId("fg-back").addEventListener("click", function () { document.querySelector('.auth-tab[data-auth="signin"]').click(); });
+
+    byId("fg-send").addEventListener("click", function () {
+      var btn = this, msg = byId("fg-msg");
+      var u = byId("fg-username").value.trim();
+      var p1 = byId("fg-pass1").value, p2 = byId("fg-pass2").value;
+      if (!u) { msg.textContent = "اكتب اسم المستخدم"; msg.className = "msg err"; return; }
+      if (p1.length < 6) { msg.textContent = "كلمة السر لازم 6 حروف أو أرقام على الأقل"; msg.className = "msg err"; return; }
+      if (p1 !== p2) { msg.textContent = "كلمتين السر مش متطابقين"; msg.className = "msg err"; return; }
+      msg.textContent = "جاري الإرسال..."; msg.className = "msg"; btn.disabled = true;
+      pub.withSuccessHandler(function () {
+        btn.disabled = false;
+        byId("fg-pass1").value = ""; byId("fg-pass2").value = "";
+        msg.textContent = "اتبعت طلبك. كلّمي أمينك يوافق عليه من التطبيق، وبعدها سجّل دخول بالكلمة الجديدة.";
+        msg.className = "msg ok";
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+      }).requestPasswordReset(u, p1);
+    });
+
+    // تسجيل الدخول
+    byId("si-submit").addEventListener("click", function () {
+      var btn = this, msg = byId("si-msg");
+      var u = byId("si-username").value.trim(), p = byId("si-password").value;
+      if (!u || !p) { msg.textContent = "اكتب اسم المستخدم وكلمة السر"; msg.className = "msg err"; return; }
+      msg.textContent = "جاري الدخول..."; msg.className = "msg"; btn.disabled = true;
+      pub.withSuccessHandler(function (res) {
+        btn.disabled = false; msg.textContent = ""; byId("si-password").value = "";
+        afterAuth(res);
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+      }).signIn(u, p);
+    });
+    byId("si-password").addEventListener("keydown", function (e) { if (e.key === "Enter") byId("si-submit").click(); });
+
+    // نوع الخدمة في إنشاء الحساب: يظهر/يختفي المرحلة والفصل
+    var ROLE_HINTS = {};
+    ROLE_HINTS[ROLE_CLASS] = "هتشوف بيانات مخدومين فصلك وإحصائياته بس.";
+    ROLE_HINTS[ROLE_STAGE] = "هتشوف فصول مرحلتك كلها ومخدوميها وإحصائيات المرحلة.";
+    ROLE_HINTS[ROLE_ADMIN] = "هتشوف كل حاجة في التطبيق.";
+    byId("su-role").addEventListener("change", function () {
+      var r = this.value;
+      byId("su-stage-wrap").style.display = (r === ROLE_CLASS || r === ROLE_STAGE) ? "block" : "none";
+      byId("su-class-wrap").style.display = (r === ROLE_CLASS) ? "block" : "none";
+      byId("su-hint").textContent = (ROLE_HINTS[r] ? ROLE_HINTS[r] + " " : "") +
+        "كود التسجيل بتاخديه من أمين الخدمة، وكل نوع خدمة ليه كود.";
+      if (r !== ROLE_CLASS) {
+        byId("su-class-select").innerHTML = '<option value="">اختار المرحلة الأول</option>';
+        byId("su-class-new").style.display = "none";
+        byId("su-class-new").value = "";
+      } else if (byId("su-stage").value) {
+        loadSignupClassOptions(byId("su-stage").value);
+      }
+    });
+
+    // بتملا قائمة اختيار الفصل في شاشة إنشاء الحساب بفصول المرحلة المختارة (نداء من غير تسجيل دخول)
+    function loadSignupClassOptions(stage) {
+      var select = byId("su-class-select");
+      if (!stage) { select.innerHTML = '<option value="">اختار المرحلة الأول</option>'; return; }
+      select.innerHTML = '<option value="">جاري التحميل...</option>';
+      pub.withSuccessHandler(function (classes) {
+        select.innerHTML = '<option value="">اختار الفصل</option>';
+        classes.forEach(function (c) {
+          var opt = document.createElement("option");
+          opt.value = c; opt.textContent = c;
+          select.appendChild(opt);
+        });
+        var addOpt = document.createElement("option");
+        addOpt.value = "__new__"; addOpt.textContent = "+ فصل جديد";
+        select.appendChild(addOpt);
+      }).withFailureHandler(function () {
+        select.innerHTML = '<option value="">اختار الفصل</option><option value="__new__">+ فصل جديد</option>';
+      }).getPublicClasses(stage);
+    }
+
+    byId("su-stage").addEventListener("change", function () {
+      if (byId("su-role").value === ROLE_CLASS) loadSignupClassOptions(this.value);
+    });
+
+    byId("su-class-select").addEventListener("change", function () {
+      var isNewChoice = this.value === "__new__";
+      byId("su-class-new").style.display = isNewChoice ? "" : "none";
+      if (isNewChoice) byId("su-class-new").focus();
+    });
+
+    // بترجع قيمة الفصل المختارة فعليًا وقت إنشاء الحساب، سواء من القائمة أو من خانة "فصل جديد"
+    function getSignupClassValue() {
+      var select = byId("su-class-select");
+      if (select.value === "__new__") return byId("su-class-new").value.trim();
+      return select.value;
+    }
+
+    // إنشاء حساب
+    byId("su-submit").addEventListener("click", function () {
+      var btn = this, msg = byId("su-msg");
+      var payload = {
+        name: byId("su-name").value.trim(),
+        username: byId("su-username").value.trim(),
+        password: byId("su-password").value,
+        phone: byId("su-phone").value.trim(),
+        birth: byId("su-birth").value,
+        address: byId("su-address").value.trim(),
+        qualification: byId("su-qual").value.trim(),
+        role: byId("su-role").value,
+        stage: byId("su-stage").value,
+        cls: getSignupClassValue(),
+        code: byId("su-code").value.trim()
+      };
+      msg.textContent = "جاري إنشاء الحساب..."; msg.className = "msg"; btn.disabled = true;
+      pub.withSuccessHandler(function (res) {
+        btn.disabled = false; msg.textContent = "";
+        byId("su-password").value = ""; byId("su-code").value = "";
+        afterAuth(res);
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+      }).signUp(payload);
+    });
+
+    // ============ PWA: التثبيت والتحديث ============
+    (function pwaSetup() {
+      if (IN_APPS_SCRIPT) return; // جوه Apps Script مفيش service worker ولا تثبيت
+      var isStandalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+      var deferred = null;
+      var bar = byId("install-bar");
+      function dismissed() { try { return Date.now() - Number(localStorage.getItem("pwa_dismiss") || 0) < 3 * 86400000; } catch (e) { return false; } }
+      function hideInstall(remember) { bar.classList.remove("show"); if (remember) { try { localStorage.setItem("pwa_dismiss", String(Date.now())); } catch (e) {} } }
+
+      window.addEventListener("beforeinstallprompt", function (e) {
+        e.preventDefault();
+        deferred = e;
+        if (!isStandalone && !dismissed()) bar.classList.add("show");
+      });
+      window.addEventListener("appinstalled", function () { deferred = null; hideInstall(false); });
+      byId("install-btn").addEventListener("click", function () {
+        if (!deferred) { hideInstall(true); return; }
+        deferred.prompt();
+        deferred.userChoice.then(function () { deferred = null; hideInstall(true); });
+      });
+      byId("install-close").addEventListener("click", function () { hideInstall(true); });
+
+      // iPhone/iPad (سفاري): مفيش زرار تثبيت تلقائي، فبنشرح الخطوات
+      var ua = navigator.userAgent || "";
+      var isIOS = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+      if (isIOS && !isStandalone && !dismissed()) {
+        byId("install-text").textContent = "عشان تثبّتي التطبيق: اضغطي زرار المشاركة في سفاري، وبعدها \"إضافة إلى الشاشة الرئيسية\"";
+        byId("install-btn").style.display = "none";
+        bar.classList.add("show");
+      }
+
+      // Service Worker بسيط: مجرد شرط من المتصفح عشان التطبيق يتثبّت. مفيش تخزين ولا شغل بدون نت
+      if (!("serviceWorker" in navigator) || !/^https:|^http:\/\/localhost|^http:\/\/127\.0\.0\.1/.test(location.href)) return;
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    })();
+    refreshOnlineState();
+
+    // أول ما التطبيق يفتح: لو فيه جلسة محفوظة نكمّل بيها، وإلا شاشة الدخول
+    (function boot() {
+      byId("auth-logo").src = document.querySelector(".header .logo").src;
+      var t = loadSession();
+      if (!t) { showAuth(); return; }
+      TOKEN = t;
+      callApi("me", [], function (u) { ME = u; enter(); }, function () { showAuth(); });
+    })();
+  </script>
+</body>
+</html>
