@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="أسرة الرسل">
-  <link rel="icon" type="image/png" href="icon-192.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <script src="config.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1357,7 +1357,7 @@
     var OFFLINE_MSG = "مفيش اتصال بالإنترنت. التطبيق محتاج نت عشان يشتغل";
 
     // الدوال العامة اللي بتتنادي مباشرة (من غير توكن) وباقي النداءات بتعدّي على api
-    function rpc(fn, args, ok, fail) {
+    function rpcOnce(fn, args, ok, fail) {
       if (IN_APPS_SCRIPT) {
         var r = google.script.run.withSuccessHandler(function (res) { if (ok) ok(res); }).withFailureHandler(function (err) { if (fail) fail(err); });
         r[fn].apply(r, args);
@@ -1365,7 +1365,7 @@
       }
       if (!APPS_SCRIPT_URL) { if (fail) fail(new Error("رابط السيرفر مش متظبط (config.js)")); return; }
       var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
-      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 60000) : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 40000) : null;
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
         // text/plain عشان الطلب يبقى "بسيط" ومحتاجش preflight (Apps Script مش بيرد على OPTIONS)
@@ -1388,13 +1388,60 @@
           if (typeof navigator !== "undefined" && navigator.onLine === false) {
             err = new Error(OFFLINE_MSG); err.offline = true;       // الجهاز فعلاً مقطوع عن النت
           } else if (e && e.name === "AbortError") {
-            err = new Error("السيرفر اتأخر في الرد. جرّبي تاني");
+            err = new Error("الاتصال بطيء دلوقتي. جرّبي تاني بعد لحظات"); err.transient = true;
           } else {
             // النت شغال بس الطلب ما وصلش للسيرفر: غالباً رابط config.js غلط، أو الـ Deployment مش Anyone، أو مفيش New version
-            err = new Error("النت شغال بس ما قدرتش أوصل للسيرفر. راجعي رابط config.js (لازم ينتهي بـ /exec) وإن الـ Deployment Anyone وعملتي New version");
+            err = new Error("الاتصال بطيء دلوقتي. جرّبي تاني بعد لحظات"); err.transient = true;
           }
           if (fail) fail(err);
         });
+    }
+
+
+    // ---------- طابور الطلبات: عدد محدود مع بعض + إعادة محاولة صامتة للقراءة ----------
+    var MAX_PARALLEL = 3, active = 0, queue = [], inflight = {};
+    function isRead(fn, args) {
+      if (fn === "getPublicClasses") return true;
+      if (fn !== "api") return false;
+      var a = args && args[1];
+      return typeof a === "string" && (a === "me" || a.indexOf("get") === 0);
+    }
+    function pump() {
+      while (active < MAX_PARALLEL && queue.length) {
+        var job = queue.shift();
+        active++;
+        runJob(job);
+      }
+    }
+    function runJob(job) {
+      rpcOnce(job.fn, job.args, function (res) {
+        active--; job.done(true, res); pump();
+      }, function (err) {
+        active--;
+        if (job.read && err && err.transient && job.tries < 3) {
+          job.tries++;
+          setTimeout(function () { queue.unshift(job); pump(); }, 800 * job.tries); // إعادة صامتة
+        } else {
+          job.done(false, err);
+        }
+        pump();
+      });
+    }
+    function rpc(fn, args, ok, fail) {
+      if (IN_APPS_SCRIPT) { return rpcOnce(fn, args, ok, fail); }
+      var read = isRead(fn, args);
+      var key = read ? JSON.stringify([fn, args]) : null;
+      var waiters = { ok: ok, fail: fail };
+      if (key && inflight[key]) { inflight[key].waiters.push(waiters); return; } // نفس الطلب شغال: ما نكررهوش
+      var job = { fn: fn, args: args, read: read, tries: 1, waiters: [waiters] };
+      job.done = function (good, val) {
+        if (key) delete inflight[key];
+        job.waiters.forEach(function (w) {
+          if (good) { if (w.ok) w.ok(val); } else if (w.fail) w.fail(val);
+        });
+      };
+      if (key) inflight[key] = job;
+      queue.push(job); pump();
     }
 
     // ---------- حالة الاتصال ----------
