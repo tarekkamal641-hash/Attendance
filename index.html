@@ -1361,7 +1361,7 @@
 
     function saveSession(t) { try { localStorage.setItem("att_token", t); } catch (e) {} }
     function loadSession() { try { return localStorage.getItem("att_token") || ""; } catch (e) { return ""; } }
-    function clearSession() { try { localStorage.removeItem("att_token"); localStorage.removeItem("att_me"); } catch (e) {} }
+    function clearSession() { try { localStorage.removeItem("att_token"); localStorage.removeItem("att_me"); Object.keys(localStorage).forEach(function (k) { if (k.indexOf("att_swr_") === 0) localStorage.removeItem(k); }); } catch (e) {} }
     // بيانات المستخدم (الاسم/الدور/المرحلة) بس، عشان التطبيق يفتح فوراً. السيرفر هو اللي بيتحقق من الصلاحيات فعلياً
     function saveMe(u) { try { localStorage.setItem("att_me", JSON.stringify(u)); } catch (e) {} }
     function loadMe() { try { var u = JSON.parse(localStorage.getItem("att_me") || "null"); return (u && u.role && u.name) ? u : null; } catch (e) { return null; } }
@@ -1475,6 +1475,22 @@
         };
       }
       queue.push(job); pump();
+    }
+        var SWR_OK = { getClasses: 1, getAbsenceAlerts: 1, getTopPerformer: 1 };
+    function swrKey(args) { return "att_swr_" + (ME ? ME.username : "") + "|" + args[1] + "|" + JSON.stringify(args[2] || []); }
+    function rpc(fn, args, ok, fail) {
+      if (IN_APPS_SCRIPT || fn !== "api" || !SWR_OK[args[1]] || !ME) return rpcCore(fn, args, ok, fail);
+      var k = swrKey(args), old = null;
+      try { var raw = localStorage.getItem(k); if (raw) old = JSON.parse(raw); } catch (e) {}
+      var oldTxt = old ? JSON.stringify(old.v) : null;
+      if (old && ok) ok(old.v);                       // اعرضي المحفوظ فورًا
+      rpcCore(fn, args, function (res) {
+        try { localStorage.setItem(k, JSON.stringify({ v: res })); } catch (e) {}
+        if (!old || JSON.stringify(res) !== oldTxt) { if (ok) ok(res); }   // حدّثي بس لو اتغير
+      }, function (err) {
+        var m = (err && err.message) || "";
+        if (!old || m.indexOf("AUTH_REQUIRED") !== -1) { if (fail) fail(err); }
+      });
     }
     function rpcCore(fn, args, ok, fail) {
       if (IN_APPS_SCRIPT) { return rpcOnce(fn, args, ok, fail); }
