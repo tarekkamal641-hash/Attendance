@@ -1476,7 +1476,7 @@
       }
       queue.push(job); pump();
     }
-    function rpc(fn, args, ok, fail) {
+    function rpcCore(fn, args, ok, fail) {
       if (IN_APPS_SCRIPT) { return rpcOnce(fn, args, ok, fail); }
       var read = isRead(fn, args);
       if (read && fn === "api") {
