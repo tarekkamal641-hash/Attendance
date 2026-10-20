@@ -424,6 +424,27 @@
     /* مساحة تحت المحتوى عشان الشريط السفلي ما يغطيش آخر حاجة */
     #app { padding-bottom: 78px; }
 
+    /* ---------- هيكل التحميل (skeleton) ---------- */
+    .skel {
+      background: linear-gradient(90deg, rgba(255,255,255,.05) 25%, rgba(255,255,255,.14) 40%, rgba(255,255,255,.05) 65%);
+      background-size: 400% 100%;
+      animation: skelShimmer 1.3s ease-in-out infinite;
+      border-radius: 8px;
+    }
+    @keyframes skelShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+    @media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
+    .skel-line { height: 13px; margin: 4px 0; }
+    .skel-line.sm { height: 10px; }
+    .skel-line.w70 { width: 70%; } .skel-line.w45 { width: 45%; } .skel-line.w55 { width: 55%; } .skel-line.w30 { width: 30%; }
+    .skel-circle { width: 34px; height: 34px; border-radius: 50%; flex: none; display: inline-block; }
+    .skel-actions { display: flex; gap: 8px; }
+    .skel-more { opacity: .8; }
+    .pager-retry { text-align: center; padding: 14px 8px; font-size: 13px; color: var(--text-dim); }
+    .pager-retry button { margin-top: 8px; }
+    #boot-msg { padding: 18px 16px; max-width: 720px; margin: 0 auto; }
+    #boot-msg .boot-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    #boot-msg .boot-card { border: 1px solid var(--border); border-radius: 16px; padding: 10px 14px; }
+
     /* ---------- قائمة المخدومين ---------- */
     .roster-item {
       display: flex;
@@ -808,7 +829,7 @@
   </div>
 
 
-  <div id="boot-msg" style="text-align:center;margin-top:35vh;color:var(--text-dim);font-size:14px;">جاري التحميل...</div>
+  <div id="boot-msg" aria-busy="true" aria-label="جاري التحميل"><div class="boot-head"><span class="skel skel-circle" style="width:56px;height:56px"></span><div style="flex:1"><div class="skel skel-line w45" style="height:18px"></div><div class="skel skel-line sm w70"></div></div></div><div class="boot-card"><div class="roster-item"><div class="roster-text"><div class="skel skel-line w55"></div><div class="skel skel-line sm w30"></div></div><div class="skel-actions"><span class="skel skel-circle"></span><span class="skel skel-circle"></span></div></div><div class="roster-item"><div class="roster-text"><div class="skel skel-line w55"></div><div class="skel skel-line sm w30"></div></div><div class="skel-actions"><span class="skel skel-circle"></span><span class="skel skel-circle"></span></div></div><div class="roster-item"><div class="roster-text"><div class="skel skel-line w55"></div><div class="skel skel-line sm w30"></div></div><div class="skel-actions"><span class="skel skel-circle"></span><span class="skel skel-circle"></span></div></div><div class="roster-item"><div class="roster-text"><div class="skel skel-line w55"></div><div class="skel skel-line sm w30"></div></div><div class="skel-actions"><span class="skel skel-circle"></span><span class="skel skel-circle"></span></div></div><div class="roster-item"><div class="roster-text"><div class="skel skel-line w55"></div><div class="skel skel-line sm w30"></div></div><div class="skel-actions"><span class="skel skel-circle"></span><span class="skel skel-circle"></span></div></div><div class="roster-item"><div class="roster-text"><div class="skel skel-line w55"></div><div class="skel skel-line sm w30"></div></div><div class="skel-actions"><span class="skel skel-circle"></span><span class="skel skel-circle"></span></div></div></div></div>
 
   <!-- ============ شاشة الدخول / إنشاء حساب ============ -->
   <div id="auth-screen">
@@ -1340,7 +1361,10 @@
 
     function saveSession(t) { try { localStorage.setItem("att_token", t); } catch (e) {} }
     function loadSession() { try { return localStorage.getItem("att_token") || ""; } catch (e) { return ""; } }
-    function clearSession() { try { localStorage.removeItem("att_token"); } catch (e) {} }
+    function clearSession() { try { localStorage.removeItem("att_token"); localStorage.removeItem("att_me"); } catch (e) {} }
+    // بيانات المستخدم (الاسم/الدور/المرحلة) بس، عشان التطبيق يفتح فوراً. السيرفر هو اللي بيتحقق من الصلاحيات فعلياً
+    function saveMe(u) { try { localStorage.setItem("att_me", JSON.stringify(u)); } catch (e) {} }
+    function loadMe() { try { var u = JSON.parse(localStorage.getItem("att_me") || "null"); return (u && u.role && u.name) ? u : null; } catch (e) { return null; } }
 
     // بوابة موحّدة: كل نداء للسيرفر بيروح لدالة api مع توكن الجلسة
     var API_METHODS = ["getClasses", "getStudentsByFilter", "getRoster", "getBirthdays", "submitAttendance", "searchStudents",
@@ -1427,20 +1451,61 @@
         pump();
       });
     }
+    // قراءات api اللي بتتطلب في نفس اللحظة بتتجمّع في طلب واحد للسيرفر
+    var pendingReads = [], flushTimer = null;
+    var SOLO_READS = { getRoster: 1, getServants: 1 };
+    function flushReads() {
+      flushTimer = null;
+      var items = pendingReads; pendingReads = [];
+      if (!items.length) return;
+      var job;
+      if (items.length === 1) {
+        var it = items[0];
+        job = { fn: "api", args: it.args, read: true, tries: 1 };
+        job.done = function (good, val) { it.finish(good, val); };
+      } else {
+        job = { fn: "batch", args: [TOKEN, items.map(function (it) { return [it.args[1], it.args[2]]; })], read: true, tries: 1 };
+        job.done = function (good, val) {
+          items.forEach(function (it, i) {
+            if (!good) { it.finish(false, val); return; }
+            var r = val && val[i];
+            if (r && r.ok) it.finish(true, r.data);
+            else it.finish(false, new Error((r && r.error) || "حصل خطأ"));
+          });
+        };
+      }
+      queue.push(job); pump();
+    }
     function rpc(fn, args, ok, fail) {
       if (IN_APPS_SCRIPT) { return rpcOnce(fn, args, ok, fail); }
       var read = isRead(fn, args);
-      var key = read ? JSON.stringify([fn, args]) : null;
-      var waiters = { ok: ok, fail: fail };
-      if (key && inflight[key]) { inflight[key].waiters.push(waiters); return; } // نفس الطلب شغال: ما نكررهوش
-      var job = { fn: fn, args: args, read: read, tries: 1, waiters: [waiters] };
+      if (read && fn === "api") {
+        var key = JSON.stringify([fn, args]);
+        var w = { ok: ok, fail: fail };
+        if (inflight[key]) { inflight[key].waiters.push(w); return; }   // نفس الطلب شغال
+        var item = { args: args, waiters: [w] };
+        item.finish = function (good, val) {
+          delete inflight[key];
+          item.waiters.forEach(function (x) {
+            if (good) { if (x.ok) x.ok(val); } else if (x.fail) x.fail(val);
+          });
+        };
+        inflight[key] = item;
+        if (SOLO_READS[args[1]]) {   // القوائم اللي المستخدم مستنيها بتتبعت لوحدها عشان ما تستناش الإحصائيات التقيلة
+          var sj = { fn: "api", args: args, read: true, tries: 1 };
+          sj.done = function (good, val) { item.finish(good, val); };
+          queue.push(sj); pump();
+          return;
+        }
+        pendingReads.push(item);
+        if (!flushTimer) flushTimer = setTimeout(flushReads, 30);
+        return;
+      }
+      var job = { fn: fn, args: args, read: read, tries: 1 };
       job.done = function (good, val) {
-        if (key) delete inflight[key];
-        job.waiters.forEach(function (w) {
-          if (good) { if (w.ok) w.ok(val); } else if (w.fail) w.fail(val);
-        });
+        inflight = {};   // بعد أي كتابة ما نستخدمش قراءة كانت شغالة قبلها
+        if (good) { if (ok) ok(val); } else if (fail) fail(val);
       };
-      if (key) inflight[key] = job;
       queue.push(job); pump();
     }
 
@@ -1728,13 +1793,9 @@ function dialNumber(num, e) {
   a.click();
   document.body.removeChild(a);
 }
-    function renderRoster(items) {
+    function renderRoster(items, append) {
       var list = document.getElementById("roster-list");
-      if (!items.length) {
-        list.textContent = "مفيش مخدومين في الاختيار ده.";
-        return;
-      }
-      list.innerHTML = "";
+      if (!append) list.innerHTML = "";
       items.forEach(function (p) {
         var row = document.createElement("div");
         row.className = "roster-item";
@@ -1804,13 +1865,9 @@ function dialNumber(num, e) {
     }
 
     // ---------- بيانات الخدام (للأمناء بس) ----------
-    function renderServants(items) {
+    function renderServants(items, append) {
       var list = document.getElementById("servants-list");
-      if (!items.length) {
-        list.textContent = "مفيش خدام متسجلين لسه.";
-        return;
-      }
-      list.innerHTML = "";
+      if (!append) list.innerHTML = "";
       items.forEach(function (s) {
         var wrap = document.createElement("div");
         wrap.className = "sa-person";
@@ -2097,26 +2154,98 @@ function dialNumber(num, e) {
       }).addServant(payload);
     });
 
-    function loadServants() {
-      document.getElementById("servants-list").textContent = "جاري تحميل القائمة...";
-      gs.withSuccessHandler(renderServants).withFailureHandler(function (err) {
-        document.getElementById("servants-list").textContent = "خطأ: " + err.message;
-      }).getServants();
-    }
+    function loadServants() { servantsPager.reload(); }
 
-    function loadRoster() {
-      document.getElementById("roster-list").textContent = "جاري تحميل القائمة...";
-      gs
-        .withSuccessHandler(renderRoster)
-        .withFailureHandler(function (err) {
-          document.getElementById("roster-list").textContent = "خطأ: " + err.message;
-        })
-        .getRoster(
+    // ---------- تحميل القوائم على دفعات (30 اسم) مع هيكل تحميل ----------
+    var PAGE_SIZE = 30;
+    var SKEL_ROW = '<div class="roster-item"><div class="roster-text"><div class="skel skel-line w55"></div><div class="skel skel-line sm w30"></div></div><div class="skel-actions"><span class="skel skel-circle"></span><span class="skel skel-circle"></span></div></div>';
+    function skelRows(n) { var h = ""; for (var i = 0; i < n; i++) h += SKEL_ROW; return h; }
+    // لو السيرفر لسه على نسخة قديمة بترجّع القايمة كلها، نقسمها هنا
+    function asPage(res, off, lim) {
+      if (Array.isArray(res)) return { items: res.slice(off, off + lim), hasMore: res.length > off + lim };
+      return res || { items: [], hasMore: false };
+    }
+    function createPager(cfg) {
+      var st = { seq: 0, offset: 0, hasMore: false, loading: false, io: null, sent: null };
+      function box() { return document.getElementById(cfg.listId); }
+      function clearSent() {
+        if (st.io) { st.io.disconnect(); st.io = null; }
+        if (st.sent && st.sent.parentNode) st.sent.parentNode.removeChild(st.sent);
+        st.sent = null;
+      }
+      function retryBlock(first) {
+        var d = document.createElement("div");
+        d.className = "pager-retry";
+        d.textContent = "الاتصال بطيء دلوقتي";
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "secondary"; b.textContent = "إعادة المحاولة";
+        b.addEventListener("click", function () { if (first) api.reload(); else { d.remove(); fetchPage(false); } });
+        d.appendChild(document.createElement("br")); d.appendChild(b);
+        return d;
+      }
+      function showMore() {
+        clearSent();
+        if (!st.hasMore) return;
+        var s = document.createElement("div");
+        s.className = "skel-more";
+        st.sent = s;
+        box().appendChild(s);
+        if ("IntersectionObserver" in window) {
+          s.innerHTML = skelRows(2);
+          st.io = new IntersectionObserver(function (es) {
+            if (es[0].isIntersecting && !st.loading) fetchPage(false);
+          }, { rootMargin: "500px" });
+          st.io.observe(s);
+        } else {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "secondary"; b.textContent = "عرض المزيد";
+          b.addEventListener("click", function () { s.innerHTML = skelRows(2); fetchPage(false); });
+          s.appendChild(b);
+        }
+      }
+      function fetchPage(first) {
+        var seq = st.seq;
+        st.loading = true;
+        cfg.fetch(st.offset, PAGE_SIZE, function (res) {
+          if (seq !== st.seq) return;                      // طلب قديم (اتغير الفلتر/البحث)
+          st.loading = false;
+          var pg = asPage(res, st.offset, PAGE_SIZE), items = pg.items || [];
+          if (first && !items.length) { box().textContent = cfg.emptyMsg; return; }
+          clearSent();
+          cfg.render(items, !first);
+          st.offset += items.length;
+          st.hasMore = !!pg.hasMore && items.length > 0;
+          showMore();
+        }, function () {
+          if (seq !== st.seq) return;
+          st.loading = false;
+          clearSent();
+          if (first) { box().innerHTML = ""; }
+          box().appendChild(retryBlock(first));
+        });
+      }
+      var api = {
+        skeleton: function () { clearSent(); box().innerHTML = skelRows(cfg.skel || 7); },
+        reload: function () { st.seq++; st.offset = 0; st.hasMore = false; st.loading = false; api.skeleton(); fetchPage(true); }
+      };
+      return api;
+    }
+    var rosterPager = createPager({
+      listId: "roster-list", emptyMsg: "مفيش مخدومين في الاختيار ده.", skel: 8, render: renderRoster,
+      fetch: function (off, lim, ok, fail) {
+        gs.withSuccessHandler(ok).withFailureHandler(fail).getRoster(
           document.getElementById("roster-stage-select").value,
           document.getElementById("roster-class-select").value,
-          document.getElementById("roster-search").value.trim()
+          document.getElementById("roster-search").value.trim(),
+          off, lim
         );
-    }
+      }
+    });
+    var servantsPager = createPager({
+      listId: "servants-list", emptyMsg: "مفيش خدام متسجلين لسه.", skel: 6, render: renderServants,
+      fetch: function (off, lim, ok, fail) { gs.withSuccessHandler(ok).withFailureHandler(fail).getServants(off, lim); }
+    });
+    function loadRoster() { rosterPager.reload(); }
 
     var rosterSearchTimer = null;
     document.getElementById("roster-search").addEventListener("input", function () {
@@ -2124,7 +2253,7 @@ function dialNumber(num, e) {
       rosterSearchTimer = setTimeout(loadRoster, 300); // بحث فوري من غير ما نضغط زرار
     });
 
-    function loadRosterClassOptions(keepSelection) {
+    function loadRosterClassOptions(keepSelection, noReload) {
       gs.withSuccessHandler(function (classes) {
         var select = document.getElementById("roster-class-select");
         var current = keepSelection ? select.value : "";
@@ -2136,10 +2265,11 @@ function dialNumber(num, e) {
           select.appendChild(opt);
         });
         select.value = current;
-        if (select.value !== current) select.value = "";
-        loadRoster();
-      }).withFailureHandler(function (err) {
-        document.getElementById("roster-list").textContent = "خطأ: " + err.message;
+        var changed = select.value !== current;
+        if (changed) select.value = "";
+        if (!noReload || changed || current) loadRoster();
+      }).withFailureHandler(function () {
+        if (!noReload) loadRoster();
       }).getClasses(document.getElementById("roster-stage-select").value);
     }
 
@@ -3401,7 +3531,10 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     function startApp() {
       applyRole();
       loadClassOptions(false);
-      loadRosterClassOptions(false);
+      rosterPager.skeleton();
+      servantsPager.skeleton();
+      loadRosterClassOptions(false, true);
+      loadRoster();
       loadBdayClassOptions(false);
       loadStudentClassOptions(byId("student-stage").value, "");
       loadClassStatsOptions();
@@ -3429,6 +3562,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       TOKEN = res.token;
       ME = res.user;
       saveSession(TOKEN);
+      saveMe(ME);
       enter();
     }
 
@@ -3615,7 +3749,13 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       var t = loadSession();
       if (!t) { showAuth(); return; }
       TOKEN = t;
-      callApi("me", [], function (u) { ME = u; enter(); }, function () { showAuth(); });
+      var cached = loadMe();
+      if (cached) { ME = cached; enter(); }            // فتح فوري بالبيانات المحفوظة، والتحقق بيتم في الخلفية
+      callApi("me", [], function (u) {
+        var changed = !ME || JSON.stringify(u) !== JSON.stringify(ME);
+        ME = u; saveMe(u);
+        if (changed) enter();
+      }, function () { if (!ME) showAuth(); });
     })();
   </script>
 </body>
