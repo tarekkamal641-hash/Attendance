@@ -3773,7 +3773,15 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
 
       // Service Worker بسيط: مجرد شرط من المتصفح عشان التطبيق يتثبّت. مفيش تخزين ولا شغل بدون نت
       if (!("serviceWorker" in navigator) || !/^https:|^http:\/\/localhost|^http:\/\/127\.0\.0\.1/.test(location.href)) return;
-      navigator.serviceWorker.register("sw.js").catch(function () {});
+            navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
+        var hiddenAt = 0;
+        document.addEventListener("visibilitychange", function () {
+          if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
+          try { reg.update(); } catch (e) {}
+          // لو التطبيق كان مقفول في الخلفية أكتر من ساعة، حمّليه من جديد عشان ياخد آخر نسخة
+          if (hiddenAt && Date.now() - hiddenAt > 60 * 60 * 1000) location.reload();
+        });
+      }).catch(function () {});
     })();
     refreshOnlineState();
 
