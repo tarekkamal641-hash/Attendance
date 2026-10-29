@@ -2298,6 +2298,14 @@ function dialNumber(num, e) {
     });
 
     // ---------- أعياد الميلاد ----------
+      function birthdayMessage(fullName) {
+      var first = (fullName || "").trim().split(/\s+/)[0] || "";
+      return "🎂🎉 عيد ميلاد سعيد يا " + first + " 🎈✨\n\n" +
+             "ربنا يحفظك ويبارك حياتك ويفرّح قلبك دايمًا 🙏💛\n" +
+             "ويعطيك سنة مليانة سلام وفرح 🕊️🎁\n\n" +
+             "محبتنا ليك ❤️\n" +
+             "أسرة الرسل ⛵";
+    }
     function renderBirthdays(items) {
       var list = document.getElementById("bday-list");
       if (!items.length) {
@@ -2326,6 +2334,16 @@ function dialNumber(num, e) {
 
         row.appendChild(text);
         row.appendChild(dateEl);
+        var wa = document.createElement("a");
+        wa.className = "roster-icon wa" + (p.waPhone ? "" : " disabled");
+        wa.innerHTML = WA_ICON_ROSTER;
+        wa.title = p.waPhone ? "تهنئة بعيد الميلاد" : "مفيش رقم";
+        if (p.waPhone) {
+          wa.href = "https://wa.me/" + p.waPhone + "?text=" + encodeURIComponent(birthdayMessage(p.name));
+          wa.target = "_blank";
+          wa.rel = "noopener";
+        }
+        row.appendChild(wa);
         list.appendChild(row);
       });
     }
