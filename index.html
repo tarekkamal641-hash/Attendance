@@ -1926,6 +1926,7 @@ function dialNumber(num, e) {
         // كل بيانات الخادم (بتظهر لما تدوسي على الاسم)
         var details = document.createElement("div");
         details.className = "sa-details";
+        var valSpans = {};
         [
           ["الاسم", s.name],
           ["الدور في الخدمة", s.role],
@@ -1943,12 +1944,13 @@ function dialNumber(num, e) {
           k.textContent = f[0];
           var v = document.createElement("span");
           v.textContent = f[1] || "—";
+          valSpans[f[0]] = v;
           d.appendChild(k);
           d.appendChild(v);
           details.appendChild(d);
         });
         wrap.appendChild(details);
-
+        addRoleEditor(s, details, subEl, valSpans);
         row.addEventListener("click", function () { details.classList.toggle("open"); });
         list.appendChild(wrap);
       });
