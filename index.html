@@ -1372,7 +1372,7 @@
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
-      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear"];
+      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole"];
 
     // ============ طبقة الاتصال بالسيرفر ============
     // جوه Apps Script: google.script.run زي الأول. وكمان PWA على استضافة تانية: fetch (POST) لرابط الـ Web App (APPS_SCRIPT_URL في config.js)
@@ -1881,6 +1881,64 @@ function dialNumber(num, e) {
     }
 
     // ---------- بيانات الخدام (للأمناء بس) ----------
+        // ---------- تعديل دور/فصل الخادم (جوه تفاصيل الخادم) ----------
+    // أمين الخدمة: الدور والمرحلة والفصل. أمين المرحلة: فصل خدام الفصول في مرحلته بس.
+    function canEditServant(s) {
+      if (!s.hasAccount || s.role === ROLE_ADMIN) return false;
+      if (ME.role === ROLE_ADMIN) return true;
+      if (ME.role === ROLE_STAGE) return s.role === ROLE_CLASS && (s.stage || "") === (ME.stage || "");
+      return false;
+    }
+    function addRoleEditor(s, details, subEl, valSpans) {
+      if (!canEditServant(s)) return;
+      var admin = ME.role === ROLE_ADMIN;
+      var box = el("div", "role-box");
+      box.appendChild(el("div", "role-title", admin ? "تعديل الدور" : "تغيير فصل الخادم"));
+      var roleSel = document.createElement("select"), stageSel = document.createElement("select");
+      [ROLE_CLASS, ROLE_STAGE].forEach(function (r) { var o = document.createElement("option"); o.value = r; o.textContent = r; roleSel.appendChild(o); });
+      ["أولى ثانوي", "ثانية ثانوي", "ثالثة ثانوي"].forEach(function (g) { var o = document.createElement("option"); o.value = g; o.textContent = g; stageSel.appendChild(o); });
+      roleSel.value = s.role === ROLE_STAGE ? ROLE_STAGE : ROLE_CLASS;
+      stageSel.value = s.stage || "أولى ثانوي";
+      var clsIn = document.createElement("input");
+      clsIn.type = "text"; clsIn.placeholder = "اسم الفصل"; clsIn.value = s.cls || ""; clsIn.autocomplete = "off";
+      var clsLabel = el("label", "", "الفصل");
+      function sync() { var show = !admin || roleSel.value === ROLE_CLASS; clsLabel.style.display = show ? "" : "none"; clsIn.style.display = show ? "" : "none"; }
+      if (admin) {
+        box.appendChild(el("label", "", "الدور")); box.appendChild(roleSel);
+        box.appendChild(el("label", "", "المرحلة")); box.appendChild(stageSel);
+        roleSel.addEventListener("change", sync);
+      }
+      sync();
+      box.appendChild(clsLabel); box.appendChild(clsIn);
+      var save = document.createElement("button");
+      save.type = "button"; save.textContent = "حفظ التعديل";
+      var act = el("div", "role-actions"); act.appendChild(save);
+      var msg = el("div", "msg");
+      box.appendChild(act); box.appendChild(msg);
+      details.appendChild(box);
+
+      save.addEventListener("click", function () {
+        var role = admin ? roleSel.value : ROLE_CLASS;
+        var stage = admin ? stageSel.value : s.stage;
+        var cls = role === ROLE_CLASS ? clsIn.value.trim() : "";
+        if (role === ROLE_CLASS && !cls) { msg.textContent = "اكتبي اسم الفصل"; msg.className = "msg err"; return; }
+        var desc = role + " · " + stage + (role === ROLE_CLASS ? " · " + cls : "");
+        if (!window.confirm("هتغيّري \"" + s.name + "\" إلى: " + desc + "؟ الصلاحيات هتتغير فوراً.")) return;
+        save.disabled = true; msg.textContent = "جاري الحفظ..."; msg.className = "msg";
+        gs.withSuccessHandler(function () {
+          save.disabled = false;
+          s.role = role; s.stage = stage; s.cls = cls;
+          s.roleLabel = role + (role === ROLE_CLASS && cls ? " · " + cls : "");
+          subEl.textContent = [s.roleLabel, s.stage].filter(Boolean).join(" · ");
+          if (valSpans["الدور في الخدمة"]) valSpans["الدور في الخدمة"].textContent = s.role;
+          if (valSpans["المرحلة"]) valSpans["المرحلة"].textContent = s.stage || "—";
+          if (valSpans["الفصل"]) valSpans["الفصل"].textContent = s.cls || "—";
+          msg.textContent = "تم الحفظ"; msg.className = "msg ok";
+        }).withFailureHandler(function (err) {
+          save.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+        }).updateUserRole(s.username, role, stage, cls);
+      });
+    }
     function renderServants(items, append) {
       var list = document.getElementById("servants-list");
       if (!append) list.innerHTML = "";
