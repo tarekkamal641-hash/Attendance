@@ -536,10 +536,7 @@
     .sa-counts { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
     .sa-counts b { color: var(--text); }
     .sa-bar { margin: 2px 2px 10px; }
-    .role-box { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); }
-    .role-box .role-title { font-weight: 700; margin-bottom: 4px; }
-    .role-box label { margin-top: 10px; }
-    .role-box .role-actions { margin-top: 12px; }
+    .sa-day select { width: auto; max-width: 64%; margin: 0; padding: 6px 8px; font-size: 14px; }
     .sa-details { display: none; padding: 0 4px 12px; }
     .sa-details.open { display: block; }
     .sa-day {
@@ -1885,8 +1882,8 @@ function dialNumber(num, e) {
     }
 
     // ---------- بيانات الخدام (للأمناء بس) ----------
-        // ---------- تعديل دور/فصل الخادم (جوه تفاصيل الخادم) ----------
-    // أمين الخدمة: الدور والمرحلة والفصل. أمين المرحلة: فصل خدام الفصول في مرحلته بس.
+           // ---------- تعديل الدور/المرحلة/الفصل جوه بيانات الخادم نفسها ----------
+    // أمين الخدمة: الدور والمرحلة والفصل (اختيار). أمين المرحلة: الفصل بس (اختيار من فصول مرحلته).
     function canEditServant(s) {
       if (!s.hasAccount || s.role === ROLE_ADMIN) return false;
       if (ME.role === ROLE_ADMIN) return true;
@@ -1896,36 +1893,57 @@ function dialNumber(num, e) {
     function addRoleEditor(s, details, subEl, valSpans) {
       if (!canEditServant(s)) return;
       var admin = ME.role === ROLE_ADMIN;
-      var box = el("div", "role-box");
-      box.appendChild(el("div", "role-title", admin ? "تعديل الدور" : "تغيير فصل الخادم"));
-      var roleSel = document.createElement("select"), stageSel = document.createElement("select");
-      [ROLE_CLASS, ROLE_STAGE].forEach(function (r) { var o = document.createElement("option"); o.value = r; o.textContent = r; roleSel.appendChild(o); });
-      ["أولى ثانوي", "ثانية ثانوي", "ثالثة ثانوي"].forEach(function (g) { var o = document.createElement("option"); o.value = g; o.textContent = g; stageSel.appendChild(o); });
-      roleSel.value = s.role === ROLE_STAGE ? ROLE_STAGE : ROLE_CLASS;
-      stageSel.value = s.stage || "أولى ثانوي";
-      var clsIn = document.createElement("input");
-      clsIn.type = "text"; clsIn.placeholder = "اسم الفصل"; clsIn.value = s.cls || ""; clsIn.autocomplete = "off";
-      var clsLabel = el("label", "", "الفصل");
-      function sync() { var show = !admin || roleSel.value === ROLE_CLASS; clsLabel.style.display = show ? "" : "none"; clsIn.style.display = show ? "" : "none"; }
+      function opt(sel, value, text) { var o = document.createElement("option"); o.value = value; o.textContent = text; sel.appendChild(o); }
+      function put(label, node) { var sp = valSpans[label]; if (!sp) return null; sp.textContent = ""; sp.appendChild(node); return sp; }
+
+      var roleSel = document.createElement("select"), stageSel = document.createElement("select"), clsSel = document.createElement("select");
       if (admin) {
-        box.appendChild(el("label", "", "الدور")); box.appendChild(roleSel);
-        box.appendChild(el("label", "", "المرحلة")); box.appendChild(stageSel);
+        opt(roleSel, ROLE_CLASS, ROLE_CLASS); opt(roleSel, ROLE_STAGE, ROLE_STAGE);
+        ["أولى ثانوي", "ثانية ثانوي", "ثالثة ثانوي"].forEach(function (g) { opt(stageSel, g, g); });
+        roleSel.value = s.role === ROLE_STAGE ? ROLE_STAGE : ROLE_CLASS;
+        stageSel.value = s.stage || "أولى ثانوي";
+        put("الدور في الخدمة", roleSel);
+        put("المرحلة", stageSel);
+      }
+      var clsSpan = put("الفصل", clsSel);
+      var clsRow = clsSpan ? clsSpan.parentNode : null;
+
+      // فصول المرحلة المتاحة (اختيار من القايمة، مش كتابة)
+      function loadClasses(stage) {
+        var cur = clsSel.value || (stage === (s.stage || "") ? (s.cls || "") : "");
+        clsSel.innerHTML = ""; opt(clsSel, "", "جاري تحميل الفصول..."); clsSel.disabled = true;
+        gs.withSuccessHandler(function (list) {
+          var keepNow = clsSel.value && clsSel.value !== "" ? clsSel.value : cur;
+          var items = (list || []).slice();
+          if (keepNow && items.indexOf(keepNow) === -1 && stage === (s.stage || "")) items.unshift(keepNow);
+          clsSel.innerHTML = ""; clsSel.disabled = false;
+          opt(clsSel, "", items.length ? "اختاري الفصل" : "مفيش فصول في المرحلة دي لسه");
+          items.forEach(function (c) { opt(clsSel, c, c); });
+          clsSel.value = items.indexOf(keepNow) !== -1 ? keepNow : "";
+        }).withFailureHandler(function () {
+          clsSel.innerHTML = ""; clsSel.disabled = false;
+          opt(clsSel, "", "تعذّر تحميل الفصول");
+          if (cur) { opt(clsSel, cur, cur); clsSel.value = cur; }
+        }).getClasses(stage);
+      }
+      function sync() { if (clsRow) clsRow.style.display = (!admin || roleSel.value === ROLE_CLASS) ? "" : "none"; }
+      if (admin) {
         roleSel.addEventListener("change", sync);
+        stageSel.addEventListener("change", function () { clsSel.value = ""; loadClasses(stageSel.value); });
       }
       sync();
-      box.appendChild(clsLabel); box.appendChild(clsIn);
+      loadClasses(admin ? stageSel.value : (s.stage || ME.stage));
+
       var save = document.createElement("button");
-      save.type = "button"; save.textContent = "حفظ التعديل";
-      var act = el("div", "role-actions"); act.appendChild(save);
+      save.type = "button"; save.textContent = "حفظ التعديل"; save.style.marginTop = "12px";
       var msg = el("div", "msg");
-      box.appendChild(act); box.appendChild(msg);
-      details.appendChild(box);
+      details.appendChild(save); details.appendChild(msg);
 
       save.addEventListener("click", function () {
         var role = admin ? roleSel.value : ROLE_CLASS;
         var stage = admin ? stageSel.value : s.stage;
-        var cls = role === ROLE_CLASS ? clsIn.value.trim() : "";
-        if (role === ROLE_CLASS && !cls) { msg.textContent = "اكتبي اسم الفصل"; msg.className = "msg err"; return; }
+        var cls = role === ROLE_CLASS ? clsSel.value : "";
+        if (role === ROLE_CLASS && !cls) { msg.textContent = "اختاري الفصل"; msg.className = "msg err"; return; }
         var desc = role + " · " + stage + (role === ROLE_CLASS ? " · " + cls : "");
         if (!window.confirm("هتغيّري \"" + s.name + "\" إلى: " + desc + "؟ الصلاحيات هتتغير فوراً.")) return;
         save.disabled = true; msg.textContent = "جاري الحفظ..."; msg.className = "msg";
@@ -1934,9 +1952,6 @@ function dialNumber(num, e) {
           s.role = role; s.stage = stage; s.cls = cls;
           s.roleLabel = role + (role === ROLE_CLASS && cls ? " · " + cls : "");
           subEl.textContent = [s.roleLabel, s.stage].filter(Boolean).join(" · ");
-          if (valSpans["الدور في الخدمة"]) valSpans["الدور في الخدمة"].textContent = s.role;
-          if (valSpans["المرحلة"]) valSpans["المرحلة"].textContent = s.stage || "—";
-          if (valSpans["الفصل"]) valSpans["الفصل"].textContent = s.cls || "—";
           msg.textContent = "تم الحفظ"; msg.className = "msg ok";
         }).withFailureHandler(function (err) {
           save.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
