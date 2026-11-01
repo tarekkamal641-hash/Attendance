@@ -12,6 +12,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script src="config.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <base target="_top">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -1248,6 +1249,7 @@
 
       <label>الاسم</label>
       <input type="text" id="student-name">
+      <div class="msg" id="student-edit-note" style="text-align:right; min-height:0; margin-top:6px;"></div>
       <label>رقم التليفون</label>
       <input type="tel" id="student-phone">
       <label>تاريخ الميلاد</label>
@@ -1262,6 +1264,7 @@
         <input type="text" id="student-class-new" placeholder="اكتب اسم الفصل الجديد" style="display:none; margin-top:8px;">
       </div>
       <button class="primary" id="save-student">حفظ بيانات المخدوم</button>
+      <button class="secondary" id="new-student-btn" type="button" style="margin-top:8px;">➕ مخدوم جديد (فضّي الفورم)</button>
       <div class="msg" id="student-msg"></div>
 
       <div class="divider"></div>
@@ -2607,6 +2610,11 @@ function dialNumber(num, e) {
         loadedStudentStage = "";
         clearCommentForm();
       }
+      var editNote = document.getElementById("student-edit-note");
+      if (editNote) {
+        editNote.textContent = loaded ? "✏️ بتعدّلي بيانات «" + loadedStudentName + "» — أي تغيير (حتى الاسم) بيتحفظ على نفس المخدوم" : "";
+        editNote.className = "msg ok";
+      }
     }
 
     // بتدوّر على مخدوم وتحمّل بياناته في الفورم، ومتستخدمة من زرار البحث ومن الدوس على اسم في قائمة المخدومين
@@ -2681,8 +2689,15 @@ function dialNumber(num, e) {
       if (ME && ME.role === ROLE_CLASS) data["الفصل"] = ME.cls || "";
 else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو اكتب اسم فصل جديد"; msg.className = "msg err"; return; }
 
-      // لو الاسم مش هو اللي اتحمّل بالبحث يبقى ده تسجيل جديد
-      data.isNew = (data["الاسم"] !== loadedStudentName);
+      // لو اتحمّل مخدوم موجود بالبحث، أي تعديل (حتى الاسم) بيتحفظ على نفس المخدوم.
+      // التسجيل الجديد بيكون من فورم فاضي (زر "مخدوم جديد" أو بحث ملقاش اسم)
+      data.isNew = !loadedStudentName;
+      if (loadedStudentName) {
+        data.originalName = loadedStudentName;
+        if (data["الاسم"] !== loadedStudentName && !window.confirm(
+          "هتغيّري اسم المخدوم من:\n" + loadedStudentName + "\nإلى:\n" + data["الاسم"] +
+          "\n\nده هيعدّل نفس المخدوم (مش هيضيف مخدوم جديد).\nلو عايزة تسجّلي مخدوم جديد اضغطي إلغاء وبعدها زر \"مخدوم جديد\".\n\nتكمّلي؟")) return;
+      }
       // تعديل لسجل محمّل واتغيرت مرحلته: ابعت المرحلة القديمة عشان السيرفر ينقله بدل ما يكرره
       if (!data.isNew && loadedStudentStage && loadedStudentStage !== data["المرحلة"]) {
         data.originalStage = loadedStudentStage;
@@ -2713,6 +2728,15 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       }).saveComment(loadedStudentName, comment, visitDate, visitType);
     });
 
+    // زر "مخدوم جديد": بيفضّي الفورم عشان الحفظ بعد كده يبقى تسجيل جديد
+    document.getElementById("new-student-btn").addEventListener("click", function () {
+      var msg = document.getElementById("student-msg");
+      setStudentForm({}, false);
+      document.getElementById("student-search").value = "";
+      document.getElementById("student-matches").innerHTML = "";
+      msg.textContent = "الفورم فاضي - اكتبي بيانات المخدوم الجديد"; msg.className = "msg ok";
+    });
+
     // بعد الحفظ، التطبيق يفضّي الفورم ويحدّث قوائم الفصول في الشاشات التانية
     function finishSave(message) {
       var msg = document.getElementById("student-msg");
@@ -2734,7 +2758,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       if (res.status === "added" || res.status === "updated") {
         finishSave(res.status === "added"
           ? "تمت إضافة \"" + data["الاسم"] + "\" في " + data["المرحلة"] + " - جاهز لمخدوم جديد"
-          : "تم تحديث بيانات \"" + data["الاسم"] + "\"");
+          : "تم تحديث بيانات \"" + data["الاسم"] + "\"" + (data.originalName && data.originalName !== data["الاسم"] ? " (الاسم القديم: " + data.originalName + ")" : ""));
         return;
       }
 
