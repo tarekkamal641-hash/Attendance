@@ -1293,6 +1293,7 @@
         <button class="subtab-btn" data-subtab="service-stats">إحصائيات الخدمة</button>
         <button class="subtab-btn" data-subtab="class-stats">إحصائيات الفصل</button>
         <button class="subtab-btn" data-subtab="stage-stats">إحصائيات المرحلة</button>
+        <button class="subtab-btn" data-subtab="monthly-report">📊 تقرير شهري</button>
       </div>
 
       <div class="subpanel active" id="subpanel-student-stats">
@@ -1301,7 +1302,15 @@
         <button class="secondary" id="load-student-stats">عرض الإحصائيات</button>
         <div class="stats-result" id="student-stats-result"></div>
         <div class="divider"></div>
-        <div id="student-month-list">جاري تحميل الحضور...</div>
+        <label>الشهر</label>
+        <select id="month-select"><option value="">جاري تحميل الشهور...</option></select>
+        <label style="margin-top:8px;">الترتيب</label>
+        <select id="month-sort">
+          <option value="name">بالاسم</option>
+          <option value="desc">الأكثر حضورًا أولاً (تنازلي)</option>
+          <option value="asc">الأقل حضورًا أولاً (تصاعدي)</option>
+        </select>
+        <div id="student-month-list" style="margin-top:12px;">جاري تحميل الحضور...</div>
       </div>
 
       <div class="subpanel" id="subpanel-service-stats">
@@ -1326,6 +1335,19 @@
         </select>
         <button class="secondary" id="load-stage-stats" style="margin-top:10px;">عرض إحصائيات المرحلة</button>
         <div class="stats-result" id="stage-stats-result"></div>
+      </div>
+
+      <div class="subpanel" id="subpanel-monthly-report">
+        <label>اختاري الشهر</label>
+        <select id="report-month"><option value="">جاري تحميل الشهور...</option></select>
+        <button class="primary" id="download-report" style="margin-top:10px;">⬇️ تحميل التقرير (Excel)</button>
+        <button class="secondary" id="share-report" type="button" style="display:none; margin-top:8px;">📤 مشاركة الملف (واتساب / درايف)</button>
+        <div class="msg" id="report-msg"></div>
+        <div class="note" style="margin-top:12px; text-align:right; line-height:1.9;">
+          ملف Excel فيه: حضر/غاب في كل جمعة من الشهر + عدد الحضور والغياب والنسبة،
+          وتاريخ آخر افتقاد وآخر تعليق لكل مخدوم.<br>
+          على حسب صلاحياتك (خادم الفصل: فصله، أمين المرحلة: مرحلته، أمين الخدمة: كل الخدمة).
+        </div>
       </div>
     </div>
   </div>
@@ -1377,7 +1399,7 @@
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
-      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole"];
+      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport"];
 
     // ============ طبقة الاتصال بالسيرفر ============
     // جوه Apps Script: google.script.run زي الأول. وكمان PWA على استضافة تانية: fetch (POST) لرابط الـ Web App (APPS_SCRIPT_URL في config.js)
@@ -2813,6 +2835,310 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       msg.textContent = "تم"; msg.className = "msg ok";
     }
 
+    // ================= مولّد ملف Excel (.xlsx) من غير مكتبات خارجية =================
+    // ملف xlsx هو zip فيه ملفات XML. بنكتب الـ zip من غير ضغط، ومعاه بنية الجداول والتنسيق.
+    var XL_ = (function () {
+      var enc = new TextEncoder();
+      var crcTable = null;
+      function crc32(bytes) {
+        if (!crcTable) {
+          crcTable = [];
+          for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); crcTable[n] = c >>> 0; }
+        }
+        var crc = 0xFFFFFFFF;
+        for (var i = 0; i < bytes.length; i++) crc = crcTable[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+        return (crc ^ 0xFFFFFFFF) >>> 0;
+      }
+
+      function zipStore(files) {
+        var chunks = [], central = [], offset = 0, cenSize = 0;
+        var d = new Date();
+        var dosTime = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+        var dosDate = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+        files.forEach(function (f) {
+          var name = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data);
+          var loc = new Uint8Array(30 + name.length), lv = new DataView(loc.buffer);
+          lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0x0800, true); lv.setUint16(8, 0, true);
+          lv.setUint16(10, dosTime, true); lv.setUint16(12, dosDate, true); lv.setUint32(14, crc, true);
+          lv.setUint32(18, data.length, true); lv.setUint32(22, data.length, true); lv.setUint16(26, name.length, true); lv.setUint16(28, 0, true);
+          loc.set(name, 30);
+          chunks.push(loc, data);
+          var cen = new Uint8Array(46 + name.length), cv = new DataView(cen.buffer);
+          cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true); cv.setUint16(8, 0x0800, true); cv.setUint16(10, 0, true);
+          cv.setUint16(12, dosTime, true); cv.setUint16(14, dosDate, true); cv.setUint32(16, crc, true);
+          cv.setUint32(20, data.length, true); cv.setUint32(24, data.length, true); cv.setUint16(28, name.length, true);
+          cv.setUint32(42, offset, true);
+          cen.set(name, 46);
+          central.push(cen); cenSize += cen.length;
+          offset += loc.length + data.length;
+        });
+        var end = new Uint8Array(22), ev = new DataView(end.buffer);
+        ev.setUint32(0, 0x06054b50, true); ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true);
+        ev.setUint32(12, cenSize, true); ev.setUint32(16, offset, true);
+        return new Blob(chunks.concat(central, [end]), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      }
+
+      function colName(i) { var s = ""; i++; while (i > 0) { var m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+      function esc(t) {
+        return String(t).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      // أرقام الستايلات (ترتيبها نفس ترتيب cellXfs في styles.xml تحت)
+      var ST = { def: 0, title: 1, head: 2, center: 3, present: 4, absent: 5, none: 6, pct: 7, num: 8, totLabel: 9, totNum: 10, text: 11, comment: 12, sub: 13, date: 14, totPct: 15 };
+
+      var STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+        '<numFmts count="1"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/></numFmts>' +
+        '<fonts count="8">' +
+          '<font><sz val="11"/><name val="Arial"/></font>' +
+          '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Arial"/></font>' +
+          '<font><b/><sz val="14"/><color rgb="FF4A3620"/><name val="Arial"/></font>' +
+          '<font><b/><sz val="11"/><name val="Arial"/></font>' +
+          '<font><sz val="11"/><color rgb="FF006100"/><name val="Arial"/></font>' +
+          '<font><sz val="11"/><color rgb="FF9C0006"/><name val="Arial"/></font>' +
+          '<font><sz val="11"/><color rgb="FF7F7F7F"/><name val="Arial"/></font>' +
+          '<font><i/><sz val="10"/><color rgb="FF7F7F7F"/><name val="Arial"/></font>' +
+        '</fonts>' +
+        '<fills count="7">' +
+          '<fill><patternFill patternType="none"/></fill>' +
+          '<fill><patternFill patternType="gray125"/></fill>' +
+          '<fill><patternFill patternType="solid"><fgColor rgb="FF4A3620"/><bgColor indexed="64"/></patternFill></fill>' +
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFC6EFCE"/><bgColor indexed="64"/></patternFill></fill>' +
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFFFC7CE"/><bgColor indexed="64"/></patternFill></fill>' +
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFEDEDED"/><bgColor indexed="64"/></patternFill></fill>' +
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFF3E6D0"/><bgColor indexed="64"/></patternFill></fill>' +
+        '</fills>' +
+        '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>' +
+          '<border><left style="thin"><color rgb="FFBFBFBF"/></left><right style="thin"><color rgb="FFBFBFBF"/></right><top style="thin"><color rgb="FFBFBFBF"/></top><bottom style="thin"><color rgb="FFBFBFBF"/></bottom><diagonal/></border></borders>' +
+        '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+        '<cellXfs count="16">' +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
+          '<xf numFmtId="0" fontId="4" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="5" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="6" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="9" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="3" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="3" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1" readingOrder="2"/></xf>' +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1" readingOrder="2"/></xf>' +
+          '<xf numFmtId="0" fontId="7" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
+          '<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="9" fontId="3" fillId="6" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+        '</cellXfs>' +
+        '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>' +
+        '</styleSheet>';
+
+      // خلية: نص / رقم / { v, s, f } (f = معادلة، v = القيمة المحسوبة عشان تظهر في أي برنامج)
+      function cellXml(ref, c) {
+        if (c === null || c === undefined) return "";
+        if (typeof c !== "object") c = { v: c };
+        var s = c.s ? ' s="' + c.s + '"' : "";
+        if (c.f !== undefined) {
+          if (typeof c.v === "string") return '<c r="' + ref + '"' + s + ' t="str"><f>' + esc(c.f) + '</f><v>' + esc(c.v) + '</v></c>';
+          return '<c r="' + ref + '"' + s + '><f>' + esc(c.f) + '</f><v>' + (c.v === undefined ? 0 : c.v) + '</v></c>';
+        }
+        if (c.v === null || c.v === undefined || c.v === "") return '<c r="' + ref + '"' + s + '/>';
+        if (typeof c.v === "number") return '<c r="' + ref + '"' + s + '><v>' + c.v + '</v></c>';
+        return '<c r="' + ref + '"' + s + ' t="inlineStr"><is><t xml:space="preserve">' + esc(c.v) + '</t></is></c>';
+      }
+
+      // sh: { name, cols:[عرض], rows:[{h, cells:[...]}], merges:["A1:H1"], freeze:{x,y}, filter:"A3:H40" }
+      function sheetXml(sh, selected) {
+        var maxCol = 0;
+        sh.rows.forEach(function (r) { if (r.cells.length > maxCol) maxCol = r.cells.length; });
+        var out = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+          '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+          '<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>' +
+          '<dimension ref="A1:' + colName(Math.max(maxCol, 1) - 1) + Math.max(sh.rows.length, 1) + '"/>' +
+          '<sheetViews><sheetView rightToLeft="1"' + (selected ? ' tabSelected="1"' : "") + ' workbookViewId="0">';
+        if (sh.freeze) {
+          out += '<pane' + (sh.freeze.x ? ' xSplit="' + sh.freeze.x + '"' : "") + ' ySplit="' + sh.freeze.y + '" topLeftCell="' +
+            colName(sh.freeze.x || 0) + (sh.freeze.y + 1) + '" activePane="' + (sh.freeze.x ? "bottomRight" : "bottomLeft") + '" state="frozen"/>' +
+            (sh.freeze.x ? '<selection pane="topRight"/><selection pane="bottomLeft"/><selection pane="bottomRight"/>' : '<selection pane="bottomLeft"/>');
+        }
+        out += '</sheetView></sheetViews><sheetFormatPr defaultRowHeight="20"/><cols>';
+        sh.cols.forEach(function (w, i) { out += '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; });
+        out += '</cols><sheetData>';
+        sh.rows.forEach(function (r, ri) {
+          out += '<row r="' + (ri + 1) + '"' + (r.h ? ' ht="' + r.h + '" customHeight="1"' : "") + '>';
+          r.cells.forEach(function (c, ci) { out += cellXml(colName(ci) + (ri + 1), c); });
+          out += '</row>';
+        });
+        out += '</sheetData>';
+        if (sh.filter) out += '<autoFilter ref="' + sh.filter + '"/>';
+        if (sh.merges && sh.merges.length) {
+          out += '<mergeCells count="' + sh.merges.length + '">' + sh.merges.map(function (m) { return '<mergeCell ref="' + m + '"/>'; }).join("") + '</mergeCells>';
+        }
+        out += '<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/>' +
+          '<pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>';
+        return out;
+      }
+
+      function build(sheets) {
+        var files = [];
+        var ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+          '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>' +
+          '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+          '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+        sheets.forEach(function (s, i) { ct += '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'; });
+        ct += '</Types>';
+        files.push({ name: "[Content_Types].xml", text: ct });
+        files.push({ name: "_rels/.rels", text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>' });
+
+        var wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets>';
+        var names = "";
+        sheets.forEach(function (s, i) {
+          var nm = String(s.name).replace(/[\[\]:*?\/\\]/g, " ").slice(0, 31);
+          s.safeName = nm;
+          wb += '<sheet name="' + esc(nm) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>';
+          if (s.filter) {
+            var p = s.filter.split(":").map(function (a) { return a.replace(/([A-Z]+)(\d+)/, "$$$1$$$2"); });
+            names += '<definedName name="_xlnm._FilterDatabase" localSheetId="' + i + '" hidden="1">\'' + esc(nm.replace(/'/g, "''")) + '\'!' + p[0] + ':' + p[1] + '</definedName>';
+          }
+        });
+        wb += '</sheets>' + (names ? '<definedNames>' + names + '</definedNames>' : "") + '</workbook>';
+        files.push({ name: "xl/workbook.xml", text: wb });
+
+        var rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+        sheets.forEach(function (s, i) { rels += '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>'; });
+        rels += '<Relationship Id="rId' + (sheets.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+        files.push({ name: "xl/_rels/workbook.xml.rels", text: rels });
+        files.push({ name: "xl/styles.xml", text: STYLES });
+        sheets.forEach(function (s, i) { files.push({ name: "xl/worksheets/sheet" + (i + 1) + ".xml", text: sheetXml(s, i === 0) }); });
+        return zipStore(files);
+      }
+
+      return { build: build, ST: ST, colName: colName };
+    })();
+
+    // تاريخ YYYY-MM-DD إلى رقم تاريخ Excel (عدد الأيام من 1899-12-30)
+    function excelDate_(iso) {
+      var p = String(iso || "").split("-");
+      if (p.length < 3) return String(iso || "");
+      return Math.round((Date.UTC(+p[0], +p[1] - 1, +p[2]) - Date.UTC(1899, 11, 30)) / 86400000);
+    }
+
+    // بيحوّل بيانات التقرير الراجعة من السيرفر لشيت Excel واحد: الحضور + تاريخ آخر افتقاد + آخر تعليق
+    function buildReportBlob_(rep) {
+      var ST = XL_.ST, col = XL_.colName;
+      var F = rep.fridays, nF = F.length, S = rep.students;
+      var monthNum = rep.monthKey.slice(5, 7).replace(/^0/, "");
+      var fixed = 5; // م، الاسم، المرحلة، الفصل، التليفون
+      var cPresent = fixed + nF, cAbsent = cPresent + 1, cPct = cPresent + 2;
+      var cDate = cPct + 1, cType = cPct + 2, cComment = cPct + 3;
+      var totalCols = cComment + 1;
+
+      var head1 = ["م", "الاسم", "المرحلة", "الفصل", "رقم التليفون"]
+        .concat(F.map(function (f) { return "جمعة " + f.day + "/" + monthNum; }))
+        .concat(["عدد الحضور", "عدد الغياب", "نسبة الحضور", "تاريخ آخر افتقاد", "نوع الافتقاد", "آخر تعليق"]);
+      var rows = [];
+      rows.push({ h: 30, cells: [{ v: "تقرير حضور المخدومين - " + rep.monthLabel + " - " + rep.scope, s: ST.title }] });
+      rows.push({ h: 34, cells: [{ v: "حضر = اتسجل حضوره   |   غاب = جمعة اتسجل فيها حضور ومحضرش   |   - = جمعة محدش سجل فيها حضور (أو لسه ماجتش)   |   الافتقاد والتعليق: آخر واحد اتسجل للمخدوم", s: ST.sub }] });
+      rows.push({ h: 32, cells: head1.map(function (h) { return { v: h, s: ST.head }; }) });
+
+      var first = 4, last = first + S.length - 1;
+      S.forEach(function (st, i) {
+        var r = first + i;
+        var cells = [
+          { v: i + 1, s: ST.num }, { v: st.name, s: ST.text }, { v: st.stage, s: ST.center }, { v: st.cls, s: ST.center },
+          { v: st.phone, s: ST.center }
+        ];
+        st.marks.forEach(function (m) {
+          cells.push(m === "p" ? { v: "حضر", s: ST.present } : m === "a" ? { v: "غاب", s: ST.absent } : { v: "-", s: ST.none });
+        });
+        if (nF) {
+          var rng = col(fixed) + r + ":" + col(fixed + nF - 1) + r;
+          var p = col(cPresent) + r, a = col(cAbsent) + r;
+          cells.push({ f: 'COUNTIF(' + rng + ',"حضر")', v: st.present, s: ST.num });
+          cells.push({ f: 'COUNTIF(' + rng + ',"غاب")', v: st.absent, s: ST.num });
+          cells.push({ f: 'IF(' + p + '+' + a + '=0,"-",' + p + '/(' + p + '+' + a + '))', v: st.pct === null ? "-" : st.pct, s: ST.pct });
+        } else {
+          cells.push({ v: 0, s: ST.num }, { v: 0, s: ST.num }, { v: "-", s: ST.pct });
+        }
+        cells.push({ v: st.visitDate ? excelDate_(st.visitDate) : "", s: ST.date });
+        cells.push({ v: st.visitType, s: ST.center });
+        cells.push({ v: st.comment, s: ST.text });
+        var cm = st.comment || "";
+        var lines = Math.max(1, Math.ceil(cm.length / 55) + cm.split("\n").length - 1);
+        rows.push({ h: Math.max(22, lines * 17), cells: cells });
+      });
+
+      if (S.length) {
+        // صف الإجماليات (معادلات حقيقية: لو عدّلتي علامة حضور الإجمالي بيتحدث)
+        var tot = [{ v: "", s: ST.totLabel }, { v: "الإجمالي (عدد الحاضرين)", s: ST.totLabel }, { v: "", s: ST.totLabel }, { v: "", s: ST.totLabel }, { v: "", s: ST.totLabel }];
+        F.forEach(function (f, j) {
+          var cnt = 0; S.forEach(function (st) { if (st.marks[j] === "p") cnt++; });
+          tot.push({ f: 'COUNTIF(' + col(fixed + j) + first + ':' + col(fixed + j) + last + ',"حضر")', v: cnt, s: ST.totNum });
+        });
+        if (nF) {
+          var sp = 0, sa = 0; S.forEach(function (st) { sp += st.present; sa += st.absent; });
+          var pr = col(cPresent) + first + ":" + col(cPresent) + last, ar = col(cAbsent) + first + ":" + col(cAbsent) + last;
+          tot.push({ f: 'SUM(' + pr + ')', v: sp, s: ST.totNum });
+          tot.push({ f: 'SUM(' + ar + ')', v: sa, s: ST.totNum });
+          tot.push({ f: 'IF(SUM(' + pr + ')+SUM(' + ar + ')=0,"-",SUM(' + pr + ')/(SUM(' + pr + ')+SUM(' + ar + ')))', v: (sp + sa) ? sp / (sp + sa) : "-", s: ST.totPct });
+        } else {
+          tot.push({ v: 0, s: ST.totNum }, { v: 0, s: ST.totNum }, { v: "-", s: ST.totPct });
+        }
+        tot.push({ v: "", s: ST.totLabel }, { v: "", s: ST.totLabel }, { v: "", s: ST.totLabel });
+        rows.push({ h: 24, cells: tot });
+      } else {
+        rows.push({ h: 24, cells: [{ v: "مفيش مخدومين في النطاق ده", s: ST.sub }] });
+      }
+
+      var cols = [5, 30, 14, 16, 16];
+      F.forEach(function () { cols.push(11); });
+      cols.push(11, 11, 12, 15, 13, 55);
+      return XL_.build([{
+        name: "الحضور", cols: cols, rows: rows,
+        merges: ["A1:" + col(totalCols - 1) + "1", "A2:" + col(totalCols - 1) + "2"],
+        freeze: { x: 2, y: 3 },
+        filter: S.length ? "A3:" + col(totalCols - 1) + last : null
+      }]);
+    }
+
+    // ---------- تقرير شهري (Excel) ----------
+    var lastReportFile = null;
+    function setReportMsg(text, cls) {
+      var m = document.getElementById("report-msg");
+      m.textContent = text; m.className = "msg" + (cls ? " " + cls : "");
+    }
+    function reportFileName_(rep) {
+      return ("تقرير " + rep.monthLabel + " - " + rep.scope + ".xlsx").replace(/[\\\/:*?"<>|]/g, "-");
+    }
+    function saveBlobAs_(blob, name) {
+      var url = URL.createObjectURL(blob), a = document.createElement("a");
+      a.href = url; a.download = name; a.rel = "noopener"; a.style.display = "none";
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { try { document.body.removeChild(a); } catch (e) {} URL.revokeObjectURL(url); }, 60000);
+    }
+    document.getElementById("download-report").addEventListener("click", function () {
+      var key = document.getElementById("report-month").value;
+      var btn = this, shareBtn = document.getElementById("share-report");
+      if (!key) { setReportMsg("اختاري الشهر الأول", "err"); return; }
+      btn.disabled = true; shareBtn.style.display = "none"; setReportMsg("جاري تجهيز التقرير...", "");
+      gs.withSuccessHandler(function (rep) {
+        btn.disabled = false;
+        try {
+          var blob = buildReportBlob_(rep), name = reportFileName_(rep);
+          lastReportFile = new File([blob], name, { type: blob.type });
+          saveBlobAs_(blob, name);
+          setReportMsg("تم تجهيز الملف: " + name + " (" + rep.students.length + " مخدوم). لو ما نزلش اضغطي مشاركة.", "ok");
+          if (navigator.canShare && navigator.canShare({ files: [lastReportFile] })) shareBtn.style.display = "";
+        } catch (e) { setReportMsg("تعذر إنشاء الملف: " + e.message, "err"); }
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; setReportMsg(err.message, "err");
+      }).getMonthlyReport(key);
+    });
+    document.getElementById("share-report").addEventListener("click", function () {
+      if (!lastReportFile) return;
+      navigator.share({ files: [lastReportFile], title: lastReportFile.name }).catch(function () {});
+    });
+
     // ---------- التنقل بين تابات الإحصائيات الفرعية ----------
     document.querySelectorAll(".subtab-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -2822,6 +3148,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         document.getElementById("subpanel-" + btn.dataset.subtab).classList.add("active");
         if (btn.dataset.subtab === "student-stats") loadStudentMonth();
         if (btn.dataset.subtab === "service-stats") loadSheetWarnings();
+        if (btn.dataset.subtab === "monthly-report") loadMonthChoices(function () {});
       });
     });
 
@@ -2880,52 +3207,105 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     });
 
     // ---------- حضور كل المخدومين في جمع الشهر (أخضر حاضر / أحمر غايب / بدون لون لسه) ----------
+    // الشهور بتتجاب مرة واحدة وبتتحط في قايمة إحصائيات المخدوم وقايمة التقرير الشهري
+    var monthChoices = null, monthData = null;
+    function fillMonthChoices(months, selectedKey) {
+      monthChoices = months || [];
+      ["month-select", "report-month"].forEach(function (id) {
+        var sel = byId(id);
+        sel.innerHTML = "";
+        monthChoices.forEach(function (m) {
+          var o = document.createElement("option"); o.value = m.key; o.textContent = m.label; sel.appendChild(o);
+        });
+        if (!monthChoices.length) sel.innerHTML = '<option value="">مفيش شهور متاحة</option>';
+      });
+      if (selectedKey) byId("month-select").value = selectedKey;
+    }
+    // قايمة الشهور بتيجي مع أول تحميل لحضور الشهر. ده احتياطي لو تاب التقرير اتفتح قبلها
+    function loadMonthChoices(cb) {
+      if (monthChoices) { cb(); return; }
+      gs.withSuccessHandler(function (months) { fillMonthChoices(months); cb(); })
+        .withFailureHandler(function (err) { setReportMsg("تعذر تحميل الشهور: " + err.message, "err"); })
+        .getReportMonths();
+    }
+
+    // ترتيب المخدومين: بالاسم، أو بنسبة الحضور (تنازلي = الأكثر حضورًا أولاً، تصاعدي = الأقل أولاً)
+    // اللي مالوش بيانات حضور في الشهر بيفضل في الآخر في الحالتين
+    function sortMonthStudents(list, mode) {
+      var out = list.slice();
+      var byName = function (a, b) { return a.name.localeCompare(b.name, "ar"); };
+      if (mode !== "asc" && mode !== "desc") return out.sort(byName);
+      return out.sort(function (a, b) {
+        var ha = a.pct !== null && a.pct !== undefined, hb = b.pct !== null && b.pct !== undefined;
+        if (ha !== hb) return ha ? -1 : 1;
+        if (!ha) return byName(a, b);
+        var d = (b.pct - a.pct) || (b.present - a.present);
+        if (mode === "asc") d = -d;
+        return d || byName(a, b);
+      });
+    }
+
+    function renderStudentMonth() {
+      var box = byId("student-month-list");
+      var res = monthData;
+      if (!box || !res || !ME) return;
+      box.innerHTML = "";
+      box.appendChild(el("div", "month-head", "حضور المخدومين - " + (res.monthLabel || ("شهر " + res.monthName))));
+
+      var legend = el("div", "month-legend");
+      [["dot-p", "✓", "حاضر"], ["dot-a", "✕", "غايب"], ["dot-n", "", "لسه ماجتش / مفيش حضور مسجل"]].forEach(function (x) {
+        var item = el("span", "lg");
+        item.appendChild(el("span", "dot " + x[0], x[1]));
+        item.appendChild(document.createTextNode(x[2]));
+        legend.appendChild(item);
+      });
+      box.appendChild(legend);
+      box.appendChild(el("div", "month-legend", "الجمع: " + res.fridays.map(function (f) { return f.day; }).join(" ، ")));
+
+      if (!res.students.length) { box.appendChild(el("div", "stat-empty", "مفيش مخدومين في نطاقك.")); return; }
+      sortMonthStudents(res.students, byId("month-sort").value).forEach(function (s) {
+        var row = el("div", "month-row");
+        var left = el("div", "month-name");
+        left.appendChild(el("div", "month-nm", s.name));
+        var sub = ME.role === ROLE_ADMIN ? [s.stage, s.cls] : (ME.role === ROLE_STAGE ? [s.cls] : []);
+        sub = sub.filter(Boolean).join(" · ");
+        if (sub) left.appendChild(el("div", "month-cls", sub));
+        // ملخص الحضور في الشهر: عدد الحضور من الجمع اللي اتسجلت + النسبة
+        var total = (s.present || 0) + (s.absent || 0);
+        left.appendChild(el("div", "month-cls", total ? ("حضر " + s.present + " من " + total + " · " + Math.round(s.pct * 100) + "%") : "مفيش حضور مسجل"));
+        // الدوس على الاسم بيعرض إحصائياته الكاملة
+        left.addEventListener("click", function () {
+          byId("stats-student-search").value = s.name;
+          byId("load-student-stats").click();
+          byId("stats-student-search").scrollIntoView({ block: "center" });
+        });
+        var dots = el("div", "month-dots");
+        s.marks.forEach(function (m, i) {
+          var d = el("span", "dot dot-" + m, m === "p" ? "✓" : (m === "a" ? "✕" : ""));
+          d.title = res.fridays[i].day + " " + res.monthName;
+          dots.appendChild(d);
+        });
+        row.appendChild(left);
+        row.appendChild(dots);
+        box.appendChild(row);
+      });
+    }
+
     function loadStudentMonth() {
       var box = byId("student-month-list");
       if (!box || !ME) return;
+      var key = monthChoices ? byId("month-select").value : "";   // أول مرة: الشهر الحالي
       box.textContent = "جاري تحميل الحضور...";
       gs.withSuccessHandler(function (res) {
-        box.innerHTML = "";
-        box.appendChild(el("div", "month-head", "حضور المخدومين - شهر " + res.monthName));
-
-        var legend = el("div", "month-legend");
-        [["dot-p", "✓", "حاضر"], ["dot-a", "✕", "غايب"], ["dot-n", "", "لسه ماجتش / مفيش حضور مسجل"]].forEach(function (x) {
-          var item = el("span", "lg");
-          item.appendChild(el("span", "dot " + x[0], x[1]));
-          item.appendChild(document.createTextNode(x[2]));
-          legend.appendChild(item);
-        });
-        box.appendChild(legend);
-        box.appendChild(el("div", "month-legend", "الجمع: " + res.fridays.map(function (f) { return f.day; }).join(" ، ")));
-
-        if (!res.students.length) { box.appendChild(el("div", "stat-empty", "مفيش مخدومين في نطاقك.")); return; }
-        res.students.forEach(function (s) {
-          var row = el("div", "month-row");
-          var left = el("div", "month-name");
-          left.appendChild(el("div", "month-nm", s.name));
-          var sub = ME.role === ROLE_ADMIN ? [s.stage, s.cls] : (ME.role === ROLE_STAGE ? [s.cls] : []);
-          sub = sub.filter(Boolean).join(" · ");
-          if (sub) left.appendChild(el("div", "month-cls", sub));
-          // الدوس على الاسم بيعرض إحصائياته الكاملة
-          left.addEventListener("click", function () {
-            byId("stats-student-search").value = s.name;
-            byId("load-student-stats").click();
-            byId("stats-student-search").scrollIntoView({ block: "center" });
-          });
-          var dots = el("div", "month-dots");
-          s.marks.forEach(function (m, i) {
-            var d = el("span", "dot dot-" + m, m === "p" ? "✓" : (m === "a" ? "✕" : ""));
-            d.title = res.fridays[i].day + " " + res.monthName;
-            dots.appendChild(d);
-          });
-          row.appendChild(left);
-          row.appendChild(dots);
-          box.appendChild(row);
-        });
+        if (!monthChoices) fillMonthChoices(res.months, res.monthKey);
+        monthData = res;
+        renderStudentMonth();
       }).withFailureHandler(function (err) {
         box.textContent = "خطأ: " + err.message;
-      }).getStudentsMonthAttendance();
+      }).getStudentsMonthAttendance(key);
     }
+    byId("month-select").addEventListener("change", loadStudentMonth);
+    byId("month-sort").addEventListener("change", renderStudentMonth);   // الترتيب من غير نداء للسيرفر
     tabHooks["stats"] = loadStudentMonth;
 
     // قائمة الجمع في الإحصائيات (خدمة / فصل / مرحلة): الدوس على أي جمعة بيفتح أسماء اللي حضروا فيها
@@ -3595,6 +3975,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       inboxRequests = [];
       inboxVisits = [];
       inboxResets = [];
+      monthData = null; lastReportFile = null;
       ["students-list", "student-matches", "student-stats-result", "service-stats-result",
        "class-stats-result", "stage-stats-result", "notif-list", "roster-list", "bday-list", "trophy-content", "requests-list", "servants-list", "visits-list", "student-month-list",
        "sa-checklist", "sv-list", "sb-list"].forEach(function (id) { byId(id).innerHTML = ""; });
