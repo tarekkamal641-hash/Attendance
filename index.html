@@ -962,6 +962,7 @@
 
   <div class="user-line-row">
     <span class="user-line" id="user-line"></span>
+    <button class="logout-btn" id="push-btn" style="display:none;">🔔 إشعارات الموبايل</button>
     <button class="logout-btn" id="logout-btn">خروج</button>
   </div>
 
@@ -1399,7 +1400,7 @@
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
-      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport"];
+      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport", "getPushKey", "pushSubscribe", "pushUnsubscribe", "pushTest"];
 
     // ============ طبقة الاتصال بالسيرفر ============
     // جوه Apps Script: google.script.run زي الأول. وكمان PWA على استضافة تانية: fetch (POST) لرابط الـ Web App (APPS_SCRIPT_URL في config.js)
@@ -2640,7 +2641,9 @@ function dialNumber(num, e) {
     }
 
     // بتدوّر على مخدوم وتحمّل بياناته في الفورم، ومتستخدمة من زرار البحث ومن الدوس على اسم في قائمة المخدومين
+    var studentSearchSeq = 0;
     function searchAndLoadStudent(query, stage) {
+      var mySeq = ++studentSearchSeq;
       document.getElementById("student-search").value = query;
       if (stage) document.getElementById("student-stage").value = stage;
 
@@ -2651,6 +2654,7 @@ function dialNumber(num, e) {
 
       msg.textContent = "جاري البحث..."; msg.className = "msg";
       gs.withSuccessHandler(function (matches) {
+        if (mySeq !== studentSearchSeq) return;   // رد لبحث أقدم
         if (!matches.length) {
           setStudentForm({ "الاسم": query }, false);
           msg.textContent = stage
@@ -2684,6 +2688,7 @@ function dialNumber(num, e) {
           });
         }
       }).withFailureHandler(function (err) {
+        if (mySeq !== studentSearchSeq) return;
         msg.textContent = "خطأ: " + err.message; msg.className = "msg err";
       }).searchStudents(query, stage);
     }
@@ -3139,6 +3144,134 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       navigator.share({ files: [lastReportFile], title: lastReportFile.name }).catch(function () {});
     });
 
+
+    // ---------- إشعارات الموبايل (Web Push) ----------
+    // شغالة في التطبيق المثبّت (GitHub) بس. الاشتراك بيتسجل على السيرفر باسم المستخدم الحالي،
+    // وبعدها الإشعارات بتوصل حتى لو التطبيق مقفول. الخروج من التطبيق بيوقفها لحد ما تتفعّل تاني.
+    var PUSH_OK = !IN_APPS_SCRIPT && ("serviceWorker" in navigator) && ("PushManager" in window) && ("Notification" in window);
+    var pushBtn = byId("push-btn");
+    function isIOS_() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+    function isStandalone_() { return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }
+    function pushDevice_() { var u = navigator.userAgent; return /android/i.test(u) ? "Android" : (isIOS_() ? "iPhone" : "جهاز"); }
+    function pushKeyToBytes_(b64) {
+      var pad = b64.length % 4 ? "====".slice(b64.length % 4) : "";
+      var raw = atob((b64 + pad).replace(/-/g, "+").replace(/_/g, "/"));
+      var out = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+      return out;
+    }
+    function sameBytes_(buf, arr) {
+      var a = new Uint8Array(buf);
+      if (a.length !== arr.length) return false;
+      for (var i = 0; i < a.length; i++) if (a[i] !== arr[i]) return false;
+      return true;
+    }
+    function pushCall_(name, args, ok, fail) {
+      var r = gs.withSuccessHandler(ok).withFailureHandler(fail);
+      r[name].apply(r, args);
+    }
+    function pushState_(cb) {   // unsupported | needs-install | blocked | off | on
+      if (!PUSH_OK) return cb("unsupported");
+      if (isIOS_() && !isStandalone_()) return cb("needs-install");
+      if (Notification.permission === "denied") return cb("blocked");
+      navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (sub) {
+        var mine = false;
+        try { mine = !!ME && localStorage.getItem("push_owner") === ME.username; } catch (e) {}
+        cb(sub && Notification.permission === "granted" && mine ? "on" : "off");
+      }).catch(function () { cb("off"); });
+    }
+    function refreshPushBtn() {
+      if (!PUSH_OK || !ME) { pushBtn.style.display = "none"; return; }
+      pushBtn.style.display = "";
+      pushState_(function (st) {
+        pushBtn.dataset.state = st;
+        pushBtn.textContent = st === "on" ? "🔔 الإشعارات شغالة" : (st === "blocked" ? "🔕 الإشعارات متقفلة" : "🔔 فعّلي إشعارات الموبايل");
+      });
+    }
+    function enablePush_() {
+      pushBtn.disabled = true;
+      var sub;
+      Notification.requestPermission().then(function (perm) {
+        if (perm !== "granted") throw new Error("DENIED");
+        return navigator.serviceWorker.ready;
+      }).then(function (reg) {
+        return new Promise(function (resolve, reject) {
+          pushCall_("getPushKey", [], function (key) { key ? resolve([reg, key]) : reject(new Error("NOKEY")); }, reject);
+        });
+      }).then(function (rk) {
+        var reg = rk[0], keyBytes = pushKeyToBytes_(rk[1]);
+        return reg.pushManager.getSubscription().then(function (cur) {
+          // اشتراك قديم بمفتاح تاني (لو المفاتيح اتغيّرت): نلغيه ونعمل واحد جديد
+          if (cur && cur.options && cur.options.applicationServerKey && !sameBytes_(cur.options.applicationServerKey, keyBytes)) {
+            return cur.unsubscribe().then(function () { return null; });
+          }
+          return cur;
+        }).then(function (cur) {
+          return cur || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes });
+        });
+      }).then(function (s) {
+        sub = s;
+        return new Promise(function (resolve, reject) {
+          pushCall_("pushSubscribe", [sub.endpoint, pushDevice_()], resolve, reject);
+        });
+      }).then(function () {
+        try {
+          localStorage.setItem("push_owner", ME.username);
+          localStorage.setItem("push_endpoint", sub.endpoint);
+          localStorage.setItem("push_synced", String(Date.now()));
+        } catch (e) {}
+        refreshPushBtn();
+        pushCall_("pushTest", [], function () {}, function () {});   // إشعار تجربة يوصل في ثواني
+        window.alert("تم تفعيل الإشعارات ✅\nهيوصلك إشعار تجربة حالًا.");
+      }).catch(function (err) {
+        var m = err && err.message || "";
+        window.alert(m === "DENIED" ? "ما سمحتيش بالإشعارات. اسمحي بيها من إعدادات المتصفح/التطبيق وجرّبي تاني."
+          : m === "NOKEY" ? "إشعارات الموبايل لسه ما اتفعّلتش من السيرفر. (لازم تشغّلي setupPush مرة من Apps Script)"
+          : "تعذر تفعيل الإشعارات: " + m);
+      }).then(function () { pushBtn.disabled = false; refreshPushBtn(); });
+    }
+    function disablePush_() {
+      var ep = "";
+      try { ep = localStorage.getItem("push_endpoint") || ""; } catch (e) {}
+      navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (sub) {
+        if (sub) ep = sub.endpoint;
+      }).catch(function () {}).then(function () {
+        if (ep) pushCall_("pushUnsubscribe", [ep], function () {}, function () {});
+        try { localStorage.removeItem("push_owner"); } catch (e) {}
+        refreshPushBtn();
+      });
+    }
+    pushBtn.addEventListener("click", function () {
+      var st = pushBtn.dataset.state;
+      if (st === "needs-install") { window.alert("على الآيفون: الإشعارات بتشتغل بس لو التطبيق متضاف للشاشة الرئيسية.\nاضغطي مشاركة ثم \"إضافة إلى الشاشة الرئيسية\"، وافتحيه من الأيقونة وفعّلي الإشعارات."); return; }
+      if (st === "blocked") { window.alert("الإشعارات متقفلة للتطبيق ده. افتحي إعدادات الموقع/التطبيق وسمحي بالإشعارات وبعدين جرّبي تاني."); return; }
+      if (st === "on") { if (window.confirm("تقفلي إشعارات الموبايل على الجهاز ده؟")) disablePush_(); return; }
+      enablePush_();
+    });
+    // لو الاشتراك بتاع المستخدم موجود: بنجدد تسجيله على السيرفر كل أسبوع (أو لو عنوانه اتغير)
+    function syncPush_() {
+      if (!PUSH_OK || !ME || Notification.permission !== "granted") return;
+      var owner = ""; try { owner = localStorage.getItem("push_owner") || ""; } catch (e) {}
+      if (owner !== ME.username) return;
+      navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (sub) {
+        if (!sub) { try { localStorage.removeItem("push_owner"); } catch (e) {} refreshPushBtn(); return; }
+        var last = 0, old = "";
+        try { last = Number(localStorage.getItem("push_synced") || 0); old = localStorage.getItem("push_endpoint") || ""; } catch (e) {}
+        if (sub.endpoint === old && Date.now() - last < 7 * 86400000) return;
+        pushCall_("pushSubscribe", [sub.endpoint, pushDevice_()], function () {
+          try { localStorage.setItem("push_endpoint", sub.endpoint); localStorage.setItem("push_synced", String(Date.now())); } catch (e) {}
+        }, function () {});
+      }).catch(function () {});
+    }
+    // عند الخروج: نشيل جهاز المستخدم من السيرفر عشان إشعاراته ما توصلش للي بعده على نفس الموبايل
+    function pushForgetOnLogout_() {
+      try {
+        var ep = localStorage.getItem("push_endpoint"), owner = localStorage.getItem("push_owner");
+        if (TOKEN && ep && owner) pushCall_("pushUnsubscribe", [ep], function () {}, function () {});
+        localStorage.removeItem("push_owner");
+      } catch (e) {}
+    }
+
     // ---------- التنقل بين تابات الإحصائيات الفرعية ----------
     document.querySelectorAll(".subtab-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -3153,13 +3286,16 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     });
 
     // ---------- إحصائيات مخدوم ----------
+    var statsSeq = 0;   // رقم آخر بحث: أي رد لبحث أقدم بيتجاهل (الردود ممكن توصل بترتيب مختلف)
     document.getElementById("load-student-stats").addEventListener("click", function () {
       var name = document.getElementById("stats-student-search").value.trim();
       var result = document.getElementById("student-stats-result");
+      var mySeq = ++statsSeq;
       if (!name) { result.innerHTML = "<div class='msg err'>اكتب اسم للبحث</div>"; return; }
 
       result.innerHTML = "<div class='msg'>جاري التحميل...</div>";
       gs.withSuccessHandler(function (stats) {
+        if (mySeq !== statsSeq) return;
         if (stats.ambiguous) {
           result.innerHTML = "";
           var note = document.createElement("div");
@@ -3202,6 +3338,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         });
         result.appendChild(openBtn);
       }).withFailureHandler(function (err) {
+        if (mySeq !== statsSeq) return;
         result.innerHTML = "<div class='msg err'>خطأ: " + err.message + "</div>";
       }).getStudentStats(name);
     });
@@ -3976,6 +4113,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       inboxVisits = [];
       inboxResets = [];
       monthData = null; lastReportFile = null;
+      byId("push-btn").style.display = "none";
       ["students-list", "student-matches", "student-stats-result", "service-stats-result",
        "class-stats-result", "stage-stats-result", "notif-list", "roster-list", "bday-list", "trophy-content", "requests-list", "servants-list", "visits-list", "student-month-list",
        "sa-checklist", "sv-list", "sb-list"].forEach(function (id) { byId(id).innerHTML = ""; });
@@ -4067,9 +4205,12 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       byId("user-line").textContent = ME.name + " · " + roleLabelOf(ME);
       showApp();
       startApp();
+      refreshPushBtn();
+      setTimeout(syncPush_, 4000);
     }
 
     function logout(msg) {
+      pushForgetOnLogout_();
       TOKEN = "";
       ME = null;
       clearSession();
