@@ -3311,11 +3311,12 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
               document.getElementById("stats-student-search").value = n;
               document.getElementById("load-student-stats").click();
             });
+          
+            result.appendChild(b);
           <div id="month-class-box" style="display:none;">
           <label style="margin-top:8px;">الفصل</label>
           <select id="month-class"><option value="">كل الفصول</option></select>
         </div>
-            result.appendChild(b);
           });
           return;
         }
@@ -3442,7 +3443,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         });
         var dots = el("div", "month-dots");
         s.marks.forEach(function (m, i) {
-          var d = el("span", "dot dot-" + m, m === "p" ? "✓" : (m === "a" ? "✕" : ""));
+        var d = el("span", "dot dot-" + m, m === "p" ? "✓" : (m === "a" ? "✕" : ""));
           d.title = res.fridays[i].day + " " + res.monthName;
           dots.appendChild(d);
         });
