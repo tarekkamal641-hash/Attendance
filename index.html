@@ -3314,8 +3314,9 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
             b.addEventListener("click", function () {
               document.getElementById("stats-student-search").value = n;
               document.getElementById("load-student-stats").click();
-            });
-          
+                      });
+            result.appendChild(b);
+          });
           return;
         }
         if (!stats.found) {
