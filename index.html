@@ -3311,6 +3311,10 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
               document.getElementById("stats-student-search").value = n;
               document.getElementById("load-student-stats").click();
             });
+          <div id="month-class-box" style="display:none;">
+          <label style="margin-top:8px;">الفصل</label>
+          <select id="month-class"><option value="">كل الفصول</option></select>
+        </div>
             result.appendChild(b);
           });
           return;
@@ -3381,7 +3385,24 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         return d || byName(a, b);
       });
     }
-
+        // فلتر الفصل: القايمة من الفصول الموجودة في الشهر ده (بتظهر بس لو فيه أكتر من فصل)
+    function fillMonthClassFilter() {
+      var sel = byId("month-class"), keep = sel.value, seen = {}, opts = [];
+      monthData.students.forEach(function (s) {
+        var k = s.stage + "|" + s.cls;
+        if (s.cls && !seen[k]) {
+          seen[k] = 1;
+          opts.push({ v: k, label: ME.role === ROLE_ADMIN ? s.stage + " - " + s.cls : s.cls });
+        }
+      });
+      opts.sort(function (a, b) { return a.label.localeCompare(b.label, "ar"); });
+      sel.innerHTML = '<option value="">كل الفصول</option>';
+      opts.forEach(function (o) {
+        var op = document.createElement("option"); op.value = o.v; op.textContent = o.label; sel.appendChild(op);
+      });
+      if (keep && seen[keep]) sel.value = keep;   // لو الفصل لسه موجود في الشهر الجديد نفضل عليه
+      byId("month-class-box").style.display = opts.length > 1 ? "" : "none";
+    }
     function renderStudentMonth() {
       var box = byId("student-month-list");
       var res = monthData;
@@ -3399,8 +3420,11 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       box.appendChild(legend);
       box.appendChild(el("div", "month-legend", "الجمع: " + res.fridays.map(function (f) { return f.day; }).join(" ، ")));
 
-      if (!res.students.length) { box.appendChild(el("div", "stat-empty", "مفيش مخدومين في نطاقك.")); return; }
-      sortMonthStudents(res.students, byId("month-sort").value).forEach(function (s) {
+      var cf = byId("month-class").value;
+      var list = res.students.filter(function (s) { return !cf || (s.stage + "|" + s.cls) === cf; });
+      if (!list.length) { box.appendChild(el("div", "stat-empty", "مفيش مخدومين في نطاقك.")); return; }
+      box.appendChild(el("div", "month-legend", "عدد المخدومين: " + list.length));
+      sortMonthStudents(list, byId("month-sort").value).forEach(function (s) {
         var row = el("div", "month-row");
         var left = el("div", "month-name");
         left.appendChild(el("div", "month-nm", s.name));
@@ -3436,6 +3460,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       gs.withSuccessHandler(function (res) {
         if (!monthChoices) fillMonthChoices(res.months, res.monthKey);
         monthData = res;
+        fillMonthClassFilter();
         renderStudentMonth();
       }).withFailureHandler(function (err) {
         box.textContent = "خطأ: " + err.message;
@@ -3443,6 +3468,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     }
     byId("month-select").addEventListener("change", loadStudentMonth);
     byId("month-sort").addEventListener("change", renderStudentMonth);   // الترتيب من غير نداء للسيرفر
+    byId("month-class").addEventListener("change", renderStudentMonth);
     tabHooks["stats"] = loadStudentMonth;
 
     // قائمة الجمع في الإحصائيات (خدمة / فصل / مرحلة): الدوس على أي جمعة بيفتح أسماء اللي حضروا فيها
