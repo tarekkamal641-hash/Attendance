@@ -1311,6 +1311,10 @@
           <option value="desc">الأكثر حضورًا أولاً (تنازلي)</option>
           <option value="asc">الأقل حضورًا أولاً (تصاعدي)</option>
         </select>
+                <div id="month-class-box" style="display:none;">
+          <label style="margin-top:8px;">الفصل</label>
+          <select id="month-class"><option value="">كل الفصول</option></select>
+        </div>
         <div id="student-month-list" style="margin-top:12px;">جاري تحميل الحضور...</div>
       </div>
 
@@ -3312,12 +3316,6 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
               document.getElementById("load-student-stats").click();
             });
           
-            result.appendChild(b);
-          <div id="month-class-box" style="display:none;">
-          <label style="margin-top:8px;">الفصل</label>
-          <select id="month-class"><option value="">كل الفصول</option></select>
-        </div>
-          });
           return;
         }
         if (!stats.found) {
