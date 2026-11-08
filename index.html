@@ -3185,13 +3185,14 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       }).catch(function () { cb("off"); });
     }
     function refreshPushBtn() {
-      if (!PUSH_OK || !ME) { pushBtn.style.display = "none"; return; }
-      pushBtn.style.display = "";
-      pushState_(function (st) {
-        pushBtn.dataset.state = st;
-        pushBtn.textContent = st === "on" ? "🔔 الإشعارات شغالة" : (st === "blocked" ? "🔕 الإشعارات متقفلة" : "🔔 فعّلي إشعارات الموبايل");
-      });
-    }
+  if (!PUSH_OK || !ME) { pushBtn.style.display = "none"; return; }
+  pushState_(function (st) {
+    pushBtn.dataset.state = st;
+    if (st === "on" || st === "unsupported") { pushBtn.style.display = "none"; return; }   // اتفعّلت: نخفي الزرار
+    pushBtn.style.display = "";
+    pushBtn.textContent = st === "blocked" ? "🔕 الإشعارات متقفلة" : "🔔 فعّلي إشعارات الموبايل";
+  });
+}
     function enablePush_() {
       pushBtn.disabled = true;
       var sub;
