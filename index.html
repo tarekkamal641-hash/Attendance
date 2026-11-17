@@ -531,6 +531,11 @@
       vertical-align: middle;
     }
     #panel-servants-hub .home-grid { padding-top: 6px; }
+    .sv-switch { display: flex; gap: 8px; margin: 4px 0 14px; }
+    .sv-mode { flex: 1; padding: 11px 6px; border: 1px solid var(--sky); border-radius: 10px; background: transparent; color: var(--sky); font-family: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer; }
+    .sv-mode.active { background: linear-gradient(135deg, var(--gold) 0%, #a97a3a 100%); border-color: transparent; color: #241a0f; }
+    .sv-stage-head { font-weight: 700; font-size: 15px; margin: 14px 0 4px; }
+    .sv-stage-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
     .sa-person { border-bottom: 1px solid var(--border); }
     .sa-person:last-child { border-bottom: none; }
     .sa-person .roster-item { border-bottom: none; cursor: pointer; }
@@ -1101,7 +1106,7 @@
         <span class="home-tile-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10.5V19h12v-8.5"/><path d="M10 19v-4.5h4V19"/></svg>
         </span>
-        <span class="home-tile-label">إحصائيات الخادم</span>
+        <span class="home-tile-label">إحصائيات الخدام</span>
       </button>
       <button class="tab-btn home-tile" data-tab="servants-birthdays">
         <span class="home-tile-icon">
@@ -1131,8 +1136,13 @@
   <!-- ============ إحصائيات الخادم (حضور + افتقاد) ============ -->
   <div class="panel" id="panel-servants-visits">
     <div class="card">
-      <p class="card-title">إحصائيات الخادم <span class="year-tag" id="sv-year"></span></p>
+      <p class="card-title">إحصائيات الخدام <span class="year-tag" id="sv-year"></span></p>
+      <div class="sv-switch">
+        <button type="button" class="sv-mode active" data-mode="servant">إحصائيات خادم</button>
+        <button type="button" class="sv-mode" data-mode="stage">إحصائيات مرحلة</button>
+      </div>
       <div id="sv-list">جاري تحميل القائمة...</div>
+      <div id="sv-stage-list" style="display:none;"></div>
     </div>
   </div>
 
@@ -1404,7 +1414,7 @@
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
-      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport", "getPushKey", "pushSubscribe", "pushUnsubscribe", "pushTest"];
+      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "getServantStageStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport", "getPushKey", "pushSubscribe", "pushUnsubscribe", "pushTest"];
 
     // ============ طبقة الاتصال بالسيرفر ============
     // جوه Apps Script: google.script.run زي الأول. وكمان PWA على استضافة تانية: fetch (POST) لرابط الـ Web App (APPS_SCRIPT_URL في config.js)
@@ -2231,7 +2241,67 @@ function dialNumber(num, e) {
     });
 
     tabHooks["servants-attendance"] = loadServantsAttendance;
-    tabHooks["servants-visits"] = loadServantVisits;
+    // ---------- إحصائيات المرحلة: كام خادم حضر في كل جمعة ----------
+    function loadServantStageStats() {
+      var box = byId("sv-stage-list");
+      box.textContent = "جاري التحميل...";
+      gs.withSuccessHandler(function (res) {
+        byId("sv-year").textContent = "سنة الخدمة " + res.yearLabel;
+        box.innerHTML = "";
+        if (!res.stages.length) { box.textContent = "مفيش خدام متسجلين لسه."; return; }
+        res.stages.forEach(function (g) {
+          box.appendChild(el("div", "sv-stage-head", g.stage));
+          box.appendChild(el("div", "sv-stage-sub", g.total + " خادم" + (g.sessions.length ? " · متوسط الحضور " + g.percentage + "%" : "")));
+          if (!g.sessions.length) { box.appendChild(el("div", "sa-empty", "مفيش جمع اتسجل فيها حضور لسه.")); return; }
+          g.sessions.slice().reverse().forEach(function (x) {
+            var wrap = el("div", "sa-person");
+            var row = el("div", "roster-item");
+            var text = el("div", "roster-text");
+            text.appendChild(el("div", "roster-name", "جمعة " + fridayLabel(x.date, "")));
+            var c = el("div", "sa-counts");
+            c.appendChild(document.createTextNode("حضر "));
+            c.appendChild(el("b", "", String(x.present)));
+            c.appendChild(document.createTextNode(" من " + x.total + " خادم · غاب " + (x.total - x.present)));
+            text.appendChild(c);
+            row.appendChild(text);
+            var pct = x.total ? Math.round(x.present / x.total * 100) : 0;
+            row.appendChild(el("div", "bday-date", x.present + "/" + x.total));
+            wrap.appendChild(row);
+            var bar = el("div", "bar-bg sa-bar");
+            var fill = el("div", "bar-fill");
+            fill.style.width = pct + "%";
+            bar.appendChild(fill);
+            wrap.appendChild(bar);
+            var details = el("div", "sa-details");
+            x.presentNames.forEach(function (n) {
+              var d = el("div", "sa-day"); d.appendChild(el("span", "", n)); d.appendChild(el("span", "ok", "✓ حضر")); details.appendChild(d);
+            });
+            x.absentNames.forEach(function (n) {
+              var d = el("div", "sa-day"); d.appendChild(el("span", "", n)); d.appendChild(el("span", "no", "✗ غاب")); details.appendChild(d);
+            });
+            wrap.appendChild(details);
+            row.addEventListener("click", function () { details.classList.toggle("open"); });
+            box.appendChild(wrap);
+          });
+        });
+      }).withFailureHandler(function (err) {
+        box.textContent = "خطأ: " + err.message;
+      }).getServantStageStats();
+    }
+
+    // زرّين: إحصائيات خادم / إحصائيات مرحلة
+    var svMode = "servant";
+    function showSvMode(mode) {
+      svMode = mode;
+      document.querySelectorAll(".sv-mode").forEach(function (b) { b.classList.toggle("active", b.dataset.mode === mode); });
+      byId("sv-list").style.display = mode === "servant" ? "" : "none";
+      byId("sv-stage-list").style.display = mode === "stage" ? "" : "none";
+      if (mode === "stage") loadServantStageStats(); else loadServantVisits();
+    }
+    document.querySelectorAll(".sv-mode").forEach(function (b) {
+      b.addEventListener("click", function () { showSvMode(b.dataset.mode); });
+    });
+    tabHooks["servants-visits"] = function () { showSvMode("servant"); };
     tabHooks["servants-birthdays"] = loadServantBirthdays;
 
     // ---------- إضافة خادم من غير حساب ----------
@@ -4228,10 +4298,35 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       loadServants();
     }
 
+    // فتح صفحة معينة من إشعار الموبايل (?tab=birthdays أو ?tab=servants-birthdays)
+    var PUSH_TABS = { "birthdays": 1, "servants-birthdays": 1 };
+    var pendingTab = "";
+    function tabFromUrl_(u) {
+      try { var t = new URL(u, location.href).searchParams.get("tab") || ""; return PUSH_TABS[t] ? t : ""; } catch (e) { return ""; }
+    }
+    function openPendingTab_() {
+      if (!pendingTab || !ME) return;
+      var t = pendingTab; pendingTab = "";
+      navStack = [];
+      goToTab(t, { skipHistory: true });
+    }
+    pendingTab = tabFromUrl_(location.href);
+    if (pendingTab) { try { history.replaceState(null, "", location.pathname); } catch (e) {} }
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", function (ev) {
+        var d = ev.data || {};
+        if (d.type !== "push-nav") return;
+        pendingTab = tabFromUrl_(d.url);
+        openPendingTab_();
+      });
+      try { navigator.serviceWorker.startMessages(); } catch (e) {}
+    }
+
     function enter() {
       byId("user-line").textContent = ME.name + " · " + roleLabelOf(ME);
       showApp();
       startApp();
+      openPendingTab_();
       refreshPushBtn();
       setTimeout(syncPush_, 4000);
     }
