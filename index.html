@@ -826,7 +826,7 @@
 <body>
   <div id="offline-bar" role="status"></div>
   <div id="install-bar" class="pwa-bar" role="dialog" aria-label="تثبيت التطبيق">
-    <div class="pwa-text" id="install-text">ثبّتي التطبيق على الموبايل عشان يفتح بسرعة ويشتغل بشكل أحسن</div>
+    <div class="pwa-text" id="install-text">ثبّت التطبيق على الموبايل عشان يفتح بسرعة ويشتغل بشكل أحسن</div>
     <button class="primary" id="install-btn" type="button">تثبيت</button>
     <button class="pwa-close" id="install-close" type="button" aria-label="إغلاق">×</button>
   </div>
@@ -910,7 +910,7 @@
         </div>
         <label>كود التسجيل</label>
         <input type="password" id="su-code" autocomplete="off">
-        <div class="role-hint" id="su-hint">كود التسجيل بتاخديه من أمين الخدمة، وكل نوع خدمة ليه كود.</div>
+        <div class="role-hint" id="su-hint">كود التسجيل بتاخده من أمين الخدمة، وكل نوع خدمة ليه كود.</div>
         <button class="primary" id="su-submit">إنشاء الحساب</button>
         <div class="msg" id="su-msg"></div>
       </div>
@@ -1186,7 +1186,7 @@
         <button class="primary" id="as-save" style="margin-top:12px;">حفظ الخادم</button>
         <button class="secondary" id="as-cancel" style="margin-top:8px;">إلغاء</button>
         <div class="msg" id="as-msg"></div>
-        <div class="role-hint">الخادم ده هيتسجل في الشيت من غير حساب دخول، وتقدري تتابعي حضوره وبياناته من التطبيق. لو عمل حساب بعد كده بنفس الاسم بيتربط بيه تلقائي.</div>
+        <div class="role-hint">الخادم ده هيتسجل في الشيت من غير حساب دخول، وتقدر تتابع حضوره وبياناته من التطبيق. لو عمل حساب بعد كده بنفس الاسم بيتربط بيه تلقائي.</div>
       </div>
       <div id="servants-list" style="margin-top:4px;">جاري تحميل القائمة...</div>
     </div>
@@ -1234,7 +1234,7 @@
   <div class="panel" id="panel-student">
     <div class="card">
       <p class="card-title">بيانات مخدوم</p>
-      <label>المرحلة (اختاريها الأول: البحث بيتم جواها، والمخدوم الجديد بيتسجل فيها)</label>
+      <label>المرحلة (اختارها الأول: البحث بيتم جواها، والمخدوم الجديد بيتسجل فيها)</label>
       <select id="student-stage">
         <option value="">كل المراحل</option>
         <option value="أولى ثانوي">أولى ثانوي</option>
@@ -1343,7 +1343,7 @@
       </div>
 
       <div class="subpanel" id="subpanel-monthly-report">
-        <label>اختاري الشهر</label>
+        <label>اختار الشهر</label>
         <select id="report-month"><option value="">جاري تحميل الشهور...</option></select>
         <button class="primary" id="download-report" style="margin-top:10px;">⬇️ تحميل التقرير (Excel)</button>
         <button class="secondary" id="share-report" type="button" style="display:none; margin-top:8px;">📤 مشاركة الملف (واتساب / درايف)</button>
@@ -1434,7 +1434,7 @@
         .then(function (txt) {
           if (timer) clearTimeout(timer);
           var data;
-          try { data = JSON.parse(txt); } catch (e) { throw new Error("رد غير متوقع من السيرفر. اتأكدي إن الـ Deployment مفتوح لـ Anyone"); }
+          try { data = JSON.parse(txt); } catch (e) { throw new Error("رد غير متوقع من السيرفر. اتأكد إن الـ Deployment مفتوح لـ Anyone"); }
           if (data && data.ok) { if (ok) ok(data.data); }
           else if (fail) fail(new Error((data && data.error) || "حصل خطأ"));
         })
@@ -1444,10 +1444,10 @@
           if (typeof navigator !== "undefined" && navigator.onLine === false) {
             err = new Error(OFFLINE_MSG); err.offline = true;       // الجهاز فعلاً مقطوع عن النت
           } else if (e && e.name === "AbortError") {
-            err = new Error("الاتصال بطيء دلوقتي. جرّبي تاني بعد لحظات"); err.transient = true;
+            err = new Error("الاتصال بطيء دلوقتي. جرّب تاني بعد لحظات"); err.transient = true;
           } else {
             // النت شغال بس الطلب ما وصلش للسيرفر: غالباً رابط config.js غلط، أو الـ Deployment مش Anyone، أو مفيش New version
-            err = new Error("الاتصال بطيء دلوقتي. جرّبي تاني بعد لحظات"); err.transient = true;
+            err = new Error("الاتصال بطيء دلوقتي. جرّب تاني بعد لحظات"); err.transient = true;
           }
           if (fail) fail(err);
         });
@@ -1515,10 +1515,10 @@
       var k = swrKey(args), old = null;
       try { var raw = localStorage.getItem(k); if (raw) old = JSON.parse(raw); } catch (e) {}
       var oldTxt = old ? JSON.stringify(old.v) : null;
-      if (old && ok) ok(old.v);                       // اعرضي المحفوظ فورًا
+      if (old && ok) ok(old.v);                       // اعرض المحفوظ فورًا
       rpcCore(fn, args, function (res) {
         try { localStorage.setItem(k, JSON.stringify({ v: res })); } catch (e) {}
-        if (!old || JSON.stringify(res) !== oldTxt) { if (ok) ok(res); }   // حدّثي بس لو اتغير
+        if (!old || JSON.stringify(res) !== oldTxt) { if (ok) ok(res); }   // حدّث بس لو اتغير
       }, function (err) {
         var m = (err && err.message) || "";
         if (!old || m.indexOf("AUTH_REQUIRED") !== -1) { if (fail) fail(err); }
@@ -1778,7 +1778,7 @@
       var cls = document.getElementById("class-select").value;
       gs
         .withSuccessHandler(function (names) {
-          // بنجيب كمان اللي اتسجل حضورهم النهاردة، عشان لو رجعتي تسجلي اسم تاني الأسماء القديمة تفضل ظاهرة ومتعلّم عليها
+          // بنجيب كمان اللي اتسجل حضورهم النهاردة، عشان لو رجعت تسجل اسم تاني الأسماء القديمة تفضل ظاهرة ومتعلّم عليها
           gs.withSuccessHandler(function (present) {
             renderStudentsList(names, present);
           }).withFailureHandler(function () {
@@ -1830,7 +1830,7 @@ function dialNumber(num, e) {
   if (e) e.preventDefault();
   var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   if (!isMobile) {
-    window.prompt("الكمبيوتر مش بيعمل مكالمات. انسخي الرقم واتصلي بيه من موبايلك:", "+" + num);
+    window.prompt("الكمبيوتر مش بيعمل مكالمات. انسخ الرقم واتصل بيه من موبايلك:", "+" + num);
     return;
   }
   var a = document.createElement("a");
@@ -1948,7 +1948,7 @@ function dialNumber(num, e) {
           var items = (list || []).slice();
           if (keepNow && items.indexOf(keepNow) === -1 && stage === (s.stage || "")) items.unshift(keepNow);
           clsSel.innerHTML = ""; clsSel.disabled = false;
-          opt(clsSel, "", items.length ? "اختاري الفصل" : "مفيش فصول في المرحلة دي لسه");
+          opt(clsSel, "", items.length ? "اختار الفصل" : "مفيش فصول في المرحلة دي لسه");
           items.forEach(function (c) { opt(clsSel, c, c); });
           clsSel.value = items.indexOf(keepNow) !== -1 ? keepNow : "";
         }).withFailureHandler(function () {
@@ -1974,9 +1974,9 @@ function dialNumber(num, e) {
         var role = admin ? roleSel.value : ROLE_CLASS;
         var stage = admin ? stageSel.value : s.stage;
         var cls = role === ROLE_CLASS ? clsSel.value : "";
-        if (role === ROLE_CLASS && !cls) { msg.textContent = "اختاري الفصل"; msg.className = "msg err"; return; }
+        if (role === ROLE_CLASS && !cls) { msg.textContent = "اختار الفصل"; msg.className = "msg err"; return; }
         var desc = role + " · " + stage + (role === ROLE_CLASS ? " · " + cls : "");
-        if (!window.confirm("هتغيّري \"" + s.name + "\" إلى: " + desc + "؟ الصلاحيات هتتغير فوراً.")) return;
+        if (!window.confirm("هتغيّر \"" + s.name + "\" إلى: " + desc + "؟ الصلاحيات هتتغير فوراً.")) return;
         save.disabled = true; msg.textContent = "جاري الحفظ..."; msg.className = "msg";
         gs.withSuccessHandler(function () {
           save.disabled = false;
@@ -2031,7 +2031,7 @@ function dialNumber(num, e) {
         row.appendChild(actions);
         wrap.appendChild(row);
 
-        // كل بيانات الخادم (بتظهر لما تدوسي على الاسم)
+        // كل بيانات الخادم (بتظهر لما تدوس على الاسم)
         var details = document.createElement("div");
         details.className = "sa-details";
         var valSpans = {};
@@ -2639,7 +2639,7 @@ function dialNumber(num, e) {
       }
       var editNote = document.getElementById("student-edit-note");
       if (editNote) {
-        editNote.textContent = loaded ? "✏️ بتعدّلي بيانات «" + loadedStudentName + "» — أي تغيير (حتى الاسم) بيتحفظ على نفس المخدوم" : "";
+        editNote.textContent = loaded ? "✏️ بتعدّل بيانات «" + loadedStudentName + "» — أي تغيير (حتى الاسم) بيتحفظ على نفس المخدوم" : "";
         editNote.className = "msg ok";
       }
     }
@@ -2726,8 +2726,8 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       if (loadedStudentName) {
         data.originalName = loadedStudentName;
         if (data["الاسم"] !== loadedStudentName && !window.confirm(
-          "هتغيّري اسم المخدوم من:\n" + loadedStudentName + "\nإلى:\n" + data["الاسم"] +
-          "\n\nده هيعدّل نفس المخدوم (مش هيضيف مخدوم جديد).\nلو عايزة تسجّلي مخدوم جديد اضغطي إلغاء وبعدها زر \"مخدوم جديد\".\n\nتكمّلي؟")) return;
+          "هتغيّر اسم المخدوم من:\n" + loadedStudentName + "\nإلى:\n" + data["الاسم"] +
+          "\n\nده هيعدّل نفس المخدوم (مش هيضيف مخدوم جديد).\nلو عايز تسجّل مخدوم جديد اضغط إلغاء وبعدها زر \"مخدوم جديد\".\n\nتكمّل؟")) return;
       }
       // تعديل لسجل محمّل واتغيرت مرحلته: ابعت المرحلة القديمة عشان السيرفر ينقله بدل ما يكرره
       if (!data.isNew && loadedStudentStage && loadedStudentStage !== data["المرحلة"]) {
@@ -2745,7 +2745,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     // أي تعليق جديد بيمسح القديم (تعليق واحد بس محفوظ للمخدوم في كل وقت)
     document.getElementById("save-comment").addEventListener("click", function () {
       var msg = document.getElementById("comment-msg");
-      if (!loadedStudentName) { msg.textContent = "لازم تحمّلي بيانات مخدوم موجود الأول"; msg.className = "msg err"; return; }
+      if (!loadedStudentName) { msg.textContent = "لازم تحمّل بيانات مخدوم موجود الأول"; msg.className = "msg err"; return; }
 
       var comment = document.getElementById("student-comment").value.trim();
       var visitDate = document.getElementById("student-comment-date").value;
@@ -2765,7 +2765,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       setStudentForm({}, false);
       document.getElementById("student-search").value = "";
       document.getElementById("student-matches").innerHTML = "";
-      msg.textContent = "الفورم فاضي - اكتبي بيانات المخدوم الجديد"; msg.className = "msg ok";
+      msg.textContent = "الفورم فاضي - اكتب بيانات المخدوم الجديد"; msg.className = "msg ok";
     });
 
     // بعد الحفظ، التطبيق يفضّي الفورم ويحدّث قوائم الفصول في الشاشات التانية
@@ -3078,7 +3078,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       });
 
       if (S.length) {
-        // صف الإجماليات (معادلات حقيقية: لو عدّلتي علامة حضور الإجمالي بيتحدث)
+        // صف الإجماليات (معادلات حقيقية: لو عدّلت علامة حضور الإجمالي بيتحدث)
         var tot = [{ v: "", s: ST.totLabel }, { v: "الإجمالي (عدد الحاضرين)", s: ST.totLabel }, { v: "", s: ST.totLabel }, { v: "", s: ST.totLabel }, { v: "", s: ST.totLabel }];
         F.forEach(function (f, j) {
           var cnt = 0; S.forEach(function (st) { if (st.marks[j] === "p") cnt++; });
@@ -3128,7 +3128,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     document.getElementById("download-report").addEventListener("click", function () {
       var key = document.getElementById("report-month").value;
       var btn = this, shareBtn = document.getElementById("share-report");
-      if (!key) { setReportMsg("اختاري الشهر الأول", "err"); return; }
+      if (!key) { setReportMsg("اختار الشهر الأول", "err"); return; }
       btn.disabled = true; shareBtn.style.display = "none"; setReportMsg("جاري تجهيز التقرير...", "");
       gs.withSuccessHandler(function (rep) {
         btn.disabled = false;
@@ -3136,7 +3136,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
           var blob = buildReportBlob_(rep), name = reportFileName_(rep);
           lastReportFile = new File([blob], name, { type: blob.type });
           saveBlobAs_(blob, name);
-          setReportMsg("تم تجهيز الملف: " + name + " (" + rep.students.length + " مخدوم). لو ما نزلش اضغطي مشاركة.", "ok");
+          setReportMsg("تم تجهيز الملف: " + name + " (" + rep.students.length + " مخدوم). لو ما نزلش اضغط مشاركة.", "ok");
           if (navigator.canShare && navigator.canShare({ files: [lastReportFile] })) shareBtn.style.display = "";
         } catch (e) { setReportMsg("تعذر إنشاء الملف: " + e.message, "err"); }
       }).withFailureHandler(function (err) {
@@ -3190,7 +3190,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     pushBtn.dataset.state = st;
     if (st === "on" || st === "unsupported") { pushBtn.style.display = "none"; return; }   // اتفعّلت: نخفي الزرار
     pushBtn.style.display = "";
-    pushBtn.textContent = st === "blocked" ? "🔕 الإشعارات متقفلة" : "🔔 فعّلي إشعارات الموبايل";
+    pushBtn.textContent = st === "blocked" ? "🔕 الإشعارات متقفلة" : "🔔 فعّل إشعارات الموبايل";
   });
 }
     function enablePush_() {
@@ -3230,8 +3230,8 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         window.alert("تم تفعيل الإشعارات ✅\nهيوصلك إشعار تجربة حالًا.");
       }).catch(function (err) {
         var m = err && err.message || "";
-        window.alert(m === "DENIED" ? "ما سمحتيش بالإشعارات. اسمحي بيها من إعدادات المتصفح/التطبيق وجرّبي تاني."
-          : m === "NOKEY" ? "إشعارات الموبايل لسه ما اتفعّلتش من السيرفر. (لازم تشغّلي setupPush مرة من Apps Script)"
+        window.alert(m === "DENIED" ? "ما سمحتش بالإشعارات. اسمح بيها من إعدادات المتصفح/التطبيق وجرّب تاني."
+          : m === "NOKEY" ? "إشعارات الموبايل لسه ما اتفعّلتش من السيرفر. (لازم تشغّل setupPush مرة من Apps Script)"
           : "تعذر تفعيل الإشعارات: " + m);
       }).then(function () { pushBtn.disabled = false; refreshPushBtn(); });
     }
@@ -3248,9 +3248,9 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     }
     pushBtn.addEventListener("click", function () {
       var st = pushBtn.dataset.state;
-      if (st === "needs-install") { window.alert("على الآيفون: الإشعارات بتشتغل بس لو التطبيق متضاف للشاشة الرئيسية.\nاضغطي مشاركة ثم \"إضافة إلى الشاشة الرئيسية\"، وافتحيه من الأيقونة وفعّلي الإشعارات."); return; }
-      if (st === "blocked") { window.alert("الإشعارات متقفلة للتطبيق ده. افتحي إعدادات الموقع/التطبيق وسمحي بالإشعارات وبعدين جرّبي تاني."); return; }
-      if (st === "on") { if (window.confirm("تقفلي إشعارات الموبايل على الجهاز ده؟")) disablePush_(); return; }
+      if (st === "needs-install") { window.alert("على الآيفون: الإشعارات بتشتغل بس لو التطبيق متضاف للشاشة الرئيسية.\nاضغط مشاركة ثم \"إضافة إلى الشاشة الرئيسية\"، وافتحه من الأيقونة وفعّل الإشعارات."); return; }
+      if (st === "blocked") { window.alert("الإشعارات متقفلة للتطبيق ده. افتح إعدادات الموقع/التطبيق وسمح بالإشعارات وبعدين جرّب تاني."); return; }
+      if (st === "on") { if (window.confirm("تقفل إشعارات الموبايل على الجهاز ده؟")) disablePush_(); return; }
       enablePush_();
     });
     // لو الاشتراك بتاع المستخدم موجود: بنجدد تسجيله على السيرفر كل أسبوع (أو لو عنوانه اتغير)
@@ -3547,7 +3547,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         if (p.resuming) prev.appendChild(el("div", "", "فيه عملية سابقة وقفت في النص، هتكمّل من مكانها. الخطوات اللي خلصت: " + (p.done.join("، ") || "ولا واحدة")));
         if (p.archiveUrl) prev.appendChild(el("div", "", "نسخة الأرشيف اتعملت بالفعل في Drive"));
         if (!p.allowed) { blocked.textContent = p.reason; blocked.style.display = "block"; return; }
-        byId("ny-confirm-label").textContent = "للتأكيد اكتبي: " + p.confirmWord;
+        byId("ny-confirm-label").textContent = "للتأكيد اكتب: " + p.confirmWord;
         byId("ny-confirm").value = "";
         wrap.style.display = "block";
       }).withFailureHandler(function (err) {
@@ -3558,13 +3558,13 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
 
     byId("ny-run").addEventListener("click", function () {
       var btn = byId("ny-run"), msg = byId("ny-msg");
-      btn.disabled = true; msg.className = "msg"; msg.textContent = "جاري التنفيذ... متقفليش الصفحة";
+      btn.disabled = true; msg.className = "msg"; msg.textContent = "جاري التنفيذ... متقفلش الصفحة";
       gs.withSuccessHandler(function (r) {
         btn.disabled = false; msg.className = "msg ok";
         msg.textContent = "تمت بداية سنة " + r.newLabel + ". الخريجين: " + r.graduates + (r.archiveUrl ? " | الأرشيف: " + r.archiveUrl : "");
         byId("ny-confirm-wrap").style.display = "none";
       }).withFailureHandler(function (err) {
-        btn.disabled = false; msg.className = "msg err"; msg.textContent = "خطأ: " + err.message + " (لو وقفت في النص اضغطي تاني وهتكمّل)";
+        btn.disabled = false; msg.className = "msg err"; msg.textContent = "خطأ: " + err.message + " (لو وقفت في النص اضغط تاني وهتكمّل)";
       }).runNewYear(byId("ny-confirm").value);
     });
 
@@ -3576,7 +3576,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       gs.withSuccessHandler(function (list) {
         if (!list.length) { box.style.display = "none"; return; }
         box.innerHTML = "";
-        box.appendChild(el("b", "", "تنبيه: لازم تحدّثي أرقام الجمع في شيتات الشهور دي لسنة الخدمة الحالية، لأن الأيام اللي فيها مش جمع فيها وبالتالي مش بتتحسب:"));
+        box.appendChild(el("b", "", "تنبيه: لازم تحدّث أرقام الجمع في شيتات الشهور دي لسنة الخدمة الحالية، لأن الأيام اللي فيها مش جمع فيها وبالتالي مش بتتحسب:"));
         list.forEach(function (w) {
           var t = "شيت " + w.sheet + " (" + w.year + "): ";
           if (w.bad.length) t += "أيام مش جمع: " + w.bad.join("، ") + ". ";
@@ -4288,7 +4288,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       pub.withSuccessHandler(function () {
         btn.disabled = false;
         byId("fg-pass1").value = ""; byId("fg-pass2").value = "";
-        msg.textContent = "اتبعت طلبك. كلّمي أمينك يوافق عليه من التطبيق، وبعدها سجّل دخول بالكلمة الجديدة.";
+        msg.textContent = "اتبعت طلبك. كلّم أمينك يوافق عليه من التطبيق، وبعدها سجّل دخول بالكلمة الجديدة.";
         msg.className = "msg ok";
       }).withFailureHandler(function (err) {
         btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
@@ -4320,7 +4320,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       byId("su-stage-wrap").style.display = (r === ROLE_CLASS || r === ROLE_STAGE) ? "block" : "none";
       byId("su-class-wrap").style.display = (r === ROLE_CLASS) ? "block" : "none";
       byId("su-hint").textContent = (ROLE_HINTS[r] ? ROLE_HINTS[r] + " " : "") +
-        "كود التسجيل بتاخديه من أمين الخدمة، وكل نوع خدمة ليه كود.";
+        "كود التسجيل بتاخده من أمين الخدمة، وكل نوع خدمة ليه كود.";
       if (r !== ROLE_CLASS) {
         byId("su-class-select").innerHTML = '<option value="">اختار المرحلة الأول</option>';
         byId("su-class-new").style.display = "none";
@@ -4419,7 +4419,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       var ua = navigator.userAgent || "";
       var isIOS = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
       if (isIOS && !isStandalone && !dismissed()) {
-        byId("install-text").textContent = "عشان تثبّتي التطبيق: اضغطي زرار المشاركة في سفاري، وبعدها \"إضافة إلى الشاشة الرئيسية\"";
+        byId("install-text").textContent = "عشان تثبّت التطبيق: اضغط زرار المشاركة في سفاري، وبعدها \"إضافة إلى الشاشة الرئيسية\"";
         byId("install-btn").style.display = "none";
         bar.classList.add("show");
       }
@@ -4431,7 +4431,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         document.addEventListener("visibilitychange", function () {
           if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
           try { reg.update(); } catch (e) {}
-          // لو التطبيق كان مقفول في الخلفية أكتر من ساعة، حمّليه من جديد عشان ياخد آخر نسخة
+          // لو التطبيق كان مقفول في الخلفية أكتر من ساعة، حمّله من جديد عشان ياخد آخر نسخة
           if (hiddenAt && Date.now() - hiddenAt > 60 * 60 * 1000) location.reload();
         });
       }).catch(function () {});
