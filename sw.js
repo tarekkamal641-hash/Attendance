@@ -92,7 +92,10 @@ self.addEventListener("notificationclick", function (e) {
   var target = new URL((e.notification.data && e.notification.data.url) || "./", self.registration.scope).href;
   e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (cs) {
     for (var i = 0; i < cs.length; i++) {
-      if (cs[i].url.indexOf(self.registration.scope) === 0 && "focus" in cs[i]) return cs[i].focus();
+      if (cs[i].url.indexOf(self.registration.scope) === 0 && "focus" in cs[i]) {
+        try { cs[i].postMessage({ type: "push-nav", url: target }); } catch (err) {}   // التطبيق مفتوح: نبعتله الصفحة اللي يروحلها
+        return cs[i].focus();
+      }
     }
     return self.clients.openWindow(target);
   }));
