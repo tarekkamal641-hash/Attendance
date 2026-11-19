@@ -495,6 +495,29 @@
     }
     .roster-icon.danger:disabled { opacity: .5; cursor: not-allowed; }
 
+    /* ---------- لوحة الحضور الأسبوعي ---------- */
+    .dash-card { background: var(--card-alt); border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin-bottom: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.18); }
+    .dash-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .dash-head b { font-size: 16px; color: var(--gold-light); }
+    .dash-pill { padding: 4px 14px; border-radius: 14px; background: rgba(217,168,92,0.28); color: var(--gold-light); font-size: 12.5px; font-weight: 700; }
+    .dash-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+    .dash-legend i { display: inline-block; vertical-align: middle; margin-left: 5px; }
+    .dash-legend .lg-bar { width: 12px; height: 12px; border-radius: 3px; background: var(--gold); }
+    .dash-legend .lg-line { width: 16px; height: 3px; border-radius: 2px; background: var(--sky); }
+    .dash-chart { direction: ltr; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    .dash-chart svg { display: block; }
+    .dash-chart .slot { cursor: pointer; }
+    .dash-tiles { display: flex; gap: 8px; margin-bottom: 12px; }
+    .dash-tile { flex: 1; text-align: center; background: var(--card-alt); border: 1px solid var(--border); border-radius: 14px; padding: 10px 4px; }
+    .dash-tile small { display: block; font-size: 11.5px; color: var(--gold-light); margin-bottom: 5px; }
+    .dash-tile b { font-size: 17px; color: var(--text); }
+    .dash-tile em { display: block; font-style: normal; font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+    .dash-cls { padding: 10px 2px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .dash-cls:last-child { border-bottom: none; }
+    .dash-cls-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 5px; }
+    .dash-cls-row b { font-size: 15px; }
+    .dash-back { display: inline-block; margin-bottom: 8px; padding: 5px 12px; border-radius: 12px; border: 1px solid var(--sky); color: var(--sky); background: transparent; font-family: inherit; font-size: 12.5px; cursor: pointer; }
+
     /* ---------- أسماء الحاضرين في الإحصائيات ---------- */
     .stat-week-main { cursor: pointer; }
     .stat-week-main:active { opacity: .75; }
@@ -1300,14 +1323,42 @@
   <div class="panel" id="panel-stats">
     <div class="card">
       <div class="subtabs">
-        <button class="subtab-btn active" data-subtab="student-stats">إحصائيات مخدوم</button>
-        <button class="subtab-btn" data-subtab="service-stats">إحصائيات الخدمة</button>
-        <button class="subtab-btn" data-subtab="class-stats">إحصائيات الفصل</button>
-        <button class="subtab-btn" data-subtab="stage-stats">إحصائيات المرحلة</button>
+        <button class="subtab-btn active" data-subtab="weekly-dash">📈 الحضور الأسبوعي</button>
+        <button class="subtab-btn" data-subtab="student-stats">إحصائيات مخدوم</button>
         <button class="subtab-btn" data-subtab="monthly-report">📊 تقرير شهري</button>
       </div>
 
-      <div class="subpanel active" id="subpanel-student-stats">
+      <div class="subpanel active" id="subpanel-weekly-dash">
+        <div class="msg err" id="sheet-warning" style="display:none; text-align:right; line-height:1.9;"></div>
+        <div id="dash-stage-wrap" style="display:none;">
+          <label>المرحلة</label>
+          <select id="dash-stage">
+            <option value="">كل الخدمة</option>
+            <option value="أولى ثانوي">أولى ثانوي</option>
+            <option value="ثانية ثانوي">ثانية ثانوي</option>
+            <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+          </select>
+        </div>
+        <div class="dash-card" style="margin-top:10px;">
+          <div class="dash-head"><span class="dash-pill">أسبوعي</span><b id="dash-title">جاري التحميل...</b></div>
+          <div class="dash-legend"><span><i class="lg-bar"></i>عدد الحاضرين</span><span><i class="lg-line"></i>نسبة الحضور %</span></div>
+          <div class="dash-chart" id="dash-chart"></div>
+          <div class="stat-hint" style="margin-top:6px;">اضغط على أي جمعة في الشارت لعرض أسماء الحاضرين</div>
+        </div>
+        <div class="dash-tiles">
+          <div class="dash-tile"><small>أعلى نسبة حضور</small><b id="dash-best">-</b><em id="dash-best-date"></em></div>
+          <div class="dash-tile"><small>نسبة الغياب</small><b id="dash-absence">-</b></div>
+          <div class="dash-tile"><small>متوسط الحضور</small><b id="dash-avg">-</b></div>
+        </div>
+        <div class="dash-card" id="dash-names" style="display:none;"></div>
+        <div class="dash-card" id="dash-classes-card" style="display:none;">
+          <div class="dash-head"><b id="dash-classes-title">الفصول</b></div>
+          <div id="dash-back-wrap"></div>
+          <div id="dash-classes"></div>
+        </div>
+      </div>
+
+      <div class="subpanel" id="subpanel-student-stats">
         <label>اسم المخدوم</label>
         <input type="text" id="stats-student-search" placeholder="اكتب الاسم أو جزء منه">
         <button class="secondary" id="load-student-stats">عرض الإحصائيات</button>
@@ -1329,7 +1380,6 @@
       </div>
 
       <div class="subpanel" id="subpanel-service-stats">
-        <div class="msg err" id="sheet-warning" style="display:none; text-align:right; line-height:1.9;"></div>
         <button class="secondary" id="load-service-stats">تحميل إحصائيات الخدمة</button>
         <div class="stats-result" id="service-stats-result"></div>
       </div>
@@ -1410,7 +1460,7 @@
 
     // بوابة موحّدة: كل نداء للسيرفر بيروح لدالة api مع توكن الجلسة
     var API_METHODS = ["getClasses", "getStudentsByFilter", "getRoster", "getBirthdays", "submitAttendance", "searchStudents",
-      "addOrUpdateStudent", "getStudentStats", "getStudentsMonthAttendance", "getClassStats", "getStageStats",
+      "addOrUpdateStudent", "getStudentStats", "getStudentsMonthAttendance", "getClassStats", "getStageStats", "getStatsDashboard",
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
@@ -3354,8 +3404,8 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         document.querySelectorAll(".subpanel").forEach(function (p) { p.classList.remove("active"); });
         btn.classList.add("active");
         document.getElementById("subpanel-" + btn.dataset.subtab).classList.add("active");
+        if (btn.dataset.subtab === "weekly-dash") loadDashboard();
         if (btn.dataset.subtab === "student-stats") loadStudentMonth();
-        if (btn.dataset.subtab === "service-stats") loadSheetWarnings();
         if (btn.dataset.subtab === "monthly-report") loadMonthChoices(function () {});
       });
     });
@@ -3540,7 +3590,170 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     byId("month-select").addEventListener("change", loadStudentMonth);
     byId("month-sort").addEventListener("change", renderStudentMonth);   // الترتيب من غير نداء للسيرفر
     byId("month-class").addEventListener("change", renderStudentMonth);
-    tabHooks["stats"] = loadStudentMonth;
+    tabHooks["stats"] = function () {
+      if (document.querySelector('.subtab-btn.active').dataset.subtab === "weekly-dash") loadDashboard();
+      else loadStudentMonth();
+    };
+
+    // ---------- لوحة الحضور الأسبوعي (شارت + ملخص + نسبة كل فصل) ----------
+    // النطاق: أمين الخدمة (اختيار مرحلة + الدخول على فصل)، أمين المرحلة (مرحلته + الدخول على فصل)، خادم الفصل (فصله). السيرفر هو اللي بيفرض الصلاحية
+    var dashState = { stage: "", cls: "" }, dashData = null, dashSeq = 0, dashSel = -1, dashNames = {};
+    var SVGNS = "http://www.w3.org/2000/svg";
+    function svgEl(tag, attrs, text) {
+      var e = document.createElementNS(SVGNS, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+    function resetDashboard_() {
+      dashState = { stage: "", cls: "" }; dashData = null; dashSel = -1; dashNames = {};
+      byId("dash-stage").value = "";
+      byId("dash-chart").innerHTML = "";
+      byId("dash-names").style.display = "none";
+      byId("dash-classes-card").style.display = "none";
+    }
+
+    function drawDashChart(d) {
+      var box = byId("dash-chart");
+      box.innerHTML = "";
+      if (!d.weeks.length) { box.textContent = "مفيش بيانات حضور مسجلة لسه"; box.style.direction = "rtl"; return; }
+      box.style.direction = "ltr";
+      var SLOT = 54, PADL = 34, PADT = 36, PADB = 26, H = 236, plotH = H - PADT - PADB;
+      var n = d.weeks.length, W = PADL + n * SLOT + 6;
+      var maxP = 0; d.weeks.forEach(function (w) { if (w.present > maxP) maxP = w.present; });
+      var step = maxP <= 5 ? 1 : (maxP <= 12 ? 2 : (maxP <= 30 ? 5 : (maxP <= 60 ? 10 : (maxP <= 150 ? 25 : 50))));
+      var top = Math.max(step, Math.ceil(maxP / step) * step);
+      function yC(v) { return PADT + plotH - (v / top) * plotH; }
+      function yP(v) { return PADT + plotH - (v / 100) * plotH; }
+
+      var svg = svgEl("svg", { width: W, height: H, viewBox: "0 0 " + W + " " + H });
+      for (var v = 0; v <= top; v += step) {
+        svg.appendChild(svgEl("line", { x1: PADL, x2: W, y1: yC(v), y2: yC(v), stroke: "rgba(255,255,255,0.14)", "stroke-width": 1 }));
+        svg.appendChild(svgEl("text", { x: PADL - 6, y: yC(v) + 4, "text-anchor": "end", "font-size": 11, fill: "#e3d3b6" }, String(v)));
+      }
+      var pts = [];
+      d.weeks.forEach(function (w, i) {
+        var cx = PADL + i * SLOT + SLOT / 2;
+        if (i === dashSel) svg.appendChild(svgEl("rect", { x: PADL + i * SLOT + 2, y: 2, width: SLOT - 4, height: H - 4, rx: 8, fill: "rgba(240,203,143,0.16)" }));
+        var bh = (w.present / top) * plotH;
+        svg.appendChild(svgEl("rect", { x: cx - 12, y: yC(w.present), width: 24, height: Math.max(bh, 1), rx: 5, fill: "#d9a85c" }));
+        svg.appendChild(svgEl("text", { x: cx, y: yC(w.present) - 5, "text-anchor": "middle", "font-size": 11, "font-weight": 700, fill: "#fffaf1" }, String(w.present)));
+        svg.appendChild(svgEl("text", { x: cx, y: H - 8, "text-anchor": "middle", "font-size": 11.5, fill: i === dashSel ? "#f0cb8f" : "#e3d3b6", "font-weight": i === dashSel ? 700 : 400 }, w.label));
+        pts.push([cx, yP(w.percentage)]);
+      });
+      if (pts.length > 1) svg.appendChild(svgEl("polyline", { points: pts.map(function (p) { return p[0] + "," + p[1]; }).join(" "), fill: "none", stroke: "#8fc1e3", "stroke-width": 2.5, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+      pts.forEach(function (p, i) {
+        svg.appendChild(svgEl("circle", { cx: p[0], cy: p[1], r: 4.5, fill: "#8fc1e3", stroke: "#4a3620", "stroke-width": 1.5 }));
+        if (i === dashSel) svg.appendChild(svgEl("text", { x: p[0], y: 13, "text-anchor": "middle", "font-size": 12, "font-weight": 700, fill: "#8fc1e3" }, d.weeks[i].percentage + "%"));
+      });
+      // مناطق الضغط (عمود كامل لكل جمعة)
+      d.weeks.forEach(function (w, i) {
+        var hit = svgEl("rect", { x: PADL + i * SLOT, y: 0, width: SLOT, height: H, fill: "transparent", "class": "slot" });
+        hit.addEventListener("click", function () { selectDashWeek(i); });
+        svg.appendChild(hit);
+      });
+      box.appendChild(svg);
+      if (dashSel < 0) box.scrollLeft = box.scrollWidth;   // أحدث جمعة ظاهرة
+    }
+
+    function selectDashWeek(i) {
+      var d = dashData, w = d && d.weeks[i];
+      if (!w) return;
+      var sc = byId("dash-chart").scrollLeft;
+      dashSel = i;
+      drawDashChart(d);
+      byId("dash-chart").scrollLeft = sc;
+      var box = byId("dash-names");
+      box.style.display = "";
+      box.innerHTML = "";
+      box.appendChild(el("div", "dash-head")).appendChild(el("b", "", "جمعة " + fridayLabel(w.iso, "")));
+      var body = el("div", "");
+      box.appendChild(body);
+      function fill(res) {
+        body.innerHTML = "";
+        body.appendChild(el("div", "stat-empty", "حضر " + res.present + " من " + res.total + " · " + (res.total ? Math.round(res.present / res.total * 100) : 0) + "%"));
+        if (!res.groups.length) { body.appendChild(el("div", "stat-empty", "محدش اتسجل حاضر في اليوم ده.")); return; }
+        res.groups.forEach(function (g) {
+          body.appendChild(el("div", "stat-group-title", g.label + " (" + g.names.length + ")"));
+          var chips = el("div", "stat-chips");
+          g.names.forEach(function (nm) { chips.appendChild(el("span", "stat-chip", nm)); });
+          body.appendChild(chips);
+        });
+      }
+      var ck = d.kind + "|" + d.key + "|" + d.stage + "|" + w.month + "|" + w.col;
+      if (dashNames[ck]) { fill(dashNames[ck]); } else {
+        body.textContent = "جاري تحميل الأسماء...";
+        var seq = dashSeq;
+        gs.withSuccessHandler(function (res) {
+          if (seq !== dashSeq) return;
+          dashNames[ck] = res;
+          if (dashSel === i) fill(res);
+        }).withFailureHandler(function (err) {
+          if (dashSel === i) body.textContent = "خطأ: " + err.message;
+        }).getAttendanceDay(d.kind, d.key, w.month, w.col, d.stage);
+      }
+      box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    function renderDashboard(d) {
+      dashData = d; dashSel = -1;
+      byId("dash-title").textContent = d.label;
+      drawDashChart(d);
+      byId("dash-avg").textContent = d.weeks.length ? d.avg + "%" : "-";
+      byId("dash-absence").textContent = d.weeks.length ? d.absence + "%" : "-";
+      byId("dash-best").textContent = d.best ? d.best.percentage + "%" : "-";
+      byId("dash-best-date").textContent = d.best ? fridayLabel(d.best.iso, "") : "";
+      byId("dash-names").style.display = "none";
+
+      var card = byId("dash-classes-card"), list = byId("dash-classes"), back = byId("dash-back-wrap");
+      list.innerHTML = ""; back.innerHTML = "";
+      var canDrill = ME && ME.role !== ROLE_CLASS;
+      if (d.kind === "class" || !d.classes.length) { card.style.display = d.kind === "class" && canDrill ? "" : "none"; }
+      else card.style.display = "";
+      byId("dash-classes-title").textContent = d.kind === "class" ? d.cls : "نسبة الحضور لكل فصل";
+      if (d.kind === "class" && canDrill) {
+        var b = el("button", "dash-back", "⬅ رجوع لكل الفصول");
+        b.type = "button";
+        b.addEventListener("click", function () { dashState.cls = ""; loadDashboard(); });
+        back.appendChild(b);
+      }
+      d.classes.forEach(function (c) {
+        var row = el("div", "dash-cls");
+        var top = el("div", "dash-cls-row");
+        top.appendChild(el("span", "", c.label));
+        top.appendChild(el("b", "", c.percentage + "%"));
+        row.appendChild(top);
+        var bar = el("div", "bar-bg"), fill = el("div", "bar-fill");
+        fill.style.width = c.percentage + "%";
+        bar.appendChild(fill); row.appendChild(bar);
+        if (canDrill) row.addEventListener("click", function () {
+          if (ME.role === ROLE_ADMIN) dashState.stage = c.stage;
+          dashState.cls = c.cls;
+          loadDashboard();
+        });
+        list.appendChild(row);
+      });
+    }
+
+    function loadDashboard() {
+      if (!ME) return;
+      if (ME.role === ROLE_ADMIN) byId("dash-stage").value = dashState.stage;
+      var mySeq = ++dashSeq;
+      byId("dash-title").textContent = "جاري التحميل...";
+      gs.withSuccessHandler(function (d) {
+        if (mySeq !== dashSeq) return;
+        renderDashboard(d);
+      }).withFailureHandler(function (err) {
+        if (mySeq !== dashSeq) return;
+        byId("dash-title").textContent = "تعذر التحميل";
+        byId("dash-chart").textContent = "خطأ: " + err.message;
+      }).getStatsDashboard(dashState.stage, dashState.cls);
+      loadSheetWarnings();
+    }
+    byId("dash-stage").addEventListener("change", function () {
+      dashState.stage = byId("dash-stage").value; dashState.cls = "";
+      loadDashboard();
+    });
 
     // قائمة الجمع في الإحصائيات (خدمة / فصل / مرحلة): الدوس على أي جمعة بيفتح أسماء اللي حضروا فيها
     // kind: "service" | "class" | "stage"  و key: اسم الفصل أو المرحلة (فاضي للخدمة)
@@ -4210,6 +4423,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       inboxVisits = [];
       inboxResets = [];
       monthData = null; lastReportFile = null;
+      resetDashboard_();
       byId("push-btn").style.display = "none";
       ["students-list", "student-matches", "student-stats-result", "service-stats-result",
        "class-stats-result", "stage-stats-result", "notif-list", "roster-list", "bday-list", "trophy-content", "requests-list", "servants-list", "visits-list", "student-month-list",
@@ -4243,7 +4457,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       loadedStudentName = "";
       loadedStudentStage = "";
       goHome();
-      document.querySelector('[data-subtab="student-stats"]').click();
+      document.querySelector('[data-subtab="weekly-dash"]').click();
     }
 
     // بتظبط اللي بيظهر حسب نوع الخدمة (والسيرفر كمان بيفرض نفس الصلاحيات)
@@ -4276,8 +4490,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       byId("as-stage-wrap").style.display = ME.role === ROLE_ADMIN ? "block" : "none"; // أمين المرحلة بيضيف لمرحلته بس
 
       // الإحصائيات
-      document.querySelector('[data-subtab="service-stats"]').style.display = admin ? "" : "none";
-      document.querySelector('[data-subtab="stage-stats"]').style.display = isClass ? "none" : "";
+      byId("dash-stage-wrap").style.display = admin ? "" : "none";
       setShown("stage-stats-select", admin, true);
       if (!admin) byId("stage-stats-select").value = ME.stage;
     }
