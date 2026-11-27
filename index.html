@@ -495,6 +495,52 @@
     }
     .roster-icon.danger:disabled { opacity: .5; cursor: not-allowed; }
 
+    /* ---------- صفحة بيانات مخدوم ---------- */
+    .sd-page-title { font-size: 22px; font-weight: 700; color: var(--gold-light); margin: 2px 4px 12px; }
+    .sd-search { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.10); border: 1px solid var(--border); border-radius: 16px; padding: 3px 14px; margin-bottom: 12px; }
+    .sd-search:focus-within { border-color: var(--gold); }
+    .sd-search .ico { color: var(--gold-light); display: flex; }
+    .sd-search input { flex: 1; min-width: 0; border: none; background: transparent; padding: 13px 0; font-size: 15px; border-radius: 0; }
+    .sd-go { border: none; border-radius: 12px; padding: 7px 14px; background: linear-gradient(135deg, var(--gold) 0%, #a97a3a 100%); color: #241a0f; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .sd-lbl { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--gold-light); margin: 12px 4px 5px; font-weight: 500; }
+    label.sd-lbl { margin-top: 0; }
+    .sd-stage { margin-bottom: 4px; }
+    .sd-status-wrap { text-align: center; margin: 10px 0 14px; }
+    .sd-status { display: inline-flex; align-items: center; gap: 6px; padding: 8px 22px; border-radius: 22px; border: 1px solid var(--border); color: var(--text-dim); font-size: 14px; font-weight: 700; background: rgba(0,0,0,0.12); }
+    .sd-status.on { border-color: var(--gold); color: var(--gold-light); background: rgba(217,168,92,0.12); }
+    .att-dots { display: flex; flex-wrap: wrap; gap: 14px; margin: 10px 0 4px; }
+    .att-dot { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text-dim); }
+    .att-dot .dot { width: 30px; height: 30px; font-size: 15px; }
+    #student-att-body .month-head { margin: 14px 0 6px; }
+    .sd-hint { font-size: 11.5px; color: var(--text-dim); margin-top: 6px; }
+    .sd-info { border: 1px solid var(--border); background: rgba(255,255,255,0.08); color: var(--gold-light); width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; font-size: 15px; cursor: pointer; vertical-align: middle; }
+    .sd-results { margin: -4px 0 10px; }
+    .sd-results .match-item { border-radius: 12px; }
+    .sd-add { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 6px; padding: 12px; border: 1px dashed var(--gold); border-radius: 12px; background: rgba(217,168,92,0.10); color: var(--gold-light); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .sfield.lockable .sd-pen { display: none; color: var(--gold-light); font-size: 17px; flex-shrink: 0; }
+    .sfield.lockable.locked { cursor: pointer; background: rgba(0,0,0,0.12); }
+    .sfield.lockable.locked input { pointer-events: none; }
+    .sfield.lockable.locked .sd-pen { display: block; }
+    button.sd-ghost { border-color: var(--border); color: var(--text-dim); border-radius: 14px; padding: 12px; margin-top: 8px; }
+    .sd-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px 16px; margin-bottom: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.22); }
+    .sd-card-title { display: flex; align-items: center; gap: 8px; font-size: 15.5px; font-weight: 700; color: var(--gold-light); margin: 12px 2px 2px; }
+    .sd-card-title .ico { display: flex; }
+    .sd-lbl .ico { display: flex; }
+    .sfield { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.20); border: 1px solid var(--border); border-radius: 14px; padding: 0 12px; }
+    .sfield:focus-within { border-color: var(--gold); }
+    .sfield > .ico { color: var(--gold-light); display: flex; flex-shrink: 0; }
+    .sfield input, .sfield select, .sfield textarea { flex: 1; min-width: 0; width: auto; border: none; background-color: transparent; padding: 12px 0; font-size: 15px; border-radius: 0; color: var(--text); }
+    .sfield select { background-position: left 0 center; padding-left: 20px; }
+    .sfield.area { align-items: flex-start; padding-top: 4px; }
+    .sfield.area textarea { width: 100%; }
+    .sfield .acts { display: flex; gap: 8px; flex-shrink: 0; }
+    .sd-round { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: rgba(255,255,255,0.08); color: var(--gold-light); text-decoration: none; cursor: pointer; }
+    .sd-round.wa { color: #7fe0a0; }
+    .sd-round.disabled { opacity: 0.3; pointer-events: none; }
+    .sd-age { padding: 3px 11px; border-radius: 12px; background: rgba(217,168,92,0.24); color: var(--gold-light); font-size: 12.5px; white-space: nowrap; flex-shrink: 0; }
+    button.sd-outline { border-color: var(--gold); color: var(--gold-light); border-radius: 14px; padding: 13px; margin-top: 10px; }
+    #panel-student button.primary { border-radius: 14px; }
+
     /* ---------- لوحة الحضور الأسبوعي ---------- */
     .dash-card { background: var(--card-alt); border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin-bottom: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.18); }
     .dash-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
@@ -1265,56 +1311,84 @@
 
   <!-- ============ تعديل/إضافة بيانات مخدوم ============ -->
   <div class="panel" id="panel-student">
-    <div class="card">
-      <p class="card-title">بيانات مخدوم</p>
-      <label>المرحلة (اختارها الأول: البحث بيتم جواها، والمخدوم الجديد بيتسجل فيها)</label>
-      <select id="student-stage">
-        <option value="">كل المراحل</option>
-        <option value="أولى ثانوي">أولى ثانوي</option>
-        <option value="ثانية ثانوي">ثانية ثانوي</option>
-        <option value="ثالثة ثانوي">ثالثة ثانوي</option>
-      </select>
-      <label>ابحث بالاسم (لو موجود هيتحمّل بياناته، لو مش موجود هيتضاف جديد)</label>
-      <input type="text" id="student-search" placeholder="اكتب الاسم أو جزء منه">
-      <button class="secondary" id="load-student">بحث</button>
-      <div id="student-matches"></div>
+    <div class="sd-search">
+      <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span>
+      <input type="text" id="student-search" placeholder="ابحث عن مخدوم أو أضف جديداً...">
+      <button type="button" class="sd-go" id="load-student">بحث</button>
+    </div>
+    <div id="student-matches" class="sd-results"></div>
+    <label class="sd-lbl" for="student-stage">المرحلة</label>
+    <select id="student-stage" class="sd-stage">
+      <option value="">كل المراحل</option>
+      <option value="أولى ثانوي">أولى ثانوي</option>
+      <option value="ثانية ثانوي">ثانية ثانوي</option>
+      <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+    </select>
 
-      <div class="divider"></div>
+    <div class="sd-status-wrap">
+      <span class="sd-status" id="student-edit-note">➕ مخدوم جديد</span>
+      <button type="button" class="sd-info" id="student-info" style="display:none;" aria-label="معلومة">ⓘ</button>
+      <div class="sd-hint" id="student-edit-hint" style="display:none;"></div>
+    </div>
 
-      <label>الاسم</label>
-      <input type="text" id="student-name">
-      <div class="msg" id="student-edit-note" style="text-align:right; min-height:0; margin-top:6px;"></div>
-      <label>رقم التليفون</label>
-      <input type="tel" id="student-phone">
-      <label>تاريخ الميلاد</label>
-      <input type="date" id="student-birth">
-      <label>العنوان</label>
-      <input type="text" id="student-address">
-      <label>أب الاعتراف</label>
-      <input type="text" id="student-confessor">
+    <div class="sd-card">
+      <p class="sd-card-title"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-3.6 3.8-5.4 7.5-5.4s6.7 1.8 7.5 5.4"/></svg></span> بيانات مخدوم</p>
+      <div class="sd-lbl">الاسم</div>
+      <div class="sfield"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-3.6 3.8-5.4 7.5-5.4s6.7 1.8 7.5 5.4"/></svg></span><input type="text" id="student-name"></div>
+
+      <div class="sd-lbl">رقم التليفون</div>
+      <div class="sfield"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5l2.2 4.4-1.7 1.7a12 12 0 0 0 5.8 5.8l1.7-1.7 4.4 2.2c-.3 2.2-2 3.6-4.2 3.4A15.5 15.5 0 0 1 3.2 7.7c-.2-2.2 1.2-3.9 3.4-4.2z"/></svg></span><input type="tel" id="student-phone" inputmode="tel">
+        <span class="acts">
+          <a class="sd-round disabled" id="student-call" href="#" aria-label="اتصال"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5l2.2 4.4-1.7 1.7a12 12 0 0 0 5.8 5.8l1.7-1.7 4.4 2.2c-.3 2.2-2 3.6-4.2 3.4A15.5 15.5 0 0 1 3.2 7.7c-.2-2.2 1.2-3.9 3.4-4.2z"/></svg></a>
+          <a class="sd-round disabled" id="student-wa" target="_blank" rel="noopener" aria-label="واتساب"></a>
+        </span>
+      </div>
+
+      <div class="sd-lbl">تاريخ الميلاد</div>
+      <div class="sfield"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span><input type="date" id="student-birth"><span class="sd-age" id="student-age" style="display:none;"></span></div>
+
+      <div class="sd-lbl">العنوان</div>
+      <div class="sfield lockable"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.2A7 7 0 0 0 5 9.8C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.4"/></svg></span><input type="text" id="student-address"><span class="sd-pen">✎</span></div>
+
       <div id="student-class-wrap">
-        <label>الفصل</label>
-        <select id="student-class-select"><option value="">اختار الفصل</option></select>
+        <div class="sd-lbl">الفصل</div>
+        <div class="sfield"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20.5h18M5 20.5V9.5l7-5 7 5v11"/><path d="M9 20.5v-5h6v5M9 11.5h1.5M13.5 11.5H15"/></svg></span><select id="student-class-select"><option value="">اختار الفصل</option></select></div>
         <input type="text" id="student-class-new" placeholder="اكتب اسم الفصل الجديد" style="display:none; margin-top:8px;">
       </div>
+    </div>
+
+    <div class="sd-card">
+      <p class="sd-card-title">البيانات الروحية والخدمية</p>
+      <div class="sd-lbl">أب الاعتراف</div>
+      <div class="sfield lockable"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5v4M10.3 4.3h3.4M12 6.5l5 4v10H7v-10z"/><path d="M10 20.5v-5a2 2 0 0 1 4 0v5M3 20.5h18M5 12.5v8M19 12.5v8"/></svg></span><input type="text" id="student-confessor"><span class="sd-pen">✎</span></div>
+
       <button class="primary" id="save-student">حفظ بيانات المخدوم</button>
-      <button class="secondary" id="new-student-btn" type="button" style="margin-top:8px;">➕ مخدوم جديد (فضّي الفورم)</button>
+      <button class="secondary sd-outline" id="new-student-btn" type="button">＋ مخدوم جديد (تفريغ الخانات)</button>
+      <button class="secondary sd-ghost" id="cancel-student-btn" type="button" style="display:none;">إلغاء التعديل</button>
       <div class="msg" id="student-msg"></div>
+    </div>
 
-      <div class="divider"></div>
+    <div class="sd-card" id="student-att-card" style="display:none;">
+      <p class="sd-card-title"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg></span> حضور الخدمة</p>
+      <div id="student-att-body"></div>
+    </div>
 
-      <p class="card-title">تعليق عن المخدوم</p>
-      <label>التعليق</label>
-      <textarea id="student-comment" rows="3" placeholder="اكتب ملاحظاتك عن المخدوم هنا"></textarea>
-      <label>تاريخ الافتقاد</label>
-      <input type="date" id="student-comment-date">
-      <label>نوع الافتقاد</label>
-      <select id="student-comment-type">
-        <option value="">اختار نوع الافتقاد</option>
-        <option value="تليفون">تليفون</option>
-        <option value="منزل">منزل</option>
-      </select>
-      <button class="secondary" id="save-comment" style="margin-top:10px;">حفظ التعليق</button>
+    <div class="sd-card">
+      <p class="sd-card-title"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10.5H9.5L5 20v-4H4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></span> تعليق ومتابعة الافتقاد</p>
+      <div class="sd-lbl">التعليق</div>
+      <div class="sfield area"><textarea id="student-comment" rows="4" placeholder="اكتب ملاحظاتك عن المخدوم هنا..."></textarea></div>
+
+      <div class="sd-lbl"><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span> تاريخ الافتقاد</div>
+      <div class="sfield"><input type="date" id="student-comment-date"></div>
+
+      <div class="sfield" style="margin-top:12px;"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 11l3.5-3 4 1.5 3-2 3.5 1 2 2.5-5 5-2 .8-2.5-.6-3-2.7z"/><path d="M12.5 14.5l1.8 1.6M10.5 13l1.8 1.6"/></svg></span>
+        <select id="student-comment-type">
+          <option value="">اختار نوع الافتقاد</option>
+          <option value="تليفون">تليفون</option>
+          <option value="منزل">منزل</option>
+        </select>
+      </div>
+      <button class="secondary sd-outline" id="save-comment" style="margin-top:14px;">حفظ التعليق والافتقاد</button>
       <div class="msg" id="comment-msg"></div>
     </div>
   </div>
@@ -1460,7 +1534,7 @@
 
     // بوابة موحّدة: كل نداء للسيرفر بيروح لدالة api مع توكن الجلسة
     var API_METHODS = ["getClasses", "getStudentsByFilter", "getRoster", "getBirthdays", "submitAttendance", "searchStudents",
-      "addOrUpdateStudent", "getStudentStats", "getStudentsMonthAttendance", "getClassStats", "getStageStats", "getStatsDashboard",
+      "addOrUpdateStudent", "getStudentStats", "getStudentAttendanceCard", "getStudentsMonthAttendance", "getClassStats", "getStageStats", "getStatsDashboard",
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
@@ -2759,15 +2833,178 @@ function dialNumber(num, e) {
       }
       var editNote = document.getElementById("student-edit-note");
       if (editNote) {
-        editNote.textContent = loaded ? "✏️ بتعدّل بيانات «" + loadedStudentName + "» — أي تغيير (حتى الاسم) بيتحفظ على نفس المخدوم" : "";
-        editNote.className = "msg ok";
+        editNote.textContent = loaded ? "✏️ تعديل البيانات نشط" : "➕ مخدوم جديد";
+        editNote.className = "sd-status" + (loaded ? " on" : "");
+      }
+      var editHint = document.getElementById("student-edit-hint");
+      if (editHint) { editHint.textContent = loaded ? "أي تغيير (حتى الاسم) بيتحفظ على «" + loadedStudentName + "»" : ""; editHint.style.display = "none"; }
+      loadStudentAttendance_(loaded ? loadedStudentName : "", loaded ? loadedStudentStage : "");
+      byId("student-info").style.display = loaded ? "" : "none";
+      byId("cancel-student-btn").style.display = loaded ? "" : "none";
+      lastLoadedRec = loaded ? rec : null;
+      lockStudentFields_(loaded);
+      refreshStudentExtras_();
+    }
+
+    // كارت "حضور الخدمة": حضر كام مرة من كل الجمع اللي عدّت + آخر شهر بالألوان (أخضر حاضر / أحمر غايب / فاضي لسه)
+    var attSeq = 0;
+    function loadStudentAttendance_(name, stage) {
+      var card = byId("student-att-card"), body = byId("student-att-body"), my = ++attSeq;
+      if (!name) { card.style.display = "none"; body.innerHTML = ""; return; }
+      card.style.display = "";
+      body.textContent = "جاري تحميل الحضور...";
+      gs.withSuccessHandler(function (res) {
+        if (my !== attSeq) return;
+        renderStudentAttendance_(res, body);
+      }).withFailureHandler(function () {
+        if (my !== attSeq) return;
+        body.textContent = "الحضور مش متاح دلوقتي";
+      }).getStudentAttendanceCard(name, stage);
+    }
+    function renderStudentAttendance_(res, body) {
+      body.innerHTML = "";
+      var total = res && res.found ? res.present + res.absent : 0;
+      if (!total) { body.appendChild(el("div", "stat-empty", "لسه مفيش حضور مسجل للمخدوم ده")); return; }
+      function row(label, val) { var r = el("div", "stat-row"); r.appendChild(el("span", "", label)); r.appendChild(el("b", "", val)); body.appendChild(r); }
+      row("حضر", res.present + " من " + total + " جمعة");
+      row("غاب", String(res.absent));
+      row("نسبة حضور الخدمة", res.percentage + "%");
+      var bar = el("div", "bar-bg"), fill = el("div", "bar-fill");
+      fill.style.width = res.percentage + "%";
+      bar.appendChild(fill); body.appendChild(bar);
+
+      if (res.month) {
+        var mo = res.month, mt = mo.present + mo.absent;
+        body.appendChild(el("div", "month-head", "آخر شهر · " + mo.label));
+        row("حضر في الشهر ده", mo.present + " من " + mt + " جمعة · " + (mt ? Math.round(mo.present / mt * 100) : 0) + "%");
+        var legend = el("div", "month-legend");
+        [["dot-p", "✓", "حاضر"], ["dot-a", "✕", "غايب"], ["dot-n", "", "لسه / مفيش حضور مسجل"]].forEach(function (x) {
+          var it = el("span", "lg"); it.appendChild(el("span", "dot " + x[0], x[1])); it.appendChild(document.createTextNode(x[2])); legend.appendChild(it);
+        });
+        body.appendChild(legend);
+        var dots = el("div", "att-dots");
+        mo.sessions.forEach(function (s) {
+          var it = el("div", "att-dot");
+          it.appendChild(el("span", "dot dot-" + s.mark, s.mark === "p" ? "✓" : (s.mark === "a" ? "✕" : "")));
+          it.appendChild(el("span", "", String(s.day)));
+          dots.appendChild(it);
+        });
+        body.appendChild(dots);
       }
     }
+
+    // العنوان وأب الاعتراف والفصل بيتقفلوا لما مخدوم يتحمّل (منعًا للتعديل بالغلط)، والدوس على الخانة بيفتحها للتعديل
+    var lastLoadedRec = null;
+    function lockStudentFields_(lock) {
+      document.querySelectorAll("#panel-student .sfield.lockable").forEach(function (f) {
+        f.classList.toggle("locked", !!lock);
+        var inp = f.querySelector("input, select");
+        if (inp) { if (inp.tagName === "SELECT") inp.disabled = !!lock; else inp.readOnly = !!lock; }
+      });
+    }
+    document.querySelectorAll("#panel-student .sfield.lockable").forEach(function (f) {
+      f.addEventListener("click", function () {
+        if (!f.classList.contains("locked")) return;
+        f.classList.remove("locked");
+        var inp = f.querySelector("input, select");
+        if (inp) { if (inp.tagName === "SELECT") inp.disabled = false; else inp.readOnly = false; inp.focus(); }
+      });
+    });
+    byId("student-info").addEventListener("click", function () {
+      var h = byId("student-edit-hint");
+      h.style.display = h.style.display === "none" ? "" : "none";
+    });
+    byId("cancel-student-btn").addEventListener("click", function () {
+      var msg = byId("student-msg");
+      if (lastLoadedRec) { setStudentForm(lastLoadedRec, true); msg.textContent = "اتلغى التعديل ورجعت البيانات المحفوظة"; msg.className = "msg ok"; }
+      else { setStudentForm({}, false); msg.textContent = ""; }
+    });
+
+    // بحث فوري: نتايج تظهر وانت بتكتب، ولو الاسم مش موجود يظهر زرار "إضافة كمخدوم جديد"
+    var liveSeq = 0, liveTimer = null;
+    function liveStudentSearch_() {
+      var q = byId("student-search").value.trim(), box = byId("student-matches"), mySeq = ++liveSeq;
+      clearTimeout(liveTimer);
+      if (q.length < 2) { box.innerHTML = ""; return; }
+      liveTimer = setTimeout(function () {
+        gs.withSuccessHandler(function (matches) {
+          if (mySeq !== liveSeq) return;
+          box.innerHTML = "";
+          matches.slice(0, 8).forEach(function (m) {
+            var b = document.createElement("button");
+            b.type = "button"; b.className = "match-item";
+            b.textContent = m["الاسم"];
+            var extra = [m["المرحلة"], m["الفصل"]].filter(Boolean).join(" · ");
+            if (extra) { var s = document.createElement("small"); s.textContent = extra; b.appendChild(s); }
+            b.addEventListener("click", function () {
+              liveSeq++; box.innerHTML = "";
+              setStudentForm(m, true);
+              var msg = byId("student-msg"); msg.textContent = "تم تحميل بيانات " + m["الاسم"] + " - تقدر تعدّل وتحفظ"; msg.className = "msg ok";
+            });
+            box.appendChild(b);
+          });
+          var exact = matches.some(function (m) { return (m["الاسم"] || "").toString().trim() === q; });
+          if (!exact) {
+            var add = document.createElement("button");
+            add.type = "button"; add.className = "sd-add";
+            add.textContent = "＋ إضافة «" + q + "» كمخدوم جديد";
+            add.addEventListener("click", function () {
+              liveSeq++; box.innerHTML = "";
+              setStudentForm({ "الاسم": q }, false);
+              var msg = byId("student-msg"); msg.textContent = "املأ بيانات المخدوم الجديد واحفظ"; msg.className = "msg ok";
+              byId("student-phone").focus();
+            });
+            box.appendChild(add);
+          }
+        }).withFailureHandler(function () {}).searchStudents(q, byId("student-stage").value);
+      }, 350);
+    }
+    byId("student-search").addEventListener("input", liveStudentSearch_);
+
+    // أزرار الاتصال/واتساب جنب رقم التليفون + السن جنب تاريخ الميلاد
+    function studentWaNumber_(raw) {
+      var d = (raw || "").toString().replace(/\D/g, "");
+      if (!d) return "";
+      if (d.indexOf("00") === 0) d = d.substring(2);
+      else if (d.charAt(0) === "0") d = "20" + d.substring(1);
+      else if (d.length === 10 && d.charAt(0) === "1") d = "20" + d;
+      return d;
+    }
+    function studentAgeText_(iso) {
+      var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
+      if (!m) return "";
+      var now = new Date(), age = now.getFullYear() - Number(m[1]);
+      if (now.getMonth() + 1 < Number(m[2]) || (now.getMonth() + 1 === Number(m[2]) && now.getDate() < Number(m[3]))) age--;
+      return age >= 0 && age < 120 ? "(" + age + " سنة)" : "";
+    }
+    function refreshStudentExtras_() {
+      var wa = studentWaNumber_(byId("student-phone").value);
+      var waBtn = byId("student-wa"), callBtn = byId("student-call");
+      waBtn.innerHTML = WA_ICON_ROSTER;
+      waBtn.classList.add("wa");
+      waBtn.classList.toggle("disabled", !wa);
+      callBtn.classList.toggle("disabled", !wa);
+      if (wa) waBtn.href = "https://wa.me/" + wa; else waBtn.removeAttribute("href");
+      var age = studentAgeText_(byId("student-birth").value), ageEl = byId("student-age");
+      ageEl.textContent = age;
+      ageEl.style.display = age ? "" : "none";
+    }
+    byId("student-phone").addEventListener("input", refreshStudentExtras_);
+    byId("student-birth").addEventListener("input", refreshStudentExtras_);
+    byId("student-birth").addEventListener("change", refreshStudentExtras_);
+    byId("student-call").addEventListener("click", function (e) {
+      var wa = studentWaNumber_(byId("student-phone").value);
+      if (wa) dialNumber(wa, e); else e.preventDefault();
+    });
+    byId("student-search").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") byId("load-student").click();
+    });
 
     // بتدوّر على مخدوم وتحمّل بياناته في الفورم، ومتستخدمة من زرار البحث ومن الدوس على اسم في قائمة المخدومين
     var studentSearchSeq = 0;
     function searchAndLoadStudent(query, stage) {
       var mySeq = ++studentSearchSeq;
+      liveSeq++; clearTimeout(liveTimer);
       document.getElementById("student-search").value = query;
       if (stage) document.getElementById("student-stage").value = stage;
 
