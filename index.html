@@ -878,6 +878,66 @@
       margin-top: 5px;
     }
 
+    /* ---------- الشريط السفلي الجديد ---------- */
+    .bottom-nav { align-items: stretch; padding-top: 6px; }
+    .bottom-nav .bottom-nav-btn { width: 25%; gap: 3px; padding: 2px 4px; font-size: 11px; cursor: pointer; }
+    .bottom-nav .nav-ico {
+      position: relative; width: 54px; height: 32px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center; transition: background .18s, transform .18s;
+    }
+    .bottom-nav .nav-ico svg { width: 23px; height: 23px; }
+    .bottom-nav .bottom-nav-btn.active .nav-ico { background: linear-gradient(135deg, rgba(217,168,92,0.38), rgba(169,122,58,0.30)); color: var(--gold-light); transform: translateY(-1px); }
+    .bottom-nav .bottom-nav-btn:active .nav-ico { transform: scale(.94); }
+    .nav-badge {
+      position: absolute; top: -3px; left: 6px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+      background: #d9534f; color: #fff; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--card);
+    }
+
+    /* ---------- الإعدادات / ملفي ---------- */
+    .set-line { font-size: 13px; color: var(--text-dim); line-height: 1.8; margin: 6px 0 10px; }
+    #panel-settings button.secondary { margin-top: 8px; }
+    button.set-danger { border-color: var(--err); color: var(--err); }
+    .pf-head { text-align: center; padding-top: 22px; }
+    .pf-avatar {
+      width: 76px; height: 76px; margin: 0 auto 10px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold) 0%, #a97a3a 100%); color: #241a0f;
+      display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900;
+      box-shadow: 0 0 0 4px rgba(217,168,92,0.2);
+    }
+    .pf-name { font-size: 18px; font-weight: 700; color: var(--gold-light); }
+    .pf-role { font-size: 12.5px; color: var(--text-dim); margin-top: 4px; }
+    .staff-note { margin-bottom: 14px; }
+    .tag-off { display: inline-block; margin-inline-start: 6px; padding: 1px 8px; border-radius: 8px; background: rgba(240,163,148,0.22); color: var(--err); font-size: 11px; font-weight: 700; vertical-align: middle; }
+    .sa-person.is-off .roster-name { opacity: .6; text-decoration: line-through; }
+
+    /* ---------- استيراد كشف Excel ---------- */
+    input[type=file] {
+      width: 100%; padding: 10px; border-radius: 10px; border: 1px dashed var(--gold);
+      background: rgba(217,168,92,0.08); color: var(--text); font-family: inherit; font-size: 13.5px;
+    }
+    .imp-map-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .imp-map-row span { flex: 0 0 100px; font-size: 12.5px; color: var(--text-dim); }
+    .imp-map-row select { flex: 1; min-width: 0; }
+    label.imp-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); margin-top: 14px; line-height: 1.6; }
+    label.imp-check input { width: 18px; height: 18px; accent-color: var(--gold); flex-shrink: 0; }
+    .imp-summary { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+    .imp-chip { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border); background: rgba(0,0,0,0.15); }
+    .imp-toolbar { display: flex; gap: 8px; margin-bottom: 6px; }
+    .imp-toolbar button { flex: 1; margin: 0; padding: 8px; font-size: 12.5px; }
+    .imp-row { display: flex; align-items: center; gap: 10px; padding: 9px 2px; border-bottom: 1px solid var(--border); }
+    .imp-row:last-child { border-bottom: none; }
+    .imp-row input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--gold); flex-shrink: 0; }
+    .imp-row .imp-text { flex: 1; min-width: 0; }
+    .imp-row .roster-address { white-space: normal; }
+    .imp-note { font-size: 11.5px; color: var(--gold-light); margin-top: 2px; }
+    .imp-badge { flex-shrink: 0; padding: 3px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .st-new { background: rgba(147,212,147,0.18); color: var(--ok); }
+    .st-exists { background: rgba(143,193,227,0.18); color: var(--sky); }
+    .st-similar, .st-other_stage { background: rgba(217,168,92,0.22); color: var(--gold-light); }
+    .st-dup_file, .st-error { background: rgba(240,163,148,0.18); color: var(--err); }
+    .imp-row.off { opacity: .55; }
+
     /* ===== PWA: شريط عدم الاتصال / التثبيت / التحديث ===== */
     #offline-bar {
       display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
@@ -1036,12 +1096,12 @@
 
   <div class="user-line-row">
     <span class="user-line" id="user-line"></span>
-    <button class="logout-btn" id="push-btn" style="display:none;">🔔 إشعارات الموبايل</button>
     <button class="logout-btn" id="logout-btn">خروج</button>
   </div>
 
   <!-- ============ الرئيسية (شبكة الاختصارات) ============ -->
   <div class="panel active" id="panel-home">
+    <div class="note staff-note" id="staff-note" style="display:none;"></div>
     <div class="home-grid">
       <button class="tab-btn home-tile home-tile-primary" data-tab="attendance">
         <span class="home-tile-icon">
@@ -1085,6 +1145,12 @@
         </span>
         <span class="home-tile-label">بداية سنة جديدة</span>
       </button>
+      <button class="tab-btn home-tile" data-tab="import" id="home-tile-import" style="display:none;">
+        <span class="home-tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3" width="17" height="18" rx="2.5"/><path d="M3.5 8.5h17M3.5 14h17M9.5 3v18"/><path d="M15 16.5l2 2 3-3.5" stroke-width="2"/></svg>
+        </span>
+        <span class="home-tile-label">استيراد كشف Excel</span>
+      </button>
     </div>
   </div>
 
@@ -1125,6 +1191,7 @@
   <div class="panel" id="panel-roster">
     <div class="card">
       <p class="card-title">قائمة المخدومين</p>
+      <button class="secondary" id="roster-import-btn" type="button" style="display:none; margin-top:8px;">📥 استيراد كشف Excel للمرحلة</button>
       <label>اختار المرحلة</label>
       <select id="roster-stage-select">
         <option value="">كل المراحل</option>
@@ -1135,7 +1202,7 @@
       <label>اختار الفصل</label>
       <select id="roster-class-select"><option value="">جاري تحميل الفصول...</option></select>
       <label>ابحث بالاسم</label>
-      <input type="text" id="roster-search" placeholder="اكتب الاسم أو جزء منه">
+      <input type="text" id="roster-search" placeholder="اكتب الاسم أو رقم التليفون">
       <div id="roster-list" style="margin-top:14px;">جاري تحميل القائمة...</div>
     </div>
   </div>
@@ -1154,6 +1221,57 @@
         <button id="ny-run" class="secondary">ابدأ سنة جديدة</button>
       </div>
       <div class="msg" id="ny-msg"></div>
+    </div>
+  </div>
+
+  <!-- ============ استيراد كشف مخدومين (Excel) ============ -->
+  <div class="panel" id="panel-import">
+    <div class="card">
+      <p class="card-title">استيراد كشف مخدومين من Excel</p>
+      <div class="note" style="text-align:right; line-height:1.9;">
+        ارفع ملف Excel (‎.xlsx) أو CSV فيه أسماء المخدومين. هتراجع الأسماء قبل الحفظ،
+        واللي موجود بالفعل في المرحلة مش هيتضاف تاني. ممكن تحمّل النموذج وتملاه، أو ترفع كشفك زي ما هو وتختار كل عمود معناه إيه.
+      </div>
+      <button class="secondary" id="imp-template" type="button">⬇️ تحميل نموذج الكشف (Excel)</button>
+      <div id="imp-stage-wrap" style="display:none;">
+        <label>المرحلة اللي هيتضاف لها الكشف</label>
+        <select id="imp-stage">
+          <option value="">اختار المرحلة</option>
+          <option value="أولى ثانوي">أولى ثانوي</option>
+          <option value="ثانية ثانوي">ثانية ثانوي</option>
+          <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+        </select>
+      </div>
+      <label>ملف الكشف</label>
+      <input type="file" id="imp-file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv">
+      <div class="msg" id="imp-file-msg"></div>
+    </div>
+
+    <div class="card" id="imp-map-card" style="display:none; margin-top:12px;">
+      <p class="card-title">كل عمود في الكشف معناه إيه؟</p>
+      <div id="imp-sheet-wrap" style="display:none;">
+        <label>الشيت (التاب)</label>
+        <select id="imp-sheet"></select>
+      </div>
+      <div id="imp-map"></div>
+      <label>فصل المخدومين اللي مالهمش فصل في الكشف</label>
+      <select id="imp-default-class"><option value="">اختار المرحلة الأول</option></select>
+      <input type="text" id="imp-default-class-new" placeholder="اكتب اسم الفصل الجديد" style="display:none; margin-top:8px;">
+      <label class="imp-check"><input type="checkbox" id="imp-update"> حدّث بيانات المخدومين الموجودين بالفعل (من الخانات المكتوبة في الكشف بس، والفاضي ما بيمسحش حاجة)</label>
+      <button class="primary" id="imp-preview-btn" type="button">مراجعة الكشف</button>
+      <div class="msg" id="imp-map-msg"></div>
+    </div>
+
+    <div class="card" id="imp-preview-card" style="display:none; margin-top:12px;">
+      <p class="card-title">مراجعة قبل الحفظ</p>
+      <div class="imp-summary" id="imp-summary"></div>
+      <div class="imp-toolbar">
+        <button class="secondary" id="imp-all" type="button">تحديد الكل</button>
+        <button class="secondary" id="imp-none" type="button">إلغاء التحديد</button>
+      </div>
+      <div id="imp-list"></div>
+      <button class="primary" id="imp-run" type="button">استيراد المحدد</button>
+      <div class="msg" id="imp-run-msg"></div>
     </div>
   </div>
 
@@ -1313,7 +1431,7 @@
   <div class="panel" id="panel-student">
     <div class="sd-search">
       <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span>
-      <input type="text" id="student-search" placeholder="ابحث عن مخدوم أو أضف جديداً...">
+      <input type="text" id="student-search" placeholder="ابحث بالاسم أو رقم التليفون...">
       <button type="button" class="sd-go" id="load-student">بحث</button>
     </div>
     <div id="student-matches" class="sd-results"></div>
@@ -1434,7 +1552,7 @@
 
       <div class="subpanel" id="subpanel-student-stats">
         <label>اسم المخدوم</label>
-        <input type="text" id="stats-student-search" placeholder="اكتب الاسم أو جزء منه">
+        <input type="text" id="stats-student-search" placeholder="اكتب الاسم أو رقم التليفون">
         <button class="secondary" id="load-student-stats">عرض الإحصائيات</button>
         <div class="stats-result" id="student-stats-result"></div>
         <div class="divider"></div>
@@ -1491,29 +1609,115 @@
     </div>
   </div>
 
-  <!-- ============ الشريط السفلي ============ -->
+  <!-- ============ الإشعارات ============ -->
+  <div class="panel" id="panel-notifications">
+    <div class="note" id="nt-push-hint" style="display:none; text-align:right;">
+      🔔 إشعارات الموبايل مش مفعّلة على الجهاز ده. <a href="#" id="nt-push-link" style="color:var(--gold-light); font-weight:700;">فعّلها من الإعدادات</a> عشان توصلك حتى لو التطبيق مقفول.
+    </div>
+    <div class="card" id="nt-alerts-card">
+      <p class="card-title">🔴 إشعارات الغياب (جمعتين ورا بعض)</p>
+      <div id="page-alerts"><div class="notif-empty">جاري التحميل...</div></div>
+    </div>
+    <div class="card" id="nt-inbox-card" style="margin-top:12px;">
+      <p class="card-title">📩 رسائل واردة</p>
+      <div id="page-inbox"><div class="notif-empty">جاري التحميل...</div></div>
+    </div>
+    <div class="card" id="nt-staff-card" style="display:none;">
+      <p class="card-title">الإشعارات</p>
+      <div class="notif-empty">مفيش إشعارات لدورك دلوقتي. إشعارات أعياد ميلاد الخدام بتوصلك على الموبايل لو فعّلتها من الإعدادات.</div>
+    </div>
+  </div>
+
+  <!-- ============ الإعدادات ============ -->
+  <div class="panel" id="panel-settings">
+    <div class="card">
+      <p class="card-title">🔔 إشعارات الموبايل</p>
+      <div class="set-line" id="push-status">جاري التحقق...</div>
+      <button class="secondary" id="push-btn" type="button" style="display:none;">فعّل إشعارات الموبايل</button>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <p class="card-title">🔑 تغيير كلمة السر</p>
+      <label>كلمة السر الحالية</label>
+      <input type="password" id="cp-old" autocomplete="current-password">
+      <label>كلمة السر الجديدة (6 حروف أو أرقام على الأقل)</label>
+      <input type="password" id="cp-new1" autocomplete="new-password">
+      <label>أكّد كلمة السر الجديدة</label>
+      <input type="password" id="cp-new2" autocomplete="new-password">
+      <button class="primary" id="cp-save" type="button">تغيير كلمة السر</button>
+      <div class="msg" id="cp-msg"></div>
+    </div>
+
+    <div class="card" id="set-admin-card" style="margin-top:12px; display:none;">
+      <p class="card-title">👥 إدارة الخدام</p>
+      <div class="set-line">تغيير دور الخادم (خادم فصل / إداري / مالية) أو إيقاف حسابه: من بيانات الخدام، دوس على اسم الخادم.</div>
+      <button class="secondary" id="set-go-servants" type="button">فتح بيانات الخدام</button>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <p class="card-title">⚙️ التطبيق</p>
+      <button class="secondary" id="set-reload" type="button">🔄 تحديث التطبيق لآخر نسخة</button>
+      <button class="secondary set-danger" id="set-logout" type="button">🚪 تسجيل الخروج</button>
+    </div>
+  </div>
+
+  <!-- ============ ملفي ============ -->
+  <div class="panel" id="panel-profile">
+    <div class="card pf-head">
+      <div class="pf-avatar" id="pf-avatar"></div>
+      <div class="pf-name" id="pf-name"></div>
+      <div class="pf-role" id="pf-role"></div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <p class="card-title">بيانات الحساب</p>
+      <div id="pf-info"></div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <p class="card-title">حضوري في الخدمة <span class="year-tag" id="pf-year"></span></p>
+      <div id="pf-att"><div class="stat-empty">جاري التحميل...</div></div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <p class="card-title">بياناتي الشخصية</p>
+      <label>رقم التليفون</label>
+      <input type="tel" id="pf-phone" placeholder="01xxxxxxxxx">
+      <label>تاريخ الميلاد</label>
+      <input type="date" id="pf-birth">
+      <label>العنوان</label>
+      <input type="text" id="pf-address">
+      <label>المؤهل الدراسي</label>
+      <input type="text" id="pf-qual">
+      <button class="primary" id="pf-save" type="button">حفظ بياناتي</button>
+      <div class="msg" id="pf-msg"></div>
+      <div class="role-hint">الاسم والدور والمرحلة والفصل بيغيّرهم أمين المرحلة أو أمين الخدمة.</div>
+    </div>
+  </div>
+
+  <!-- ============ الشريط السفلي: الرئيسية / الإشعارات / الإعدادات / ملفي ============ -->
   <nav class="bottom-nav">
-    <button class="tab-btn bottom-nav-btn" data-tab="birthdays">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21v-8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8"/><path d="M2.5 13h19M8 10V6.5c0-1 .8-1.8 1.8-1.8.7 0 1.2.5 1.2 1.2 0-.7.5-1.2 1.2-1.2 1 0 1.8.8 1.8 1.8V10"/><path d="M3 21h18"/></svg>
-      <span>أعياد الميلاد</span>
-    </button>
-    <button class="tab-btn bottom-nav-btn" data-tab="stats">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2.5 20h19"/></svg>
-      <span>إحصائيات</span>
-    </button>
-    <button class="tab-btn bottom-nav-btn bottom-nav-btn-primary" data-tab="attendance">
-      <span class="bottom-nav-primary-circle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="m8.5 15 2 2 4.5-4.5"/></svg>
+    <button class="tab-btn bottom-nav-btn active" data-tab="home" type="button">
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9v10.2a.8.8 0 0 0 .8.8H10v-5.5h4V20h3.7a.8.8 0 0 0 .8-.8V9"/></svg>
       </span>
-      <span>تسجيل الحضور</span>
+      <span>الرئيسية</span>
     </button>
-    <button class="tab-btn bottom-nav-btn" data-tab="student">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5 16c.5-1.8 2-2.8 3.5-2.8s3 1 3.5 2.8M14.5 9.5h4M14.5 13h4"/></svg>
-      <span>بيانات مخدوم</span>
+    <button class="tab-btn bottom-nav-btn" data-tab="notifications" type="button">
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 0 0-12 0c0 6.5-2.5 8-2.5 8h17S18 16 18 9.5"/><path d="M10.2 20.5a2 2 0 0 0 3.6 0"/></svg>
+        <span class="nav-badge" id="nav-badge" style="display:none;">0</span>
+      </span>
+      <span>الإشعارات</span>
     </button>
-    <button class="tab-btn bottom-nav-btn" data-tab="roster">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M16 14.2c2.6.3 4.5 2.3 4.5 5.3"/></svg>
-      <span>قائمة المخدومين</span>
+    <button class="tab-btn bottom-nav-btn" data-tab="settings" type="button">
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </span>
+      <span>الإعدادات</span>
+    </button>
+    <button class="tab-btn bottom-nav-btn" data-tab="profile" type="button">
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="10" r="3.2"/><path d="M6.3 18.4c1.2-2.2 3.2-3.3 5.7-3.3s4.5 1.1 5.7 3.3"/></svg>
+      </span>
+      <span>ملفي</span>
     </button>
   </nav>
 
@@ -1521,7 +1725,10 @@
 
   <script>
     // ============ الحساب والجلسة ============
-    var ROLE_CLASS = "خادم فصل", ROLE_STAGE = "أمين مرحلة", ROLE_ADMIN = "أمين خدمة";
+    var ROLE_CLASS = "خادم فصل", ROLE_STAGE = "أمين مرحلة", ROLE_ADMIN = "أمين خدمة", ROLE_OFFICE = "إداري", ROLE_FINANCE = "مالية";
+    // إداري / مالية: ما بيشوفوش أي حاجة من بيانات المخدومين (والسيرفر بيمنعهم كمان)
+    function isStaff(u) { return !!u && (u.role === ROLE_OFFICE || u.role === ROLE_FINANCE); }
+    function isLeader(u) { return !!u && (u.role === ROLE_STAGE || u.role === ROLE_ADMIN); }
     var TOKEN = "";
     var ME = null;
 
@@ -1538,13 +1745,14 @@
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
-      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "getServantStageStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport", "getPushKey", "pushSubscribe", "pushUnsubscribe", "pushTest"];
+      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "getServantStageStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport", "getPushKey", "pushSubscribe", "pushUnsubscribe", "pushTest", "getImportPreview", "importStudents", "setUserDisabled", "getMyProfile", "updateMyProfile", "changePassword"];
 
     // ============ طبقة الاتصال بالسيرفر ============
     // جوه Apps Script: google.script.run زي الأول. وكمان PWA على استضافة تانية: fetch (POST) لرابط الـ Web App (APPS_SCRIPT_URL في config.js)
     var IN_APPS_SCRIPT = (typeof google !== "undefined" && google.script && google.script.run);
     var APPS_SCRIPT_URL = (typeof window.APPS_SCRIPT_URL === "string") ? window.APPS_SCRIPT_URL.trim() : "";
     var OFFLINE_MSG = "مفيش اتصال بالإنترنت. التطبيق محتاج نت عشان يشتغل";
+    var LONG_ACTIONS = { importStudents: 1, runNewYear: 1 };
 
     // الدوال العامة اللي بتتنادي مباشرة (من غير توكن) وباقي النداءات بتعدّي على api
     function rpcOnce(fn, args, ok, fail) {
@@ -1555,7 +1763,9 @@
       }
       if (!APPS_SCRIPT_URL) { if (fail) fail(new Error("رابط السيرفر مش متظبط (config.js)")); return; }
       var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
-      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 40000) : null;
+      // العمليات التقيلة (استيراد كشف / سنة جديدة) ممكن تاخد أكتر من 40 ثانية على السيرفر، فبنستناها لحد 5 دقايق ونص
+      var longCall = fn === "api" && args && LONG_ACTIONS[args[1]];
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, longCall ? 330000 : 40000) : null;
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
         // text/plain عشان الطلب يبقى "بسيط" ومحتاجش preflight (Apps Script مش بيرد على OPTIONS)
@@ -1711,6 +1921,7 @@
       }, function (err) {
         var m = (err && err.message) || "";
         if (m.indexOf("AUTH_REQUIRED") !== -1) { logout("انتهت الجلسة، سجّل دخول تاني"); return; }
+        if (m.indexOf("ACCOUNT_DISABLED") !== -1) { logout("الحساب ده اتوقف. كلّم أمين المرحلة أو أمين الخدمة"); return; }
         if (fail) fail(err);
       });
     }
@@ -1761,6 +1972,7 @@
     function goToTab(tabName, opts) {
       opts = opts || {};
       var current = currentTabName();
+      if (current === "notifications" && tabName !== "notifications") leaveNotifications_();
       if (!opts.skipHistory && current !== tabName) navStack.push(current);
 
       document.querySelectorAll(".tab-btn").forEach(function (b) {
@@ -1781,7 +1993,7 @@
     }
 
     document.querySelectorAll(".tab-btn").forEach(function (btn) {
-      btn.addEventListener("click", function () { goToTab(btn.dataset.tab); });
+      btn.addEventListener("click", function () { if (btn.dataset.tab === "home") goHome(); else goToTab(btn.dataset.tab); });
     });
 
     document.getElementById("back-btn").addEventListener("click", goBack);
@@ -1792,8 +2004,9 @@
 
     // الشعار/الاسم في الهيدر بيرجّع للرئيسية (شبكة الاختصارات)
     function goHome() {
+      if (currentTabName() === "notifications") leaveNotifications_();
       navStack = [];
-      document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+      document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.toggle("active", b.dataset.tab === "home"); });
       document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("active"); });
       document.getElementById("panel-home").classList.add("active");
       document.getElementById("subnav-row").style.display = "none";
@@ -1987,7 +2200,7 @@ function dialNumber(num, e) {
         del.className = "roster-icon danger";
         del.innerHTML = TRASH_ICON;
         del.title = "حذف المخدوم";
-        del.addEventListener("click", function () { deleteStudentFromRoster(p.name, del); });
+        del.addEventListener("click", function () { deleteStudentFromRoster(p.name, del, p.stage); });
 
         var text = document.createElement("div");
         text.className = "roster-text roster-text-clickable";
@@ -1997,7 +2210,7 @@ function dialNumber(num, e) {
         nameEl.textContent = p.name;
         var addrEl = document.createElement("div");
         addrEl.className = "roster-address";
-        addrEl.textContent = p.address || "بدون عنوان";
+        addrEl.textContent = (isPhoneQuery(document.getElementById("roster-search").value) && p.phone) ? "📞 " + p.phone : (p.address || "بدون عنوان");
         text.appendChild(nameEl);
         text.appendChild(addrEl);
         text.addEventListener("click", function () {
@@ -2028,7 +2241,7 @@ function dialNumber(num, e) {
     }
 
     // بتحذف مخدوم نهائيًا بعد تأكيد، وبترجّع تحديث كل القوائم المرتبطة بيه في التطبيق
-    function deleteStudentFromRoster(name, btn) {
+    function deleteStudentFromRoster(name, btn, stage) {
       var confirmed = window.confirm("متأكد إنك عايز تحذف \"" + name + "\" نهائيًا؟ ده هيشيله من شيت المخدومين وكل سجلات الحضور، ومينفعش يترجع.");
       if (!confirmed) return;
 
@@ -2043,18 +2256,27 @@ function dialNumber(num, e) {
       }).withFailureHandler(function (err) {
         btn.disabled = false;
         window.alert("تعذر الحذف: " + err.message);
-      }).deleteStudent(name);
+      }).deleteStudent(name, stage || "");
     }
 
     // ---------- بيانات الخدام (للأمناء بس) ----------
            // ---------- تعديل الدور/المرحلة/الفصل جوه بيانات الخادم نفسها ----------
     // أمين الخدمة: الدور والمرحلة والفصل (اختيار). أمين المرحلة: الفصل بس (اختيار من فصول مرحلته).
-    function canEditServant(s) {
-      if (!s.hasAccount || s.role === ROLE_ADMIN) return false;
+    // أمين الخدمة: أي خادم (مش أمين خدمة) لأي دور. أمين المرحلة: خدام مرحلته بين خادم فصل / إداري / مالية
+    var STAGES_LIST = ["أولى ثانوي", "ثانية ثانوي", "ثالثة ثانوي"];
+    function managedRoles() {
+      if (ME.role === ROLE_ADMIN) return [ROLE_CLASS, ROLE_STAGE, ROLE_OFFICE, ROLE_FINANCE];
+      if (ME.role === ROLE_STAGE) return [ROLE_CLASS, ROLE_OFFICE, ROLE_FINANCE];
+      return [];
+    }
+    function canManageServant(s) {
+      if (!ME || !s.hasAccount || s.username === ME.username) return false;
       if (ME.role === ROLE_ADMIN) return true;
-      if (ME.role === ROLE_STAGE) return s.role === ROLE_CLASS && (s.stage || "") === (ME.stage || "");
+      if (ME.role === ROLE_STAGE) return managedRoles().indexOf(s.role) !== -1 && (s.stage || "") === (ME.stage || "");
       return false;
     }
+    function canEditServant(s) { return canManageServant(s) && s.role !== ROLE_ADMIN; }
+
     function addRoleEditor(s, details, subEl, valSpans) {
       if (!canEditServant(s)) return;
       var admin = ME.role === ROLE_ADMIN;
@@ -2062,13 +2284,16 @@ function dialNumber(num, e) {
       function put(label, node) { var sp = valSpans[label]; if (!sp) return null; sp.textContent = ""; sp.appendChild(node); sp.parentNode.classList.add("sa-edit"); return sp; }
 
       var roleSel = document.createElement("select"), stageSel = document.createElement("select"), clsSel = document.createElement("select");
+      managedRoles().forEach(function (r) { opt(roleSel, r, r); });
+      roleSel.value = managedRoles().indexOf(s.role) !== -1 ? s.role : ROLE_CLASS;
+      put("الدور في الخدمة", roleSel);
+      var stageRow = null;
       if (admin) {
-        opt(roleSel, ROLE_CLASS, ROLE_CLASS); opt(roleSel, ROLE_STAGE, ROLE_STAGE);
-        ["أولى ثانوي", "ثانية ثانوي", "ثالثة ثانوي"].forEach(function (g) { opt(stageSel, g, g); });
-        roleSel.value = s.role === ROLE_STAGE ? ROLE_STAGE : ROLE_CLASS;
-        stageSel.value = s.stage || "أولى ثانوي";
-        put("الدور في الخدمة", roleSel);
-        put("المرحلة", stageSel);
+        opt(stageSel, "", "كل الخدمة (من غير مرحلة)");
+        STAGES_LIST.forEach(function (g) { opt(stageSel, g, g); });
+        stageSel.value = s.stage || "";
+        var sp = put("المرحلة", stageSel);
+        stageRow = sp ? sp.parentNode : null;
       }
       var clsSpan = put("الفصل", clsSel);
       var clsRow = clsSpan ? clsSpan.parentNode : null;
@@ -2076,41 +2301,52 @@ function dialNumber(num, e) {
       // فصول المرحلة المتاحة (اختيار من القايمة، مش كتابة)
       function loadClasses(stage) {
         var cur = clsSel.value || (stage === (s.stage || "") ? (s.cls || "") : "");
-        clsSel.innerHTML = ""; opt(clsSel, "", "جاري تحميل الفصول..."); clsSel.disabled = true;
+        clsSel.innerHTML = "";
+        if (!stage) { opt(clsSel, "", "اختار المرحلة الأول"); return; }
+        opt(clsSel, "", "جاري تحميل الفصول..."); clsSel.disabled = true;
         gs.withSuccessHandler(function (list) {
-          var keepNow = clsSel.value && clsSel.value !== "" ? clsSel.value : cur;
           var items = (list || []).slice();
-          if (keepNow && items.indexOf(keepNow) === -1 && stage === (s.stage || "")) items.unshift(keepNow);
+          if (cur && items.indexOf(cur) === -1 && stage === (s.stage || "")) items.unshift(cur);
           clsSel.innerHTML = ""; clsSel.disabled = false;
           opt(clsSel, "", items.length ? "اختار الفصل" : "مفيش فصول في المرحلة دي لسه");
           items.forEach(function (c) { opt(clsSel, c, c); });
-          clsSel.value = items.indexOf(keepNow) !== -1 ? keepNow : "";
+          clsSel.value = items.indexOf(cur) !== -1 ? cur : "";
         }).withFailureHandler(function () {
           clsSel.innerHTML = ""; clsSel.disabled = false;
           opt(clsSel, "", "تعذّر تحميل الفصول");
           if (cur) { opt(clsSel, cur, cur); clsSel.value = cur; }
         }).getClasses(stage);
       }
-      function sync() { if (clsRow) clsRow.style.display = (!admin || roleSel.value === ROLE_CLASS) ? "" : "none"; }
-      if (admin) {
-        roleSel.addEventListener("change", sync);
-        stageSel.addEventListener("change", function () { clsSel.value = ""; loadClasses(stageSel.value); });
+      function curStage() { return admin ? stageSel.value : (s.stage || ME.stage); }
+      function sync() {
+        var r = roleSel.value, staff = r === ROLE_OFFICE || r === ROLE_FINANCE;
+        if (clsRow) clsRow.style.display = r === ROLE_CLASS ? "" : "none";
+        if (stageRow) {
+          // "كل الخدمة" متاحة للإداري والمالية بس
+          stageSel.options[0].disabled = !staff;
+          if (!staff && !stageSel.value) stageSel.value = STAGES_LIST[0];
+        }
       }
+      roleSel.addEventListener("change", sync);
+      if (admin) stageSel.addEventListener("change", function () { clsSel.value = ""; loadClasses(stageSel.value); });
       sync();
-      loadClasses(admin ? stageSel.value : (s.stage || ME.stage));
+      loadClasses(curStage());
 
       var save = document.createElement("button");
-      save.type = "button"; save.className = "primary"; save.textContent = "حفظ التعديل";
+      save.type = "button"; save.className = "primary"; save.textContent = "حفظ تغيير الدور";
       var msg = el("div", "msg");
       details.appendChild(save); details.appendChild(msg);
 
       save.addEventListener("click", function () {
-        var role = admin ? roleSel.value : ROLE_CLASS;
-        var stage = admin ? stageSel.value : s.stage;
+        var role = roleSel.value;
+        var stage = curStage();
         var cls = role === ROLE_CLASS ? clsSel.value : "";
+        var staff = role === ROLE_OFFICE || role === ROLE_FINANCE;
+        if (!stage && !staff) { msg.textContent = "اختار المرحلة"; msg.className = "msg err"; return; }
         if (role === ROLE_CLASS && !cls) { msg.textContent = "اختار الفصل"; msg.className = "msg err"; return; }
-        var desc = role + " · " + stage + (role === ROLE_CLASS ? " · " + cls : "");
-        if (!window.confirm("هتغيّر \"" + s.name + "\" إلى: " + desc + "؟ الصلاحيات هتتغير فوراً.")) return;
+        var desc = role + " · " + (stage || "كل الخدمة") + (role === ROLE_CLASS ? " · " + cls : "");
+        var warn = staff ? "\n(الإداري والمالية مش بيشوفوا أي بيانات للمخدومين)" : "";
+        if (!window.confirm("هتغيّر \"" + s.name + "\" إلى: " + desc + "؟ الصلاحيات هتتغير فوراً." + warn)) return;
         save.disabled = true; msg.textContent = "جاري الحفظ..."; msg.className = "msg";
         gs.withSuccessHandler(function () {
           save.disabled = false;
@@ -2122,6 +2358,39 @@ function dialNumber(num, e) {
           save.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
         }).updateUserRole(s.username, role, stage, cls);
       });
+    }
+
+    // إيقاف / تفعيل حساب الخادم
+    function addDisableControl(s, wrap, details, nameEl) {
+      if (!canManageServant(s)) return;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      var msg = el("div", "msg");
+      function paint() {
+        btn.className = "secondary" + (s.disabled ? "" : " set-danger");
+        btn.textContent = s.disabled ? "✅ تفعيل الحساب تاني" : "⛔ إيقاف الحساب";
+        btn.style.marginTop = "10px";
+        wrap.classList.toggle("is-off", !!s.disabled);
+        var tag = nameEl.querySelector(".tag-off");
+        if (s.disabled && !tag) nameEl.appendChild(el("span", "tag-off", "موقوف"));
+        if (!s.disabled && tag) tag.remove();
+      }
+      paint();
+      btn.addEventListener("click", function () {
+        var to = !s.disabled;
+        var q = to
+          ? "هتوقف حساب \"" + s.name + "\"؟\nمش هيقدر يدخل التطبيق، وأي جهاز فاتح عليه هيخرج فورًا. بياناته وحضوره بيفضلوا زي ما هم."
+          : "هتفعّل حساب \"" + s.name + "\" تاني؟";
+        if (!window.confirm(q)) return;
+        btn.disabled = true; msg.textContent = "جاري الحفظ..."; msg.className = "msg";
+        gs.withSuccessHandler(function () {
+          btn.disabled = false; s.disabled = to; paint();
+          msg.textContent = to ? "الحساب اتوقف" : "الحساب اتفعّل"; msg.className = "msg ok";
+        }).withFailureHandler(function (err) {
+          btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+        }).setUserDisabled(s.username, to);
+      });
+      details.appendChild(btn); details.appendChild(msg);
     }
     function renderServants(items, append) {
       var list = document.getElementById("servants-list");
@@ -2193,6 +2462,7 @@ function dialNumber(num, e) {
         });
         wrap.appendChild(details);
         addRoleEditor(s, details, subEl, valSpans);
+        addDisableControl(s, wrap, details, nameEl);
         row.addEventListener("click", function () { details.classList.toggle("open"); });
         list.appendChild(wrap);
       });
@@ -2920,6 +3190,14 @@ function dialNumber(num, e) {
       else { setStudentForm({}, false); msg.textContent = ""; }
     });
 
+    // البحث برقم تليفون؟ (4 أرقام على الأقل ومفيش حروف) - نفس قاعدة السيرفر
+    function isPhoneQuery(q) {
+      var s = (q || "").toString();
+      var d = s.replace(/[\u0660-\u0669]/g, function (x) { return String(x.charCodeAt(0) - 0x0660); }).replace(/\D/g, "");
+      return d.length >= 4 && !/[A-Za-z\u0621-\u064A]/.test(s);
+    }
+    function matchExtra(m) { return [m["المرحلة"], m["الفصل"], m["رقم التليفون"]].filter(Boolean).join(" · "); }
+
     // بحث فوري: نتايج تظهر وانت بتكتب، ولو الاسم مش موجود يظهر زرار "إضافة كمخدوم جديد"
     var liveSeq = 0, liveTimer = null;
     function liveStudentSearch_() {
@@ -2934,7 +3212,7 @@ function dialNumber(num, e) {
             var b = document.createElement("button");
             b.type = "button"; b.className = "match-item";
             b.textContent = m["الاسم"];
-            var extra = [m["المرحلة"], m["الفصل"]].filter(Boolean).join(" · ");
+            var extra = matchExtra(m);
             if (extra) { var s = document.createElement("small"); s.textContent = extra; b.appendChild(s); }
             b.addEventListener("click", function () {
               liveSeq++; box.innerHTML = "";
@@ -2944,7 +3222,21 @@ function dialNumber(num, e) {
             box.appendChild(b);
           });
           var exact = matches.some(function (m) { return (m["الاسم"] || "").toString().trim() === q; });
-          if (!exact) {
+          if (isPhoneQuery(q)) {
+            // بحث برقم: مفيش "إضافة باسم الرقم"، بس لو مالقاش حد نعرض إضافة مخدوم جديد بالرقم ده
+            if (!matches.length) {
+              var addP = document.createElement("button");
+              addP.type = "button"; addP.className = "sd-add";
+              addP.textContent = "مفيش مخدوم بالرقم ده · ＋ إضافة مخدوم جديد بالرقم";
+              addP.addEventListener("click", function () {
+                liveSeq++; box.innerHTML = "";
+                setStudentForm({ "رقم التليفون": q }, false);
+                var msg = byId("student-msg"); msg.textContent = "اكتب اسم المخدوم وباقي بياناته واحفظ"; msg.className = "msg ok";
+                byId("student-name").focus();
+              });
+              box.appendChild(addP);
+            }
+          } else if (!exact) {
             var add = document.createElement("button");
             add.type = "button"; add.className = "sd-add";
             add.textContent = "＋ إضافة «" + q + "» كمخدوم جديد";
@@ -3016,7 +3308,11 @@ function dialNumber(num, e) {
       msg.textContent = "جاري البحث..."; msg.className = "msg";
       gs.withSuccessHandler(function (matches) {
         if (mySeq !== studentSearchSeq) return;   // رد لبحث أقدم
-        if (!matches.length) {
+        if (!matches.length && isPhoneQuery(query)) {
+          setStudentForm({ "رقم التليفون": query }, false);
+          msg.textContent = "مفيش مخدوم بالرقم ده - لو جديد اكتب اسمه وباقي بياناته واحفظ";
+          msg.className = "msg ok";
+        } else if (!matches.length) {
           setStudentForm({ "الاسم": query }, false);
           msg.textContent = stage
             ? "مفيش مخدوم بالاسم ده في " + stage + " - املأ البيانات وهيتضاف في " + stage
@@ -3034,7 +3330,7 @@ function dialNumber(num, e) {
             b.type = "button";
             b.className = "match-item";
             b.textContent = m["الاسم"];
-            var extra = [m["المرحلة"], m["الفصل"]].filter(Boolean).join(" · ");
+            var extra = matchExtra(m);
             if (extra) {
               var s = document.createElement("small");
               s.textContent = extra;
@@ -3505,6 +3801,571 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       navigator.share({ files: [lastReportFile], title: lastReportFile.name }).catch(function () {});
     });
 
+    // ================= استيراد كشف مخدومين (Excel / CSV) =================
+    // قارئ xlsx من غير مكتبات: الملف zip، بنفكّه بـ DecompressionStream اللي في المتصفح، وبنقرا XML الشيتات
+    var XLR_ = (function () {
+      function u16(b, o) { return b[o] | (b[o + 1] << 8); }
+      function u32(b, o) { return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0; }
+      function unzip(buf) {
+        var b = new Uint8Array(buf), eocd = -1, dec = new TextDecoder();
+        for (var i = b.length - 22; i >= Math.max(0, b.length - 65557); i--) { if (u32(b, i) === 0x06054b50) { eocd = i; break; } }
+        if (eocd < 0) throw new Error("BAD_ZIP");
+        var n = u16(b, eocd + 10), off = u32(b, eocd + 16), out = {};
+        for (var k = 0; k < n && off + 46 <= b.length; k++) {
+          if (u32(b, off) !== 0x02014b50) break;
+          var method = u16(b, off + 10), csize = u32(b, off + 20);
+          var nlen = u16(b, off + 28), elen = u16(b, off + 30), clen = u16(b, off + 32), loc = u32(b, off + 42);
+          var name = dec.decode(b.subarray(off + 46, off + 46 + nlen));
+          var start = loc + 30 + u16(b, loc + 26) + u16(b, loc + 28);
+          out[name.replace(/^\/+/, "")] = { method: method, data: b.subarray(start, start + csize) };
+          off += 46 + nlen + elen + clen;
+        }
+        return out;
+      }
+      function inflate(e) {
+        if (e.method === 0) return Promise.resolve(e.data);
+        if (e.method !== 8) return Promise.reject(new Error("BAD_ZIP"));
+        if (typeof DecompressionStream === "undefined") return Promise.reject(new Error("NO_INFLATE"));
+        var stream = new Blob([e.data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+        return new Response(stream).arrayBuffer().then(function (ab) { return new Uint8Array(ab); });
+      }
+      function readText(files, name) {
+        var e = files[name];
+        if (!e) return Promise.resolve("");
+        return inflate(e).then(function (u) { return new TextDecoder("utf-8").decode(u); });
+      }
+      function xml(t) { return t ? new DOMParser().parseFromString(t, "application/xml") : null; }
+      function tags(node, name) { return node ? Array.prototype.slice.call(node.getElementsByTagNameNS("*", name)) : []; }
+      function colIndex(ref) {
+        var m = /^([A-Z]+)/.exec(ref || ""), n = 0;
+        if (!m) return -1;
+        for (var i = 0; i < m[1].length; i++) n = n * 26 + (m[1].charCodeAt(i) - 64);
+        return n - 1;
+      }
+      function rowIndex(ref) { var m = /(\d+)$/.exec(ref || ""); return m ? Number(m[1]) - 1 : -1; }
+      function textOf(node) { // نص الخلية من غير النطق المكتوب (rPh)
+        return tags(node, "t").filter(function (t) { return !t.parentNode || t.parentNode.localName !== "rPh"; })
+          .map(function (t) { return t.textContent; }).join("");
+      }
+      function isDateCode(code) {
+        var c = (code || "").replace(/"[^"]*"/g, "").replace(/\[[^\]]*\]/g, "").replace(/\\./g, "").toLowerCase();
+        return c !== "general" && /[dy]/.test(c);
+      }
+      function serialToIso(n, d1904) {
+        var d = new Date(Date.UTC(1899, 11, 30) + (Math.floor(n) + (d1904 ? 1462 : 0)) * 86400000);
+        return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
+      }
+      var MAX_R = 3000, MAX_C = 60;
+
+      function sheetRows(doc, sst, dateStyle, d1904) {
+        var grid = [], seqRow = -1;
+        tags(doc, "row").forEach(function (row) {
+          var r = row.getAttribute("r") ? Number(row.getAttribute("r")) - 1 : seqRow + 1;
+          seqRow = r;
+          if (r < 0 || r >= MAX_R) return;
+          var line = grid[r] = grid[r] || [], seqCol = -1;
+          tags(row, "c").forEach(function (c) {
+            var ref = c.getAttribute("r"), ci = ref ? colIndex(ref) : seqCol + 1;
+            seqCol = ci;
+            if (ci < 0 || ci >= MAX_C) return;
+            var t = c.getAttribute("t") || "", vEl = tags(c, "v")[0], v = vEl ? vEl.textContent : "", out;
+            if (t === "s") out = sst[Number(v)] || "";
+            else if (t === "inlineStr") out = textOf(tags(c, "is")[0]);
+            else if (t === "str") out = v;
+            else if (t === "b") out = v === "1" ? "TRUE" : "FALSE";
+            else if (t === "e") out = "";
+            else if (t === "d") out = v.slice(0, 10);
+            else if (v === "") out = "";
+            else {
+              var num = Number(v);
+              out = isNaN(num) ? v : (dateStyle[Number(c.getAttribute("s") || 0)] ? { date: serialToIso(num, d1904) } : num);
+            }
+            line[ci] = out;
+          });
+        });
+        // الخلايا المدموجة رأسيًا (زي الفصل مكتوب مرة واحدة لمجموعة أسماء): القيمة بتنزل لكل الصفوف
+        tags(doc, "mergeCell").forEach(function (m) {
+          var p = (m.getAttribute("ref") || "").split(":");
+          if (p.length !== 2) return;
+          var r1 = rowIndex(p[0]), c1 = colIndex(p[0]), r2 = Math.min(rowIndex(p[1]), MAX_R - 1);
+          if (r1 < 0 || c1 < 0 || c1 >= MAX_C || r2 <= r1) return;
+          var v = grid[r1] && grid[r1][c1];
+          if (v === undefined || v === "") return;
+          for (var r = r1 + 1; r <= r2; r++) { grid[r] = grid[r] || []; grid[r][c1] = v; }
+        });
+        var out = [];
+        for (var i = 0; i < grid.length; i++) {
+          var row = grid[i] || [], clean = [];
+          for (var j = 0; j < row.length; j++) clean.push(row[j] === undefined ? "" : row[j]);
+          out.push(clean);
+        }
+        return out;
+      }
+
+      function parseXlsx(buf) {
+        var files = unzip(buf);
+        return Promise.all([readText(files, "xl/workbook.xml"), readText(files, "xl/_rels/workbook.xml.rels"),
+          readText(files, "xl/sharedStrings.xml"), readText(files, "xl/styles.xml")]).then(function (t) {
+          var wb = xml(t[0]);
+          if (!wb) throw new Error("BAD_ZIP");
+          var rels = {};
+          tags(xml(t[1]), "Relationship").forEach(function (r) { rels[r.getAttribute("Id")] = r.getAttribute("Target") || ""; });
+          var sst = tags(xml(t[2]), "si").map(textOf);
+          var st = xml(t[3]), custom = {};
+          tags(st, "numFmt").forEach(function (f) { custom[f.getAttribute("numFmtId")] = f.getAttribute("formatCode"); });
+          var xfs = tags(st, "cellXfs")[0];
+          var dateStyle = tags(xfs, "xf").map(function (x) {
+            var id = Number(x.getAttribute("numFmtId") || 0);
+            return (id >= 14 && id <= 17) || id === 22 || (id >= 27 && id <= 36) || (id >= 50 && id <= 58) ||
+              (custom[id] !== undefined && isDateCode(custom[id]));
+          });
+          var d1904 = tags(wb, "workbookPr").some(function (p) { var v = p.getAttribute("date1904"); return v === "1" || v === "true"; });
+          var sheets = tags(wb, "sheet").map(function (s) {
+            var rid = s.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id") || s.getAttribute("r:id");
+            var target = rels[rid] || "";
+            var path = target.charAt(0) === "/" ? target.slice(1) : "xl/" + target.replace(/^\.\//, "");
+            return { name: s.getAttribute("name") || "", path: path };
+          }).filter(function (s) { return files[s.path]; });
+          return Promise.all(sheets.map(function (s) {
+            return readText(files, s.path).then(function (txt) {
+              return { name: s.name, rows: sheetRows(xml(txt), sst, dateStyle, d1904) };
+            });
+          }));
+        });
+      }
+
+      function parseCsv(text) {
+        text = text.replace(/^﻿/, "");
+        var firstLine = text.split(/\r?\n/)[0] || "";
+        var delim = [",", ";", "\t"].sort(function (a, b) { return firstLine.split(b).length - firstLine.split(a).length; })[0];
+        var rows = [], row = [], cell = "", q = false;
+        for (var i = 0; i < text.length; i++) {
+          var ch = text[i];
+          if (q) {
+            if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+            else cell += ch;
+            continue;
+          }
+          if (ch === '"') q = true;
+          else if (ch === delim) { row.push(cell); cell = ""; }
+          else if (ch === "\n" || ch === "\r") {
+            if (ch === "\r" && text[i + 1] === "\n") i++;
+            row.push(cell); rows.push(row); row = []; cell = "";
+            if (rows.length >= MAX_R) break;
+          } else cell += ch;
+        }
+        if (cell || row.length) { row.push(cell); rows.push(row); }
+        return rows;
+      }
+
+      function readFile(file) {
+        return file.arrayBuffer().then(function (buf) {
+          var b = new Uint8Array(buf);
+          if (b[0] === 0x50 && b[1] === 0x4B) return parseXlsx(buf);           // PK = zip = xlsx
+          if (b[0] === 0xD0 && b[1] === 0xCF) throw new Error("OLD_XLS");      // ملف .xls القديم
+          var txt = new TextDecoder("utf-8").decode(b);
+          if ((txt.match(/ /g) || []).length > 3) {                      // CSV محفوظ بترميز عربي قديم (ANSI)
+            try { txt = new TextDecoder("windows-1256").decode(b); } catch (e) {}
+          }
+          return [{ name: file.name, rows: parseCsv(txt) }];
+        });
+      }
+      return { readFile: readFile };
+    })();
+
+    // ---------- تنضيف قيم الكشف ----------
+    function impDigits_(s) {
+      return String(s).replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+        .replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); });
+    }
+    function impText_(v) {
+      if (v === null || v === undefined) return "";
+      if (typeof v === "object") return v.date || "";
+      return String(v).replace(/[​-‏‪-‮⁦-⁩﻿]/g, "").replace(/\s+/g, " ").trim();
+    }
+    function impPhone_(v) {
+      if (v === null || v === undefined || v === "" || typeof v === "object") return "";
+      var s = typeof v === "number" ? String(Math.round(v)) : impDigits_(v);
+      s = s.replace(/[\s\-().]/g, "");
+      var m = /\+?\d{7,}/.exec(s);   // لو فيه رقمين (010.. / 011..) بناخد الأول
+      if (!m) return "";
+      s = m[0];
+      if (/^1[0125]\d{8}$/.test(s)) s = "0" + s;   // موبايل مصري اتحفظ في Excel كرقم فضاع الصفر
+      else if (/^(\+|00)?20(1[0125]\d{8})$/.test(s)) s = "0" + s.replace(/^(\+|00)?20/, "");
+      return s;
+    }
+    function impBirth_(v) {
+      if (v === null || v === undefined || v === "") return { iso: "" };
+      if (typeof v === "object") return { iso: v.date || "" };
+      if (typeof v === "number") {
+        if (v > 3000 && v < 80000) return { iso: new Date(Date.UTC(1899, 11, 30) + Math.floor(v) * 86400000).toISOString().slice(0, 10) };
+        return { iso: "", bad: String(v) };
+      }
+      var s = impDigits_(v).trim(), m, y, mo, da;
+      if ((m = /^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})/.exec(s))) { y = +m[1]; mo = +m[2]; da = +m[3]; }
+      else if ((m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/.exec(s))) {
+        da = +m[1]; mo = +m[2]; y = +m[3];
+        if (y < 100) y += y < 50 ? 2000 : 1900;
+        if (mo > 12 && da <= 12) { var tmp = da; da = mo; mo = tmp; } // مكتوب شهر/يوم
+      } else return { iso: "", bad: s };
+      var dt = new Date(Date.UTC(y, mo - 1, da));
+      if (mo < 1 || mo > 12 || dt.getUTCDate() !== da || y < 1940 || y > new Date().getFullYear()) return { iso: "", bad: s };
+      return { iso: y + "-" + (mo < 10 ? "0" : "") + mo + "-" + (da < 10 ? "0" : "") + da };
+    }
+
+    // ---------- ربط الأعمدة تلقائيًا بأسماء العناوين ----------
+    var IMP_FIELDS = [
+      { key: "name", label: "الاسم *", syn: ["الاسم", "اسم", "الاسم بالكامل", "الاسم رباعي", "الاسم الثلاثي", "الاسم الرباعي", "اسم المخدوم", "اسم الطالب", "name", "full name", "student name"] },
+      { key: "phone", label: "رقم التليفون", syn: ["رقم التليفون", "التليفون", "تليفون", "الموبايل", "موبايل", "رقم الموبايل", "المحمول", "رقم المحمول", "الهاتف", "هاتف", "رقم الهاتف", "واتساب", "واتس", "رقم", "phone", "mobile", "tel"] },
+      { key: "birth", label: "تاريخ الميلاد", syn: ["تاريخ الميلاد", "الميلاد", "تاريخ ميلاد", "birth", "birthday", "date of birth", "dob"] },
+      { key: "address", label: "العنوان", syn: ["العنوان", "عنوان", "السكن", "محل السكن", "address"] },
+      { key: "confessor", label: "أب الاعتراف", syn: ["اب الاعتراف", "اب اعتراف", "الاب الروحي", "confession father"] },
+      { key: "cls", label: "الفصل", syn: ["الفصل", "فصل", "اسم الفصل", "class"] }
+    ];
+    var IMP_CONTAINS_ORDER = ["cls", "birth", "confessor", "phone", "address", "name"];
+    function impField_(key) { return IMP_FIELDS.filter(function (f) { return f.key === key; })[0]; }
+    function impSynSet_(f) { return f.syn.map(normAr); }
+
+    function impDetect_(rows) {
+      var best = -1, bestScore = 0;
+      var nameSyn = impSynSet_(impField_("name"));
+      for (var r = 0; r < Math.min(rows.length, 15); r++) {
+        var cells = (rows[r] || []).map(function (c) { return normAr(impText_(c)); });
+        var score = 0, hasName = false;
+        cells.forEach(function (c) {
+          if (!c) return;
+          IMP_FIELDS.forEach(function (f) { if (impSynSet_(f).indexOf(c) !== -1) score++; });
+          if (nameSyn.some(function (s) { return c === s || (s.length >= 4 && c.indexOf(s) !== -1); })) hasName = true;
+        });
+        if (hasName && score > bestScore) { best = r; bestScore = score; }
+      }
+      var width = 0;
+      rows.forEach(function (r) { if (r.length > width) width = r.length; });
+      var headers = [];
+      for (var c = 0; c < width; c++) headers.push(best >= 0 ? impText_(rows[best][c]) : "");
+      var norm = headers.map(normAr), map = {}, used = {};
+      IMP_FIELDS.forEach(function (f) {          // 1) تطابق كامل
+        var syn = impSynSet_(f);
+        for (var c = 0; c < norm.length; c++) if (!used[c] && norm[c] && syn.indexOf(norm[c]) !== -1) { map[f.key] = c; used[c] = 1; return; }
+      });
+      IMP_CONTAINS_ORDER.forEach(function (k) {   // 2) العنوان فيه الكلمة
+        if (map[k] !== undefined) return;
+        var syn = impSynSet_(impField_(k)).filter(function (s) { return s.length >= 3; });
+        for (var c = 0; c < norm.length; c++) {
+          if (used[c] || !norm[c]) continue;
+          if (syn.some(function (s) { return norm[c].indexOf(s) !== -1; })) { map[k] = c; used[c] = 1; return; }
+        }
+      });
+      if (map.name === undefined) {               // 3) من غير عناوين: أكتر عمود فيه أسماء عربي من كلمتين
+        var bestC = -1, bestN = 0;
+        for (var c2 = 0; c2 < width; c2++) {
+          if (used[c2]) continue;
+          var n = 0;
+          for (var r2 = best + 1; r2 < Math.min(rows.length, best + 30); r2++) {
+            if (/[؀-ۿ]{2,}\s+[؀-ۿ]{2,}/.test(impText_((rows[r2] || [])[c2]))) n++;
+          }
+          if (n > bestN) { bestN = n; bestC = c2; }
+        }
+        if (bestC >= 0) map.name = bestC;
+      }
+      return { headerRow: best, headers: headers, map: map };
+    }
+
+    // ---------- حالة شاشة الاستيراد ----------
+    var IMP = { sheets: [], sheet: 0, headerRow: -1, headers: [], map: {}, rows: [], items: null, checks: [] };
+    var IMP_LABELS = { "new": "جديد", exists: "موجود", similar: "مشابه", other_stage: "اسم في مرحلة تانية", dup_file: "مكرر في الكشف", error: "ناقص" };
+
+    function impStage_() { return ME && ME.role === ROLE_ADMIN ? byId("imp-stage").value : (ME ? ME.stage : ""); }
+    function impMsg_(id, text, cls) { var m = byId(id); m.textContent = text || ""; m.className = "msg" + (cls ? " " + cls : ""); }
+    function impHidePreview_() { IMP.items = null; IMP.checks = []; byId("imp-preview-card").style.display = "none"; impMsg_("imp-run-msg", ""); }
+
+    function resetImport_(full) {
+      IMP = { sheets: [], sheet: 0, headerRow: -1, headers: [], map: {}, rows: [], items: null, checks: [] };
+      byId("imp-file").value = "";
+      byId("imp-map-card").style.display = "none";
+      byId("imp-preview-card").style.display = "none";
+      byId("imp-update").checked = false;
+      byId("imp-default-class-new").value = "";
+      byId("imp-default-class-new").style.display = "none";
+      ["imp-file-msg", "imp-map-msg", "imp-run-msg"].forEach(function (id) { impMsg_(id, ""); });
+      if (full) byId("imp-stage").value = "";
+    }
+
+    function impLoadClasses_() {
+      var sel = byId("imp-default-class"), stage = impStage_(), keep = sel.value;
+      if (!stage) { sel.innerHTML = '<option value="">اختار المرحلة الأول</option>'; return; }
+      sel.innerHTML = '<option value="">جاري تحميل الفصول...</option>';
+      gs.withSuccessHandler(function (classes) {
+        sel.innerHTML = '<option value="">— من غير فصل افتراضي —</option>';
+        (classes || []).forEach(function (c) { var o = document.createElement("option"); o.value = c; o.textContent = c; sel.appendChild(o); });
+        var add = document.createElement("option"); add.value = "__new__"; add.textContent = "+ فصل جديد"; sel.appendChild(add);
+        if (Array.prototype.some.call(sel.options, function (o) { return o.value === keep; })) sel.value = keep;
+        byId("imp-default-class-new").style.display = sel.value === "__new__" ? "" : "none";
+      }).withFailureHandler(function () {
+        sel.innerHTML = '<option value="">— من غير فصل افتراضي —</option><option value="__new__">+ فصل جديد</option>';
+      }).getClasses(stage);
+    }
+    function impDefaultClass_() {
+      var v = byId("imp-default-class").value;
+      return v === "__new__" ? byId("imp-default-class-new").value.trim() : v;
+    }
+
+    function impColLabel_(c) {
+      var h = IMP.headers[c];
+      return "عمود " + XL_.colName(c) + (h ? " · " + h : "");
+    }
+    function impRenderMap_() {
+      var box = byId("imp-map");
+      box.innerHTML = "";
+      IMP_FIELDS.forEach(function (f) {
+        var row = el("div", "imp-map-row");
+        row.appendChild(el("span", "", f.label));
+        var sel = document.createElement("select");
+        var none = document.createElement("option"); none.value = "-1"; none.textContent = "— مش موجود في الكشف —"; sel.appendChild(none);
+        IMP.headers.forEach(function (h, c) { var o = document.createElement("option"); o.value = String(c); o.textContent = impColLabel_(c); sel.appendChild(o); });
+        sel.value = IMP.map[f.key] === undefined ? "-1" : String(IMP.map[f.key]);
+        sel.addEventListener("change", function () {
+          var c = Number(sel.value);
+          if (c < 0) delete IMP.map[f.key]; else IMP.map[f.key] = c;
+          impHidePreview_();
+        });
+        row.appendChild(sel);
+        box.appendChild(row);
+      });
+    }
+
+    function impSetupSheet_() {
+      var rows = (IMP.sheets[IMP.sheet] || {}).rows || [];
+      var d = impDetect_(rows);
+      IMP.headerRow = d.headerRow; IMP.headers = d.headers; IMP.map = d.map;
+      impRenderMap_();
+      impHidePreview_();
+      var dataCount = rows.length - (d.headerRow + 1);
+      impMsg_("imp-map-msg", d.headerRow >= 0
+        ? "لقيت العناوين في صف " + (d.headerRow + 1) + " · اتأكد من الربط تحت وبعدين اضغط مراجعة"
+        : "مالقيتش صف عناوين واضح، فكل الصفوف هتتقرا كبيانات. اختار عمود الاسم وباقي الأعمدة بنفسك", d.headerRow >= 0 ? "ok" : "");
+      if (dataCount <= 0) impMsg_("imp-map-msg", "الشيت ده مفيهوش بيانات تحت العناوين", "err");
+    }
+
+    // بيحوّل صفوف الشيت لمخدومين حسب ربط الأعمدة
+    function impBuildRows_() {
+      var rows = (IMP.sheets[IMP.sheet] || {}).rows || [], out = [], map = IMP.map, defCls = impDefaultClass_();
+      var nameSyn = impSynSet_(impField_("name"));
+      function cell(row, k) { return map[k] === undefined ? "" : row[map[k]]; }
+      for (var r = IMP.headerRow + 1; r < rows.length; r++) {
+        var row = rows[r] || [];
+        var name = impText_(cell(row, "name"));
+        var rec = {
+          name: name,
+          phone: impPhone_(cell(row, "phone")),
+          address: impText_(cell(row, "address")),
+          confessor: impText_(cell(row, "confessor")),
+          cls: impText_(cell(row, "cls")) || defCls
+        };
+        var b = impBirth_(cell(row, "birth"));
+        rec.birth = b.iso;
+        if (!name && !rec.phone && !rec.address && !b.iso) continue;    // صف فاضي
+        if (nameSyn.indexOf(normAr(name)) !== -1) continue;              // عناوين متكررة في نص الكشف
+        rec._line = r + 1;
+        rec._warn = b.bad ? "تاريخ الميلاد مش مفهوم (" + b.bad + ") ومش هيتسجل" : "";
+        out.push(rec);
+      }
+      return out;
+    }
+    function impPayload_(list) {
+      return list.map(function (r) { return { name: r.name, phone: r.phone, birth: r.birth, address: r.address, confessor: r.confessor, cls: r.cls }; });
+    }
+
+    function impDefaultChecked_(status, upd) {
+      if (status === "new") return true;
+      if (status === "exists") return upd;
+      return false; // المشابه والاسم في مرحلة تانية: المستخدم يختارهم بنفسه
+    }
+    function impDisabled_(status, upd) { return status === "error" || status === "dup_file" || (status === "exists" && !upd); }
+
+    function impRenderPreview_() {
+      var items = IMP.items || [], upd = byId("imp-update").checked;
+      var counts = {}, list = byId("imp-list"), sum = byId("imp-summary");
+      items.forEach(function (it) { counts[it.status] = (counts[it.status] || 0) + 1; });
+      sum.innerHTML = "";
+      ["new", "exists", "similar", "other_stage", "dup_file", "error"].forEach(function (s) {
+        if (!counts[s]) return;
+        var label = s === "exists" && upd ? "هيتحدّث" : IMP_LABELS[s];
+        sum.appendChild(el("span", "imp-chip st-" + s, label + ": " + counts[s]));
+      });
+      list.innerHTML = "";
+      IMP.checks = [];
+      if (counts.similar || counts.other_stage) {
+        list.appendChild(el("div", "stat-empty", "«مشابه» و«اسم في مرحلة تانية» مش متحددين: راجعهم وحدد اللي متأكد إنه مخدوم جديد. (الاسم اللي في مرحلة تانية بيشارك نفس صف الحضور في شيتات الشهور)"));
+      }
+      items.forEach(function (it, i) {
+        var r = IMP.rows[i];
+        var row = el("div", "imp-row");
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.disabled = impDisabled_(it.status, upd);
+        cb.checked = !cb.disabled && impDefaultChecked_(it.status, upd);
+        if (cb.disabled) row.classList.add("off");
+        cb.addEventListener("change", impUpdateRunBtn_);
+        IMP.checks.push(cb);
+        var tx = el("div", "imp-text");
+        tx.appendChild(el("div", "roster-name", r.name || "(من غير اسم)"));
+        tx.appendChild(el("div", "roster-address", ["صف " + r._line, r.cls || "من غير فصل", r.phone, r.birth].filter(Boolean).join(" · ")));
+        var note = [it.note, r._warn].filter(Boolean).join(" · ");
+        if (note) tx.appendChild(el("div", "imp-note", note));
+        var badge = el("span", "imp-badge st-" + it.status, it.status === "exists" && upd ? "هيتحدّث" : IMP_LABELS[it.status]);
+        row.appendChild(cb); row.appendChild(tx); row.appendChild(badge);
+        list.appendChild(row);
+      });
+      byId("imp-preview-card").style.display = "";
+      impUpdateRunBtn_();
+    }
+    function impSelected_() {
+      var out = [];
+      IMP.checks.forEach(function (cb, i) { if (cb.checked && !cb.disabled) out.push(i); });
+      return out;
+    }
+    function impUpdateRunBtn_() {
+      var n = impSelected_().length, btn = byId("imp-run");
+      btn.textContent = n ? "استيراد المحدد (" + n + ")" : "حدد مخدومين للاستيراد";
+      btn.disabled = !n;
+    }
+
+    function impRunPreview_(after) {
+      var stage = impStage_();
+      if (!stage) { impMsg_("imp-map-msg", "اختار المرحلة الأول", "err"); return; }
+      if (IMP.map.name === undefined) { impMsg_("imp-map-msg", "اختار عمود الاسم", "err"); return; }
+      if (byId("imp-default-class").value === "__new__" && !impDefaultClass_()) { impMsg_("imp-map-msg", "اكتب اسم الفصل الجديد", "err"); return; }
+      var rows = impBuildRows_();
+      if (!rows.length) { impMsg_("imp-map-msg", "مالقيتش أسماء في الكشف بالربط ده", "err"); return; }
+      if (rows.length > 500) { impMsg_("imp-map-msg", "الكشف فيه " + rows.length + " صف. قسّمه لملفات كل واحد 500 اسم أو أقل", "err"); return; }
+      IMP.rows = rows;
+      var btn = byId("imp-preview-btn");
+      btn.disabled = true;
+      impMsg_("imp-map-msg", "جاري مراجعة " + rows.length + " اسم مع بيانات المرحلة...");
+      gs.withSuccessHandler(function (res) {
+        btn.disabled = false;
+        IMP.items = res.items || [];
+        impMsg_("imp-map-msg", "");
+        impRenderPreview_();
+        if (after) after();
+        else byId("imp-preview-card").scrollIntoView({ block: "start", behavior: "smooth" });
+      }).withFailureHandler(function (err) {
+        btn.disabled = false;
+        impMsg_("imp-map-msg", cleanErr(err), "err");
+      }).getImportPreview(stage, impPayload_(rows));
+    }
+
+    byId("imp-file").addEventListener("change", function () {
+      var file = this.files && this.files[0];
+      if (!file) return;
+      resetImport_(false);
+      impMsg_("imp-file-msg", "جاري قراءة " + file.name + "...");
+      XLR_.readFile(file).then(function (sheets) {
+        sheets = sheets.filter(function (s) { return s.rows.some(function (r) { return r.some(function (c) { return impText_(c) !== ""; }); }); });
+        if (!sheets.length) throw new Error("EMPTY");
+        IMP.sheets = sheets;
+        var sel = byId("imp-sheet");
+        sel.innerHTML = "";
+        sheets.forEach(function (s, i) { var o = document.createElement("option"); o.value = String(i); o.textContent = s.name + " (" + s.rows.length + " صف)"; sel.appendChild(o); });
+        byId("imp-sheet-wrap").style.display = sheets.length > 1 ? "" : "none";
+        IMP.sheet = 0; sel.value = "0";
+        byId("imp-map-card").style.display = "";
+        impSetupSheet_();
+        impLoadClasses_();
+        impMsg_("imp-file-msg", "تم قراءة " + file.name, "ok");
+      }).catch(function (e) {
+        var m = (e && e.message) || "";
+        impMsg_("imp-file-msg",
+          m === "NO_INFLATE" ? "المتصفح ده قديم ومش بيفتح ملفات Excel. حدّثه، أو احفظ الكشف من Excel كـ CSV UTF-8 وارفعه" :
+          m === "OLD_XLS" ? "ده ملف Excel قديم (.xls). افتحه واحفظه بصيغة .xlsx أو CSV وارفعه تاني" :
+          m === "EMPTY" ? "الملف فاضي" :
+          "الملف ده مش Excel (.xlsx) أو CSV سليم", "err");
+      });
+    });
+    byId("imp-sheet").addEventListener("change", function () { IMP.sheet = Number(this.value) || 0; impSetupSheet_(); });
+    byId("imp-stage").addEventListener("change", function () { impHidePreview_(); impLoadClasses_(); });
+    byId("imp-default-class").addEventListener("change", function () {
+      var isNew = this.value === "__new__";
+      byId("imp-default-class-new").style.display = isNew ? "" : "none";
+      if (isNew) byId("imp-default-class-new").focus();
+      impHidePreview_();
+    });
+    byId("imp-default-class-new").addEventListener("input", impHidePreview_);
+    byId("imp-update").addEventListener("change", function () { if (IMP.items) impRenderPreview_(); });
+    byId("imp-preview-btn").addEventListener("click", function () { impRunPreview_(); });
+    byId("imp-all").addEventListener("click", function () { IMP.checks.forEach(function (cb) { if (!cb.disabled) cb.checked = true; }); impUpdateRunBtn_(); });
+    byId("imp-none").addEventListener("click", function () { IMP.checks.forEach(function (cb) { cb.checked = false; }); impUpdateRunBtn_(); });
+    byId("roster-import-btn").addEventListener("click", function () { goToTab("import"); });
+    tabHooks["import"] = function () { if (IMP.sheets.length) impLoadClasses_(); };
+
+    // الحفظ على دفعات (100 اسم) عشان كل نداء يخلص بسرعة ويبان التقدم
+    byId("imp-run").addEventListener("click", function () {
+      var idx = impSelected_(), stage = impStage_(), upd = byId("imp-update").checked, btn = this;
+      if (!idx.length || !stage) return;
+      var rows = idx.map(function (i) { return IMP.rows[i]; });
+      if (!window.confirm("هتستورد " + rows.length + " مخدوم في " + stage + ". تكمّل؟")) return;
+      var CHUNK = 100, pos = 0, tot = { added: 0, updated: 0, unchanged: 0, skipped: [] };
+      btn.disabled = true; byId("imp-preview-btn").disabled = true;
+      function finish(errText) {
+        btn.disabled = false; byId("imp-preview-btn").disabled = false;
+        var parts = ["اتضاف " + tot.added + " مخدوم"];
+        if (tot.updated) parts.push("اتحدّث " + tot.updated);
+        if (tot.unchanged) parts.push(tot.unchanged + " موجودين من غير تغيير");
+        if (tot.skipped.length) parts.push("اتجاهل " + tot.skipped.length + " (" + tot.skipped.slice(0, 3).map(function (s) { return s.name + ": " + s.reason; }).join("، ") + (tot.skipped.length > 3 ? "..." : "") + ")");
+        var text = parts.join(" · ");
+        if (errText) text = "وقف عند " + pos + " من " + rows.length + ": " + errText + " — " + text + ". لو ضغطت مراجعة تاني اللي اتحفظ هيظهر «موجود» ومش هيتكرر";
+        if (tot.added || tot.updated) {
+          loadClassOptions(true);
+          loadRosterClassOptions(true);
+          loadBdayClassOptions(true);
+          loadStudentClassOptions(byId("student-stage").value, "");
+          loadTrophy();
+        }
+        // مراجعة تاني بعد الحفظ: اللي اتسجل يبان «موجود»
+        impRunPreview_(function () { impMsg_("imp-run-msg", text, errText ? "err" : "ok"); });
+        impMsg_("imp-run-msg", text, errText ? "err" : "ok");
+      }
+      function next() {
+        if (pos >= rows.length) { finish(""); return; }
+        var part = rows.slice(pos, pos + CHUNK);
+        impMsg_("imp-run-msg", "جاري الحفظ... " + pos + " من " + rows.length + " (متقفلش الصفحة)");
+        gs.withSuccessHandler(function (res) {
+          tot.added += res.added || 0; tot.updated += res.updated || 0; tot.unchanged += res.unchanged || 0;
+          tot.skipped = tot.skipped.concat(res.skipped || []);
+          pos += part.length;
+          next();
+        }).withFailureHandler(function (err) { finish(cleanErr(err)); }).importStudents(stage, impPayload_(part), upd);
+      }
+      next();
+    });
+
+    // نموذج الكشف: عناوين الأعمدة بالظبط + شيت تعليمات
+    byId("imp-template").addEventListener("click", function () {
+      var ST = XL_.ST;
+      var heads = ["الاسم", "رقم التليفون", "تاريخ الميلاد", "العنوان", "أب الاعتراف", "الفصل"];
+      var rows = [{ h: 28, cells: heads.map(function (h) { return { v: h, s: ST.head }; }) }];
+      for (var i = 0; i < 80; i++) rows.push({ cells: heads.map(function () { return { v: "", s: ST.text }; }) });
+      var tips = [
+        "إزاي تملا الكشف",
+        "• اكتب كل مخدوم في صف، والاسم بس هو الإجباري.",
+        "• رقم التليفون: 01xxxxxxxxx (لو Excel شال الصفر من الأول التطبيق بيرجّعه).",
+        "• تاريخ الميلاد: يوم/شهر/سنة، مثلاً 15/3/2010.",
+        "• الفصل: اكتبه لكل مخدوم، أو سيبه فاضي واختار فصل واحد للكل وقت الاستيراد.",
+        "• المرحلة مش محتاجة عمود: الكشف كله بيتضاف لمرحلتك (أمين الخدمة بيختار المرحلة).",
+        "• المخدوم الموجود بالفعل في المرحلة مش هيتكرر، وتقدر تختار تحدّث بياناته.",
+        "• ممكن ترفع كشفك القديم زي ما هو من غير النموذج، وتختار كل عمود معناه إيه."
+      ];
+      var tipRows = tips.map(function (t, i) { return { h: i ? 22 : 28, cells: [{ v: t, s: i ? ST.text : ST.title }] }; });
+      try {
+        var blob = XL_.build([
+          { name: "المخدومين", cols: [32, 16, 15, 32, 20, 16], rows: rows, freeze: { y: 1 } },
+          { name: "تعليمات", cols: [95], rows: tipRows }
+        ]);
+        saveBlobAs_(blob, "نموذج كشف المخدومين.xlsx");
+      } catch (e) { impMsg_("imp-file-msg", "تعذر إنشاء النموذج: " + e.message, "err"); }
+    });
+
 
     // ---------- إشعارات الموبايل (Web Push) ----------
     // شغالة في التطبيق المثبّت (GitHub) بس. الاشتراك بيتسجل على السيرفر باسم المستخدم الحالي،
@@ -3541,15 +4402,32 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         cb(sub && Notification.permission === "granted" && mine ? "on" : "off");
       }).catch(function () { cb("off"); });
     }
+    // زرار إشعارات الموبايل بقى في صفحة الإعدادات، ومعاه سطر بيوضح حالتها على الجهاز ده
     function refreshPushBtn() {
-  if (!PUSH_OK || !ME) { pushBtn.style.display = "none"; return; }
-  pushState_(function (st) {
-    pushBtn.dataset.state = st;
-    if (st === "on" || st === "unsupported") { pushBtn.style.display = "none"; return; }   // اتفعّلت: نخفي الزرار
-    pushBtn.style.display = "";
-    pushBtn.textContent = st === "blocked" ? "🔕 الإشعارات متقفلة" : "🔔 فعّل إشعارات الموبايل";
-  });
-}
+      var status = byId("push-status");
+      if (!ME) { pushBtn.style.display = "none"; return; }
+      if (!PUSH_OK) {
+        pushBtn.style.display = "none";
+        status.textContent = IN_APPS_SCRIPT
+          ? "إشعارات الموبايل بتشتغل من التطبيق المثبّت بس (لينك GitHub)، مش من لينك جوجل."
+          : "المتصفح ده مش بيدعم إشعارات الموبايل.";
+        return;
+      }
+      pushState_(function (st) {
+        pushBtn.dataset.state = st;
+        pushBtn.style.display = "";
+        pushBtn.className = "secondary" + (st === "on" ? " set-danger" : "");
+        var T = {
+          on: ["✅ مفعّلة على الجهاز ده: هتوصلك إشعارات الغياب والافتقاد والطلبات وأعياد الميلاد حتى لو التطبيق مقفول.", "إيقاف الإشعارات على الجهاز ده"],
+          off: ["مش مفعّلة على الجهاز ده.", "🔔 فعّل إشعارات الموبايل"],
+          blocked: ["🔕 الإشعارات متقفلة من إعدادات المتصفح/الموبايل للتطبيق ده.", "إزاي أفتحها؟"],
+          "needs-install": ["على الآيفون لازم التطبيق يتضاف للشاشة الرئيسية الأول.", "إزاي أضيفه؟"]
+        }[st] || ["", ""];
+        status.textContent = T[0];
+        pushBtn.textContent = T[1];
+        if (!T[1]) pushBtn.style.display = "none";
+      });
+    }
     function enablePush_() {
       pushBtn.disabled = true;
       var sub;
@@ -3633,6 +4511,95 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         localStorage.removeItem("push_owner");
       } catch (e) {}
     }
+
+    // ---------- الإعدادات ----------
+    tabHooks["settings"] = function () {
+      refreshPushBtn();
+      byId("set-admin-card").style.display = isLeader(ME) ? "" : "none";
+    };
+    byId("set-go-servants").addEventListener("click", function () { goToTab("servants"); });
+    byId("set-reload").addEventListener("click", function () {
+      try {
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+          navigator.serviceWorker.getRegistration().then(function (r) { if (r) r.update(); }).catch(function () {}).then(function () { location.reload(); });
+          return;
+        }
+      } catch (e) {}
+      location.reload();
+    });
+    byId("set-logout").addEventListener("click", function () { if (window.confirm("تسجيل الخروج من الجهاز ده؟")) logout(); });
+    byId("nt-push-link").addEventListener("click", function (e) { e.preventDefault(); goToTab("settings"); });
+
+    byId("cp-save").addEventListener("click", function () {
+      var btn = this, msg = byId("cp-msg");
+      var o = byId("cp-old").value, n1 = byId("cp-new1").value, n2 = byId("cp-new2").value;
+      if (!o) { msg.textContent = "اكتب كلمة السر الحالية"; msg.className = "msg err"; return; }
+      if (n1.length < 6) { msg.textContent = "كلمة السر الجديدة لازم 6 حروف أو أرقام على الأقل"; msg.className = "msg err"; return; }
+      if (n1 !== n2) { msg.textContent = "كلمتين السر الجداد مش متطابقين"; msg.className = "msg err"; return; }
+      btn.disabled = true; msg.textContent = "جاري التغيير..."; msg.className = "msg";
+      gs.withSuccessHandler(function () {
+        btn.disabled = false;
+        ["cp-old", "cp-new1", "cp-new2"].forEach(function (id) { byId(id).value = ""; });
+        msg.textContent = "تم تغيير كلمة السر. استخدم الجديدة في الدخول الجاي"; msg.className = "msg ok";
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+      }).changePassword(o, n1);
+    });
+
+    // ---------- ملفي ----------
+    function initialsOf(name) {
+      var p = (name || "").trim().split(/\s+/).filter(Boolean);
+      return (p[0] ? p[0].charAt(0) : "?") + (p[1] ? " " + p[1].charAt(0) : "");
+    }
+    function renderProfileHead(u) {
+      byId("pf-avatar").textContent = initialsOf(u.name);
+      byId("pf-name").textContent = u.name || "";
+      byId("pf-role").textContent = roleLabelOf(u);
+    }
+    function loadProfile() {
+      if (!ME) return;
+      renderProfileHead(ME);
+      byId("pf-msg").textContent = "";
+      byId("pf-att").innerHTML = '<div class="stat-empty">جاري التحميل...</div>';
+      gs.withSuccessHandler(function (p) {
+        renderProfileHead(p);
+        var info = byId("pf-info");
+        info.innerHTML = "";
+        [["اسم المستخدم", p.username], ["الدور", p.role], ["المرحلة", p.stage || (p.role === ROLE_ADMIN || isStaff(p) ? "كل الخدمة" : "")],
+         ["الفصل", p.cls], ["تاريخ التسجيل", (p.registered || "").slice(0, 10)]].forEach(function (f) {
+          if (!f[1]) return;
+          var r = el("div", "stat-row"); r.appendChild(el("span", "", f[0])); r.appendChild(el("b", "", f[1])); info.appendChild(r);
+        });
+        byId("pf-phone").value = p.phone || "";
+        byId("pf-birth").value = p.birth || "";
+        byId("pf-address").value = p.address || "";
+        byId("pf-qual").value = p.qualification || "";
+        byId("pf-year").textContent = "سنة الخدمة " + p.yearLabel;
+        var a = p.attendance || {}, tot = (a.present || 0) + (a.absent || 0), box = byId("pf-att");
+        box.innerHTML = "";
+        if (!tot) { box.appendChild(el("div", "stat-empty", "لسه مفيش جمع اتسجل فيها حضور الخدام")); return; }
+        [["حضرت", a.present + " من " + tot + " جمعة"], ["غبت", String(a.absent)], ["نسبة الحضور", a.percentage + "%"]].forEach(function (f) {
+          var r = el("div", "stat-row"); r.appendChild(el("span", "", f[0])); r.appendChild(el("b", "", f[1])); box.appendChild(r);
+        });
+        var bar = el("div", "bar-bg"), fill = el("div", "bar-fill");
+        fill.style.width = a.percentage + "%"; bar.appendChild(fill); box.appendChild(bar);
+      }).withFailureHandler(function (err) {
+        byId("pf-att").innerHTML = "";
+        byId("pf-att").appendChild(el("div", "stat-empty", "تعذر التحميل: " + cleanErr(err)));
+      }).getMyProfile();
+    }
+    tabHooks["profile"] = loadProfile;
+    byId("pf-save").addEventListener("click", function () {
+      var btn = this, msg = byId("pf-msg");
+      var data = { phone: byId("pf-phone").value.trim(), birth: byId("pf-birth").value, address: byId("pf-address").value.trim(), qualification: byId("pf-qual").value.trim() };
+      if (!data.phone) { msg.textContent = "اكتب رقم التليفون"; msg.className = "msg err"; return; }
+      btn.disabled = true; msg.textContent = "جاري الحفظ..."; msg.className = "msg";
+      gs.withSuccessHandler(function () {
+        btn.disabled = false; msg.textContent = "تم حفظ بياناتك"; msg.className = "msg ok";
+      }).withFailureHandler(function (err) {
+        btn.disabled = false; msg.textContent = cleanErr(err); msg.className = "msg err";
+      }).updateMyProfile(data);
+    });
 
     // ---------- التنقل بين تابات الإحصائيات الفرعية ----------
     document.querySelectorAll(".subtab-btn").forEach(function (btn) {
@@ -4232,13 +5199,15 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         title = "🏆 مرحلة " + r.name;
         sub = "أعلى نسبة حضور في الخدمة كلها - " + r.percentage + "% (" + r.present + " من " + r.total + ")";
       }
-      box.innerHTML =
-        '<div class="notif-item" style="border-bottom:none;">' +
-          '<div class="notif-text">' +
-            '<div class="notif-name">' + title + "</div>" +
-            '<div class="notif-sub">' + sub + "</div>" +
-          "</div>" +
-        "</div>";
+      // textContent مش innerHTML: الأسماء جاية من الشيت ومينفعش تتفسّر كـ HTML
+      box.innerHTML = "";
+      var item = el("div", "notif-item");
+      item.style.borderBottom = "none";
+      var tx = el("div", "notif-text");
+      tx.appendChild(el("div", "notif-name", title));
+      tx.appendChild(el("div", "notif-sub", sub));
+      item.appendChild(tx);
+      box.appendChild(item);
     }
 
     function loadTrophy() {
@@ -4254,12 +5223,26 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     var inboxVisits = [];
     var inboxResets = [];
 
+    var pageVisitsPending = false;   // صفحة الإشعارات مفتوحة وعلّمنا الافتقاد إنه اتشاف (بيختفي "جديد" لما تقفلها)
+    function inboxCount_(useNewOnly) {
+      var hideVisits = useNewOnly === false || visitsPendingClear || pageVisitsPending;
+      var visitCount = hideVisits ? 0 : inboxVisits.filter(function (v) { return v.isNew; }).length;
+      return inboxRequests.length + inboxResets.length + visitCount;
+    }
     function updateInboxBadge(useNewOnly) {
       var badge = document.getElementById("requests-badge");
-      var visitCount = inboxVisits.filter(function (v) { return v.isNew; }).length;
-      var total = inboxRequests.length + inboxResets.length + (useNewOnly === false ? 0 : visitCount);
+      var total = inboxCount_(useNewOnly);
       if (total > 0) { badge.textContent = total; badge.style.display = "flex"; }
       else { badge.style.display = "none"; }
+      updateNavBadge();
+    }
+    // العدّاد على أيقونة الإشعارات في الشريط السفلي = الغياب + الرسائل الواردة
+    function updateNavBadge() {
+      var nb = document.getElementById("nav-badge");
+      if (!nb) return;
+      var n = isStaff(ME) ? 0 : lastAlerts.length + inboxCount_();
+      if (n > 0) { nb.textContent = n > 99 ? "99+" : n; nb.style.display = "flex"; }
+      else nb.style.display = "none";
     }
 
     function sectionHeader(text) {
@@ -4286,7 +5269,9 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       nameEl.textContent = r.name;
       var sub = document.createElement("div");
       sub.className = "notif-sub";
-      sub.innerHTML = "طلب نقل من فصل <b>" + r.fromClass + "</b> لفصل \"" + r.toClass + "\" - بواسطة " + r.requestedBy;
+      sub.appendChild(document.createTextNode("طلب نقل من فصل "));
+      sub.appendChild(el("b", "", r.fromClass));
+      sub.appendChild(document.createTextNode(" لفصل \"" + r.toClass + "\" - بواسطة " + r.requestedBy));
       text.appendChild(nameEl);
       text.appendChild(sub);
 
@@ -4319,7 +5304,8 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
           loadBdayClassOptions(true);
           loadTrophy();
         }).withFailureHandler(function (err) {
-          sub.innerHTML = "<b style='color:var(--err);'>خطأ: " + err.message + "</b>";
+          sub.textContent = "خطأ: " + cleanErr(err);
+          sub.style.color = "var(--err)";
           accept.disabled = false; reject.disabled = false;
         }).respondTransferRequest(r.id, decision);
       }
@@ -4377,8 +5363,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       list.appendChild(item);
     }
 
-    function renderInbox() {
-      var list = document.getElementById("requests-list");
+    function buildInbox(list) {
       list.innerHTML = "";
 
       // الإشعارات بتظهر للمستخدم لحد ما يشوفها (بتختفي من عنده هو بس)، والسجل الكامل بيفضل متاح من اللينك اللي تحت
@@ -4415,9 +5400,38 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         });
         list.appendChild(all);
       }
-
+    }
+    function renderInbox() {
+      buildInbox(document.getElementById("requests-list"));
+      buildInbox(document.getElementById("page-inbox"));
       updateInboxBadge();
     }
+
+    // صفحة الإشعارات: لما تتفتح بنعلّم إشعارات الافتقاد إنها اتشافت، و"جديد" بيختفي لما تسيب الصفحة
+    function openNotificationsPage_() {
+      var staff = isStaff(ME);
+      byId("nt-alerts-card").style.display = staff ? "none" : "";
+      byId("nt-inbox-card").style.display = staff ? "none" : "";
+      byId("nt-staff-card").style.display = staff ? "" : "none";
+      pushState_(function (st) { byId("nt-push-hint").style.display = (st === "off" || st === "needs-install") ? "" : "none"; });
+      if (staff) return;
+      redrawAlerts();
+      renderInbox();
+      var fresh = inboxVisits.filter(function (v) { return v.isNew; });
+      if (fresh.length && !pageVisitsPending) {
+        pageVisitsPending = true;
+        updateInboxBadge();
+        var upTo = fresh.reduce(function (m, v) { return v.loggedAt > m ? v.loggedAt : m; }, "");
+        gs.withSuccessHandler(function () {}).markVisitsSeen(upTo);
+      }
+    }
+    function leaveNotifications_() {
+      if (!pageVisitsPending) return;
+      pageVisitsPending = false;
+      inboxVisits.forEach(function (v) { v.isNew = false; });
+      renderInbox();
+    }
+    tabHooks["notifications"] = openNotificationsPage_;
 
     // صفحة "المخدومين الذين تم افتقادهم": الدوس على الاسم بيفتح بياناته
     function renderVisitsPage() {
@@ -4530,28 +5544,28 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
           renderInbox();
         }).getVisitNotifications();
       }).withFailureHandler(function (err) {
-        document.getElementById("requests-list").innerHTML =
-          '<div class="notif-empty">تعذر تحميل الرسائل: ' + err.message + "</div>";
+        ["requests-list", "page-inbox"].forEach(function (id) {
+          var box = document.getElementById(id);
+          box.innerHTML = "";
+          box.appendChild(el("div", "notif-empty", "تعذر تحميل الرسائل: " + cleanErr(err)));
+        });
       }).getPendingTransferRequests();
     }
 
+    // إشعارات الغياب بتتعرض في مكانين (قايمة الجرس فوق + صفحة الإشعارات) من نفس البيانات
+    var lastAlerts = [];
     function updateAlertsBadge() {
-      var n = document.querySelectorAll("#notif-list .notif-item").length;
+      var n = lastAlerts.length;
       var badge = document.getElementById("bell-badge");
       if (n > 0) { badge.textContent = n; badge.style.display = "flex"; }
-      else {
-        badge.style.display = "none";
-        document.getElementById("notif-list").innerHTML = '<div class="notif-empty">مفيش حد غاب جمعتين ورا بعض</div>';
-      }
+      else badge.style.display = "none";
+      updateNavBadge();
     }
 
-    function renderAlerts(alerts) {
-      var list = document.getElementById("notif-list");
+    function drawAlerts(list) {
       list.innerHTML = "";
-
-      if (!alerts.length) { updateAlertsBadge(); return; }
-
-      alerts.forEach(function (a) {
+      if (!lastAlerts.length) { list.innerHTML = '<div class="notif-empty">مفيش حد غاب جمعتين ورا بعض</div>'; return; }
+      lastAlerts.forEach(function (a) {
         var item = document.createElement("div");
         item.className = "notif-item";
 
@@ -4582,13 +5596,13 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
           wa.href = "https://wa.me/" + a.phone + "?text=" + encodeURIComponent(a.message);
           wa.target = "_blank";
           wa.rel = "noopener";
-          // الدوس بيفتح الواتس زي الأول، وبنفس الوقت بنسجّل إنها اتبعتت ونشيل الإشعار
+          // الدوس بيفتح الواتس زي الأول، وبنفس الوقت بنسجّل إنها اتبعتت ونشيل الإشعار من المكانين
           wa.addEventListener("click", function () {
             if (wa.dataset.busy) return;
             wa.dataset.busy = "1";
             gs.withSuccessHandler(function () {
-              item.remove();
-              updateAlertsBadge();
+              lastAlerts = lastAlerts.filter(function (x) { return x !== a; });
+              redrawAlerts();
             }).withFailureHandler(function (err) {
               delete wa.dataset.busy;
               var e = document.createElement("div");
@@ -4604,14 +5618,24 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         item.appendChild(wa);
         list.appendChild(item);
       });
-
+    }
+    function redrawAlerts() {
+      drawAlerts(document.getElementById("notif-list"));
+      drawAlerts(document.getElementById("page-alerts"));
       updateAlertsBadge();
+    }
+    function renderAlerts(alerts) {
+      lastAlerts = (alerts || []).slice();
+      redrawAlerts();
     }
 
     function loadAlerts() {
       gs.withSuccessHandler(renderAlerts).withFailureHandler(function (err) {
-        document.getElementById("notif-list").innerHTML =
-          '<div class="notif-empty">تعذر تحميل الإشعارات: ' + err.message + "</div>";
+        ["notif-list", "page-alerts"].forEach(function (id) {
+          var box = document.getElementById(id);
+          box.innerHTML = "";
+          box.appendChild(el("div", "notif-empty", "تعذر تحميل الإشعارات: " + cleanErr(err)));
+        });
       }).getAbsenceAlerts();
     }
 
@@ -4635,6 +5659,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     function roleLabelOf(u) {
       if (u.role === ROLE_CLASS) return u.role + " · " + u.stage + " · " + u.cls;
       if (u.role === ROLE_STAGE) return u.role + " · " + u.stage;
+      if (isStaff(u)) return u.role + " · " + (u.stage || "كل الخدمة");
       return u.role;
     }
 
@@ -4660,8 +5685,13 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       inboxVisits = [];
       inboxResets = [];
       monthData = null; lastReportFile = null;
+      lastAlerts = []; pageVisitsPending = false;
+      ["cp-old", "cp-new1", "cp-new2", "pf-phone", "pf-birth", "pf-address", "pf-qual"].forEach(function (id) { byId(id).value = ""; });
+      ["cp-msg", "pf-msg", "pf-name", "pf-role", "pf-avatar"].forEach(function (id) { byId(id).textContent = ""; });
+      ["pf-info", "pf-att", "page-alerts", "page-inbox"].forEach(function (id) { byId(id).innerHTML = ""; });
+      byId("nav-badge").style.display = "none";
       resetDashboard_();
-      byId("push-btn").style.display = "none";
+      byId("push-btn").style.display = "none"; byId("push-status").textContent = "";
       ["students-list", "student-matches", "student-stats-result", "service-stats-result",
        "class-stats-result", "stage-stats-result", "notif-list", "roster-list", "bday-list", "trophy-content", "requests-list", "servants-list", "visits-list", "student-month-list",
        "sa-checklist", "sv-list", "sb-list"].forEach(function (id) { byId(id).innerHTML = ""; });
@@ -4693,6 +5723,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       byId("requests-panel").classList.remove("open");
       loadedStudentName = "";
       loadedStudentStage = "";
+      resetImport_(true);
       goHome();
       document.querySelector('[data-subtab="weekly-dash"]').click();
     }
@@ -4720,10 +5751,24 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       if (!admin) byId("student-stage").value = ME.stage;
 
       // الخدام: ظاهرة لكل الأدوار. خادم الفصل بيشوف خدام مرحلته بس (مفروضة من السيرفر برضو)
+      var leader = isLeader(ME), staff = isStaff(ME);
       setShown("home-tile-servants", true, false);
       setShown("home-tile-newyear", admin, false);
-      setShown("hub-tile-attendance", !isClass, false); // تسجيل حضور الخدام للأمناء بس
-      setShown("add-servant-btn", !isClass, false);      // إضافة خادم للأمناء بس
+      setShown("home-tile-import", leader, false);      // استيراد كشف Excel: أمين المرحلة (ولأمين الخدمة كمان)
+      setShown("roster-import-btn", leader, false);
+      byId("imp-stage-wrap").style.display = admin ? "block" : "none";
+      setShown("hub-tile-attendance", leader, false); // تسجيل حضور الخدام للأمناء بس
+      setShown("add-servant-btn", leader, false);      // إضافة خادم للأمناء بس
+
+      // الإداري والمالية: مفيش أي حاجة من بيانات المخدومين (البلاطات + الكأس + الجرس + الرسائل الواردة)
+      ["attendance", "roster", "student", "stats", "birthdays"].forEach(function (t) {
+        var tile = document.querySelector('#panel-home .home-tile[data-tab="' + t + '"]');
+        if (tile) tile.style.display = staff ? "none" : "";
+      });
+      ["trophy-btn", "bell-btn", "requests-btn"].forEach(function (id) { byId(id).parentNode.style.display = staff ? "none" : ""; });
+      var sn = byId("staff-note");
+      sn.style.display = staff ? "" : "none";
+      sn.textContent = staff ? "دورك: " + ME.role + (ME.stage ? " · " + ME.stage : " · كل الخدمة") + ". من هنا تقدر تتابع الخدام وأعياد ميلادهم وحضورك، وبيانات المخدومين مش متاحة لدورك." : "";
       byId("as-stage-wrap").style.display = ME.role === ROLE_ADMIN ? "block" : "none"; // أمين المرحلة بيضيف لمرحلته بس
 
       // الإحصائيات
@@ -4734,6 +5779,13 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
 
     function startApp() {
       applyRole();
+      updateNavBadge();
+      if (isStaff(ME)) {   // الإداري/المالية: بس الخدام (أي نداء تاني للمخدومين السيرفر بيرفضه)
+        lastAlerts = []; inboxRequests = []; inboxResets = []; inboxVisits = [];
+        servantsPager.skeleton();
+        loadServants();
+        return;
+      }
       loadClassOptions(false);
       rosterPager.skeleton();
       servantsPager.skeleton();
