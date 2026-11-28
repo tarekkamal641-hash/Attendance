@@ -880,18 +880,28 @@
       margin-top: 5px;
     }
 
-    /* ---------- الشريط السفلي الجديد ---------- */
-    .bottom-nav { align-items: stretch; padding-top: 6px; }
-    .bottom-nav .bottom-nav-btn { width: 25%; gap: 3px; padding: 2px 4px; font-size: 11px; cursor: pointer; }
-    .bottom-nav .nav-ico {
-      position: relative; width: 54px; height: 32px; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center; transition: background .18s, transform .18s;
+    /* ---------- الشريط السفلي: كبسولة طايرة (التاب المفتوح بيبان اسمه جنب أيقونته) ---------- */
+    .bottom-nav {
+      left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      max-width: 520px; margin: 0 auto;
+      align-items: center; justify-content: space-between;
+      padding: 6px; border: 1px solid var(--border); border-radius: 30px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.45);
     }
+    .bottom-nav .bottom-nav-btn {
+      flex: 1 1 0; width: auto; min-width: 0; flex-direction: row; justify-content: center; gap: 7px;
+      padding: 10px 6px; border-radius: 24px; font-size: 13.5px; cursor: pointer;
+      transition: flex-grow .25s ease, background .2s ease, color .2s ease;
+    }
+    .bottom-nav .bottom-nav-btn > span:last-child { display: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bottom-nav .bottom-nav-btn.active { flex-grow: 2.1; background: rgba(217,168,92,0.20); color: var(--gold-light); font-weight: 700; }
+    .bottom-nav .bottom-nav-btn.active > span:last-child { display: inline; }
+    .bottom-nav .nav-ico { position: relative; display: flex; align-items: center; justify-content: center; transition: transform .18s; }
     .bottom-nav .nav-ico svg { width: 23px; height: 23px; }
-    .bottom-nav .bottom-nav-btn.active .nav-ico { background: linear-gradient(135deg, rgba(217,168,92,0.38), rgba(169,122,58,0.30)); color: var(--gold-light); transform: translateY(-1px); }
-    .bottom-nav .bottom-nav-btn:active .nav-ico { transform: scale(.94); }
+    .bottom-nav .bottom-nav-btn:active .nav-ico { transform: scale(.9); }
+    #app { padding-bottom: 96px; }
     .nav-badge {
-      position: absolute; top: -3px; left: 6px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+      position: absolute; top: -7px; left: -9px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
       background: #d9534f; color: #fff; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
       border: 2px solid var(--card);
     }
@@ -912,6 +922,30 @@
     .staff-note { margin-bottom: 14px; }
     .tag-off { display: inline-block; margin-inline-start: 6px; padding: 1px 8px; border-radius: 8px; background: rgba(240,163,148,0.22); color: var(--err); font-size: 11px; font-weight: 700; vertical-align: middle; }
     .sa-person.is-off .roster-name { opacity: .6; text-decoration: line-through; }
+
+    /* ---------- تصدير قائمة المخدومين ---------- */
+    .rx-box { margin-top: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(0,0,0,0.12); }
+    .rx-scope { font-size: 14px; font-weight: 700; color: var(--gold-light); margin-bottom: 8px; }
+    .rx-label { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+    .rx-cols { display: flex; flex-wrap: wrap; gap: 6px; }
+    label.rx-chip {
+      display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 7px 12px; border-radius: 18px;
+      border: 1px solid var(--border); font-size: 13px; color: var(--text); cursor: pointer; user-select: none;
+    }
+    label.rx-chip input { width: 16px; height: 16px; margin: 0; accent-color: var(--gold); }
+    label.rx-chip.on { border-color: var(--gold); background: rgba(217,168,92,0.14); }
+    .rx-btns { display: flex; gap: 8px; margin-top: 12px; }
+    .rx-btns button { flex: 1; margin: 0; }
+    /* ملفي: الأرقام */
+    .pf-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin: 4px 0 10px; }
+    .pf-stat { background: rgba(217,168,92,0.10); border: 1px solid var(--border); border-radius: 12px; padding: 10px 6px; text-align: center; }
+    .pf-stat b { display: block; font-size: 26px; color: var(--gold-light); line-height: 1.2; }
+    .pf-stat span { font-size: 12px; color: var(--text-dim); }
+    .pf-note { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+    table.pf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.pf-table th { color: var(--text-dim); font-weight: 500; padding: 6px 4px; border-bottom: 1px solid var(--border); text-align: right; }
+    table.pf-table td { padding: 7px 4px; border-bottom: 1px solid var(--border); }
+    table.pf-table td + td, table.pf-table th + th { text-align: center; }
 
     /* ---------- استيراد كشف Excel ---------- */
     input[type=file] {
@@ -1193,7 +1227,23 @@
   <div class="panel" id="panel-roster">
     <div class="card">
       <p class="card-title">قائمة المخدومين</p>
-      <button class="secondary" id="roster-import-btn" type="button" style="display:none; margin-top:8px;">📥 استيراد كشف Excel للمرحلة</button>
+      <button class="secondary" id="rx-toggle" type="button" style="margin-top:8px;">📤 تصدير القائمة (PDF / Excel)</button>
+      <div class="rx-box" id="rx-box" style="display:none;">
+        <div class="rx-scope" id="rx-scope"></div>
+        <div class="rx-label">البيانات اللي هتظهر في القائمة</div>
+        <div class="rx-cols">
+          <label class="rx-chip on"><input type="checkbox" checked disabled> الاسم</label>
+          <label class="rx-chip"><input type="checkbox" id="rx-c-phone"> التليفون</label>
+          <label class="rx-chip"><input type="checkbox" id="rx-c-address"> العنوان</label>
+          <label class="rx-chip"><input type="checkbox" id="rx-c-att"> ملخص الحضور</label>
+        </div>
+        <div class="rx-btns">
+          <button class="primary" id="rx-pdf" type="button">📄 PDF</button>
+          <button class="secondary" id="rx-xlsx" type="button">📊 Excel</button>
+        </div>
+        <button class="secondary" id="rx-share" type="button" style="display:none;">📤 مشاركة ملف Excel</button>
+        <div class="msg" id="rx-msg"></div>
+      </div>
       <label>اختار المرحلة</label>
       <select id="roster-stage-select">
         <option value="">كل المراحل</option>
@@ -1675,7 +1725,7 @@
       <div id="pf-info"></div>
     </div>
     <div class="card" style="margin-top:12px;">
-      <p class="card-title">حضوري في الخدمة <span class="year-tag" id="pf-year"></span></p>
+      <p class="card-title">خدمتي بالأرقام <span class="year-tag" id="pf-year"></span></p>
       <div id="pf-att"><div class="stat-empty">جاري التحميل...</div></div>
     </div>
     <div class="card" style="margin-top:12px;">
@@ -1696,26 +1746,26 @@
 
   <!-- ============ الشريط السفلي: الرئيسية / الإشعارات / الإعدادات / ملفي ============ -->
   <nav class="bottom-nav">
-    <button class="tab-btn bottom-nav-btn active" data-tab="home" type="button">
+    <button class="tab-btn bottom-nav-btn active" data-tab="home" type="button" aria-label="الرئيسية">
       <span class="nav-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9v10.2a.8.8 0 0 0 .8.8H10v-5.5h4V20h3.7a.8.8 0 0 0 .8-.8V9"/></svg>
       </span>
       <span>الرئيسية</span>
     </button>
-    <button class="tab-btn bottom-nav-btn" data-tab="notifications" type="button">
+    <button class="tab-btn bottom-nav-btn" data-tab="notifications" type="button" aria-label="الإشعارات">
       <span class="nav-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 0 0-12 0c0 6.5-2.5 8-2.5 8h17S18 16 18 9.5"/><path d="M10.2 20.5a2 2 0 0 0 3.6 0"/></svg>
         <span class="nav-badge" id="nav-badge" style="display:none;">0</span>
       </span>
       <span>الإشعارات</span>
     </button>
-    <button class="tab-btn bottom-nav-btn" data-tab="settings" type="button">
+    <button class="tab-btn bottom-nav-btn" data-tab="settings" type="button" aria-label="الإعدادات">
       <span class="nav-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
       </span>
       <span>الإعدادات</span>
     </button>
-    <button class="tab-btn bottom-nav-btn" data-tab="profile" type="button">
+    <button class="tab-btn bottom-nav-btn" data-tab="profile" type="button" aria-label="ملفي">
       <span class="nav-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="10" r="3.2"/><path d="M6.3 18.4c1.2-2.2 3.2-3.3 5.7-3.3s4.5 1.1 5.7 3.3"/></svg>
       </span>
@@ -1747,7 +1797,7 @@
       "getServiceStats", "getAbsenceAlerts", "getTopPerformer",
       "confirmTransferRequest", "confirmMoveStudent", "getPendingTransferRequests", "respondTransferRequest", "deleteStudent", "getServants",
       "getComment", "saveComment", "getVisitNotifications", "markVisitsSeen",
-      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "getServantStageStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport", "getPushKey", "pushSubscribe", "pushUnsubscribe", "pushTest", "getImportPreview", "importStudents", "setUserDisabled", "getMyProfile", "updateMyProfile", "changePassword"];
+      "getServantsAttendance", "getServantsAttendanceDay", "saveServantsAttendanceDay", "getServantStats", "getServantStageStats", "addServant", "getServantBirthdays", "getAttendanceDay", "markAbsenceSent", "getPresentOnDate", "getAttendanceDates", "getSheetWarnings", "getPasswordResets", "respondPasswordReset", "getNewYearPreview", "runNewYear", "updateUserRole", "getReportMonths", "getMonthlyReport", "getPushKey", "pushSubscribe", "pushUnsubscribe", "pushTest", "getImportPreview", "importStudents", "setUserDisabled", "getMyProfile", "updateMyProfile", "changePassword", "getRosterExport"];
 
     // ============ طبقة الاتصال بالسيرفر ============
     // جوه Apps Script: google.script.run زي الأول. وكمان PWA على استضافة تانية: fetch (POST) لرابط الـ Web App (APPS_SCRIPT_URL في config.js)
@@ -3549,12 +3599,12 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       }
 
       // أرقام الستايلات (ترتيبها نفس ترتيب cellXfs في styles.xml تحت)
-      var ST = { def: 0, title: 1, head: 2, center: 3, present: 4, absent: 5, none: 6, pct: 7, num: 8, totLabel: 9, totNum: 10, text: 11, comment: 12, sub: 13, date: 14, totPct: 15 };
+      var ST = { def: 0, title: 1, head: 2, center: 3, present: 4, absent: 5, none: 6, pct: 7, num: 8, totLabel: 9, totNum: 10, text: 11, comment: 12, sub: 13, date: 14, totPct: 15, big: 16, grp: 17, cRtl: 18 };
 
       var STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
         '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
         '<numFmts count="1"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/></numFmts>' +
-        '<fonts count="8">' +
+        '<fonts count="10">' +
           '<font><sz val="11"/><name val="Arial"/></font>' +
           '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Arial"/></font>' +
           '<font><b/><sz val="14"/><color rgb="FF4A3620"/><name val="Arial"/></font>' +
@@ -3563,6 +3613,8 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
           '<font><sz val="11"/><color rgb="FF9C0006"/><name val="Arial"/></font>' +
           '<font><sz val="11"/><color rgb="FF7F7F7F"/><name val="Arial"/></font>' +
           '<font><i/><sz val="10"/><color rgb="FF7F7F7F"/><name val="Arial"/></font>' +
+          '<font><b/><sz val="28"/><color rgb="FF4A3620"/><name val="Arial"/></font>' +
+          '<font><b/><sz val="12"/><color rgb="FF4A3620"/><name val="Arial"/></font>' +
         '</fonts>' +
         '<fills count="7">' +
           '<fill><patternFill patternType="none"/></fill>' +
@@ -3576,7 +3628,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>' +
           '<border><left style="thin"><color rgb="FFBFBFBF"/></left><right style="thin"><color rgb="FFBFBFBF"/></right><top style="thin"><color rgb="FFBFBFBF"/></top><bottom style="thin"><color rgb="FFBFBFBF"/></bottom><diagonal/></border></borders>' +
         '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
-        '<cellXfs count="16">' +
+        '<cellXfs count="19">' +
           '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center"/></xf>' +
           '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
           '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
@@ -3593,6 +3645,9 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
           '<xf numFmtId="0" fontId="7" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
           '<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
           '<xf numFmtId="9" fontId="3" fillId="6" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="8" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+          '<xf numFmtId="0" fontId="9" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center" readingOrder="2"/></xf>' +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" readingOrder="2"/></xf>' +
         '</cellXfs>' +
         '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>' +
         '</styleSheet>';
@@ -3801,6 +3856,185 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     document.getElementById("share-report").addEventListener("click", function () {
       if (!lastReportFile) return;
       navigator.share({ files: [lastReportFile], title: lastReportFile.name }).catch(function () {});
+    });
+
+    // ================= تصدير قائمة المخدومين (PDF / Excel) =================
+    // القائمة بتطلع حسب المرحلة/الفصل المختارين فوق (خادم الفصل: فصله بس). البحث مش بيأثر عليها
+    var RX_KEY = "att_rx_cols";
+    var lastRosterFile = null;
+    function rxStage_() { return ME.role === ROLE_ADMIN ? byId("roster-stage-select").value : ME.stage; }
+    function rxClass_() { return ME.role === ROLE_CLASS ? ME.cls : byId("roster-class-select").value; }
+    function rxScopeText_() {
+      var st = rxStage_(), cl = rxClass_();
+      if (cl) return "هيتصدّر: " + (/^فصل\s/.test(cl) ? cl : "فصل " + cl) + (st ? " · " + st : "");
+      if (st) return "هيتصدّر: " + st + " كلها (كل الفصول)";
+      return "هيتصدّر: كل المراحل";
+    }
+    function rxCols_() { return { phone: byId("rx-c-phone").checked, address: byId("rx-c-address").checked, att: byId("rx-c-att").checked }; }
+    function rxPaint_() {
+      document.querySelectorAll("#rx-box label.rx-chip").forEach(function (l) {
+        var i = l.querySelector("input"); l.classList.toggle("on", !!(i && i.checked));
+      });
+    }
+    function rxMsg_(t, cls) { var m = byId("rx-msg"); m.textContent = t || ""; m.className = "msg" + (cls ? " " + cls : ""); }
+    (function () {
+      var saved = { phone: true, address: false, att: true };
+      try { var x = JSON.parse(localStorage.getItem(RX_KEY) || "null"); if (x) saved = x; } catch (e) {}
+      byId("rx-c-phone").checked = !!saved.phone; byId("rx-c-address").checked = !!saved.address; byId("rx-c-att").checked = !!saved.att;
+      rxPaint_();
+    })();
+    ["rx-c-phone", "rx-c-address", "rx-c-att"].forEach(function (id) {
+      byId(id).addEventListener("change", function () {
+        rxPaint_();
+        try { localStorage.setItem(RX_KEY, JSON.stringify(rxCols_())); } catch (e) {}
+      });
+    });
+    byId("rx-toggle").addEventListener("click", function () {
+      var box = byId("rx-box"), open = box.style.display === "none";
+      box.style.display = open ? "" : "none";
+      if (open) { byId("rx-scope").textContent = rxScopeText_(); rxMsg_(""); }
+    });
+    ["roster-stage-select", "roster-class-select"].forEach(function (id) {
+      byId(id).addEventListener("change", function () { byId("rx-scope").textContent = rxScopeText_(); byId("rx-share").style.display = "none"; });
+    });
+
+    // بيقسم القائمة لمجموعات (فصل، أو مرحلة · فصل) لو مش فصل واحد، والترقيم بيبدأ من 1 في كل مجموعة
+    function rxGroups_(data) {
+      if (data.single) return [{ label: "", rows: data.rows }];
+      var allStages = !rxStage_(), out = [], cur = null;
+      data.rows.forEach(function (r) {
+        var lb = (allStages ? (r.stage || "-") + " · " : "") + (r.cls ? (/^فصل\s/.test(r.cls) ? r.cls : "فصل " + r.cls) : "من غير فصل");
+        if (!cur || cur.label !== lb) { cur = { label: lb, rows: [] }; out.push(cur); }
+        cur.rows.push(r);
+      });
+      return out;
+    }
+    function rxAtt_(r) { return r.total ? r.present + " من " + r.total : "-"; }
+    function rxFileName_(data, ext) {
+      return ("قائمة " + data.title + (data.single && data.subtitle ? " - " + data.subtitle : "") + "." + ext).replace(/[\\\/:*?"<>|]/g, "-");
+    }
+    function rxFetch_(cb) {
+      var cols = rxCols_();
+      rxMsg_("جاري تجهيز القائمة...");
+      byId("rx-pdf").disabled = byId("rx-xlsx").disabled = true;
+      gs.withSuccessHandler(function (data) {
+        byId("rx-pdf").disabled = byId("rx-xlsx").disabled = false;
+        if (!data.rows.length) { rxMsg_("مفيش مخدومين في الاختيار ده", "err"); return; }
+        try { cb(data, cols); } catch (e) { rxMsg_("تعذر إنشاء الملف: " + e.message, "err"); }
+      }).withFailureHandler(function (err) {
+        byId("rx-pdf").disabled = byId("rx-xlsx").disabled = false;
+        rxMsg_(cleanErr(err), "err");
+      }).getRosterExport(rxStage_(), rxClass_(), cols.att);
+    }
+
+    function buildRosterXlsx_(data, cols) {
+      var ST = XL_.ST, groups = rxGroups_(data);
+      var head = ["م", "الاسم"], widths = [6, 34];
+      if (cols.phone) { head.push("التليفون"); widths.push(16); }
+      if (cols.address) { head.push("العنوان"); widths.push(36); }
+      if (cols.att) { head.push("الحضور (جمعة)"); widths.push(15); }
+      var n = head.length, last = XL_.colName(n - 1), rows = [], merges = [];
+      function blankRow() { var c = []; for (var i = 0; i < n; i++) c.push(""); return c; }
+      var t = blankRow(); t[0] = { v: data.title, s: ST.big };
+      rows.push({ h: 50, cells: t }); merges.push("A1:" + last + "1");
+      var sub = blankRow();
+      sub[0] = { v: [data.subtitle, "سنة الخدمة " + data.yearLabel, "عدد المخدومين: " + data.rows.length].filter(Boolean).join("   ·   "), s: ST.sub };
+      rows.push({ h: 22, cells: sub }); merges.push("A2:" + last + "2");
+      rows.push({ h: 8, cells: [""] });
+      rows.push({ h: 26, cells: head.map(function (h) { return { v: h, s: ST.head }; }) });
+      groups.forEach(function (g) {
+        if (g.label) {
+          var gr = blankRow(); gr[0] = { v: g.label + "  (" + g.rows.length + ")", s: ST.grp };
+          for (var i = 1; i < n; i++) gr[i] = { v: "", s: ST.grp };
+          rows.push({ h: 24, cells: gr }); merges.push("A" + rows.length + ":" + last + rows.length);
+        }
+        g.rows.forEach(function (r, i) {
+          var c = [{ v: i + 1, s: ST.num }, { v: r.name, s: ST.text }];
+          if (cols.phone) c.push({ v: r.phone, s: ST.center });
+          if (cols.address) c.push({ v: r.address, s: ST.text });
+          if (cols.att) c.push({ v: rxAtt_(r), s: ST.cRtl });
+          rows.push({ h: 22, cells: c });
+        });
+      });
+      var tot = blankRow(); tot[0] = { v: "الإجمالي: " + data.rows.length + " مخدوم", s: ST.totLabel };
+      for (var k = 1; k < n; k++) tot[k] = { v: "", s: ST.totLabel };
+      rows.push({ h: 24, cells: tot }); merges.push("A" + rows.length + ":" + last + rows.length);
+      return XL_.build([{ name: data.title, cols: widths, rows: rows, merges: merges, freeze: { y: 4 } }]);
+    }
+
+    function rxEsc_(t) { return String(t === null || t === undefined ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+    function buildRosterHtml_(data, cols) {
+      var groups = rxGroups_(data), e = rxEsc_;
+      var th = "<th>م</th><th>الاسم</th>" + (cols.phone ? "<th>التليفون</th>" : "") + (cols.address ? "<th>العنوان</th>" : "") + (cols.att ? "<th>الحضور</th>" : "");
+      var span = 2 + (cols.phone ? 1 : 0) + (cols.address ? 1 : 0) + (cols.att ? 1 : 0);
+      var body = "";
+      groups.forEach(function (g) {
+        if (g.label) body += '<tr class="grp"><td colspan="' + span + '">' + e(g.label) + ' <small>(' + g.rows.length + ')</small></td></tr>';
+        g.rows.forEach(function (r, i) {
+          body += '<tr><td class="n">' + (i + 1) + "</td><td>" + e(r.name) + "</td>" +
+            (cols.phone ? '<td class="c"><span dir="ltr">' + e(r.phone) + "</span></td>" : "") +
+            (cols.address ? "<td>" + e(r.address) + "</td>" : "") +
+            (cols.att ? '<td class="c">' + e(rxAtt_(r)) + "</td>" : "") + "</tr>";
+        });
+      });
+      var today = new Date(), dstr = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
+      return '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>' + e(rxFileName_(data, "pdf").replace(/\.pdf$/, "")) + '</title>' +
+        '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">' +
+        "<style>@page{size:A4;margin:12mm 11mm}*{box-sizing:border-box}" +
+        "body{margin:0;font-family:'Tajawal',Tahoma,Arial,sans-serif;color:#2b1d10;-webkit-print-color-adjust:exact;print-color-adjust:exact}" +
+        ".hd{text-align:center;border-bottom:3px solid #b8863f;padding:0 0 8px;margin-bottom:12px}" +
+        ".hd h1{font-size:48px;font-weight:900;margin:0;color:#4a3620;line-height:1.15}" +
+        ".hd .sub{font-size:15px;color:#7a6650;margin-top:6px}" +
+        "table{width:100%;border-collapse:collapse;font-size:14px}" +
+        "thead th{background:#4a3620;color:#fff;padding:7px 6px;border:1px solid #4a3620;font-weight:700}" +
+        "td{border:1px solid #d3c4ab;padding:6px 7px}td.n{text-align:center;width:36px;color:#7a6650}td.c{text-align:center;white-space:nowrap}" +
+        "tbody tr:nth-child(even) td{background:#faf5ec}tr{page-break-inside:avoid}" +
+        "tr.grp td{background:#efe2c8!important;font-weight:900;font-size:16px;color:#4a3620}tr.grp small{font-weight:400;color:#7a6650}" +
+        ".ft{display:flex;justify-content:space-between;margin-top:10px;font-size:12px;color:#7a6650}</style></head><body>" +
+        '<div class="hd"><h1>' + e(data.title) + '</h1><div class="sub">' +
+        e([data.subtitle, "سنة الخدمة " + data.yearLabel, "عدد المخدومين: " + data.rows.length].filter(Boolean).join("  ·  ")) + "</div></div>" +
+        "<table><thead><tr>" + th + "</tr></thead><tbody>" + body + "</tbody></table>" +
+        '<div class="ft"><span>أسرة الرسل</span><span>' + (cols.att ? "الحضور = حضر كام جمعة من الجمع اللي اتسجل فيها حضور · " : "") + "اتطبعت " + dstr + "</span></div>" +
+        "</body></html>";
+    }
+    // PDF: بنفتح نافذة الطباعة على صفحة القائمة، ومنها "حفظ كـ PDF" (أو طباعة على ورق علطول)
+    function printRosterPdf_(data, cols) {
+      var old = byId("rx-print-frame");
+      if (old) old.remove();
+      var fr = document.createElement("iframe");
+      fr.id = "rx-print-frame";
+      fr.setAttribute("aria-hidden", "true");
+      fr.style.cssText = "position:fixed;left:-10000px;top:0;width:900px;height:1200px;border:0;opacity:0;pointer-events:none;";
+      document.body.appendChild(fr);
+      var docTitle = document.title;
+      fr.onload = function () {
+        var w = fr.contentWindow, done = false;
+        function go() {
+          if (done) return; done = true;
+          document.title = rxFileName_(data, "pdf").replace(/\.pdf$/, "");  // اسم ملف الـ PDF في نافذة الحفظ
+          try { w.focus(); w.print(); }
+          catch (e) { rxMsg_("المتصفح ده منع الطباعة. جرّب Excel أو افتح التطبيق من Chrome", "err"); }
+          setTimeout(function () { document.title = docTitle; }, 4000);
+        }
+        try { if (w.document.fonts && w.document.fonts.ready) w.document.fonts.ready.then(function () { setTimeout(go, 150); }); } catch (e) {}
+        setTimeout(go, 1500);   // لو الخط اتأخر (أو مفيش نت) نطبع بالخط العادي
+      };
+      fr.srcdoc = buildRosterHtml_(data, cols);
+      rxMsg_("اتفتحت نافذة الطباعة: اختار «حفظ كـ PDF» (Save as PDF) عشان تنزل الملف، أو اطبعها علطول", "ok");
+    }
+    byId("rx-pdf").addEventListener("click", function () { byId("rx-share").style.display = "none"; rxFetch_(printRosterPdf_); });
+    byId("rx-xlsx").addEventListener("click", function () {
+      rxFetch_(function (data, cols) {
+        var blob = buildRosterXlsx_(data, cols), name = rxFileName_(data, "xlsx");
+        lastRosterFile = new File([blob], name, { type: blob.type });
+        saveBlobAs_(blob, name);
+        rxMsg_("تم تجهيز " + name + " (" + data.rows.length + " مخدوم). لو ما نزلش اضغط مشاركة", "ok");
+        byId("rx-share").style.display = (navigator.canShare && navigator.canShare({ files: [lastRosterFile] })) ? "" : "none";
+      });
+    });
+    byId("rx-share").addEventListener("click", function () {
+      if (!lastRosterFile || !navigator.share) return;
+      navigator.share({ files: [lastRosterFile], title: lastRosterFile.name }).catch(function () {});
     });
 
     // ================= استيراد كشف مخدومين (Excel / CSV) =================
@@ -4298,7 +4532,6 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     byId("imp-preview-btn").addEventListener("click", function () { impRunPreview_(); });
     byId("imp-all").addEventListener("click", function () { IMP.checks.forEach(function (cb) { if (!cb.disabled) cb.checked = true; }); impUpdateRunBtn_(); });
     byId("imp-none").addEventListener("click", function () { IMP.checks.forEach(function (cb) { cb.checked = false; }); impUpdateRunBtn_(); });
-    byId("roster-import-btn").addEventListener("click", function () { goToTab("import"); });
     tabHooks["import"] = function () { if (IMP.sheets.length) impLoadClasses_(); };
 
     // الحفظ على دفعات (100 اسم) عشان كل نداء يخلص بسرعة ويبان التقدم
@@ -4576,21 +4809,43 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
         byId("pf-birth").value = p.birth || "";
         byId("pf-address").value = p.address || "";
         byId("pf-qual").value = p.qualification || "";
-        byId("pf-year").textContent = "سنة الخدمة " + p.yearLabel;
-        var a = p.attendance || {}, tot = (a.present || 0) + (a.absent || 0), box = byId("pf-att");
-        box.innerHTML = "";
-        if (!tot) { box.appendChild(el("div", "stat-empty", "لسه مفيش جمع اتسجل فيها حضور الخدام")); return; }
-        [["حضرت", a.present + " من " + tot + " جمعة"], ["غبت", String(a.absent)], ["نسبة الحضور", a.percentage + "%"]].forEach(function (f) {
-          var r = el("div", "stat-row"); r.appendChild(el("span", "", f[0])); r.appendChild(el("b", "", f[1])); box.appendChild(r);
-        });
-        var bar = el("div", "bar-bg"), fill = el("div", "bar-fill");
-        fill.style.width = a.percentage + "%"; bar.appendChild(fill); box.appendChild(bar);
+        renderMyCounts_(p.counts);
       }).withFailureHandler(function (err) {
         byId("pf-att").innerHTML = "";
         byId("pf-att").appendChild(el("div", "stat-empty", "تعذر التحميل: " + cleanErr(err)));
       }).getMyProfile();
     }
     tabHooks["profile"] = loadProfile;
+
+    // خدمتي بالأرقام: مربعات بالأعداد + جدول التفاصيل (لكل فصل أو لكل مرحلة)
+    function renderMyCounts_(c) {
+      var box = byId("pf-att");
+      box.innerHTML = "";
+      byId("pf-year").textContent = c && c.scope ? c.scope : "";
+      if (!c || !c.cards) { box.appendChild(el("div", "stat-empty", "مفيش أرقام متاحة")); return; }
+      var grid = el("div", "pf-stats");
+      c.cards.forEach(function (k) {
+        var t = el("div", "pf-stat");
+        t.appendChild(el("b", "", String(k.value)));
+        t.appendChild(el("span", "", k.label));
+        grid.appendChild(t);
+      });
+      box.appendChild(grid);
+      if (c.note) box.appendChild(el("div", "pf-note", "الخدام: " + c.note));
+      if (c.table && c.table.rows && c.table.rows.length) {
+        var tb = document.createElement("table");
+        tb.className = "pf-table";
+        var hr = document.createElement("tr");
+        c.table.head.forEach(function (h) { hr.appendChild(el("th", "", h)); });
+        tb.appendChild(hr);
+        c.table.rows.forEach(function (r) {
+          var tr = document.createElement("tr");
+          r.forEach(function (v) { tr.appendChild(el("td", "", String(v))); });
+          tb.appendChild(tr);
+        });
+        box.appendChild(tb);
+      }
+    }
     byId("pf-save").addEventListener("click", function () {
       var btn = this, msg = byId("pf-msg");
       var data = { phone: byId("pf-phone").value.trim(), birth: byId("pf-birth").value, address: byId("pf-address").value.trim(), qualification: byId("pf-qual").value.trim() };
@@ -5688,6 +5943,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       inboxResets = [];
       monthData = null; lastReportFile = null;
       lastAlerts = []; pageVisitsPending = false;
+      byId("rx-box").style.display = "none"; byId("rx-share").style.display = "none"; byId("rx-msg").textContent = "";
       ["cp-old", "cp-new1", "cp-new2", "pf-phone", "pf-birth", "pf-address", "pf-qual"].forEach(function (id) { byId(id).value = ""; });
       ["cp-msg", "pf-msg", "pf-name", "pf-role", "pf-avatar"].forEach(function (id) { byId(id).textContent = ""; });
       ["pf-info", "pf-att", "page-alerts", "page-inbox"].forEach(function (id) { byId(id).innerHTML = ""; });
@@ -5757,7 +6013,6 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       setShown("home-tile-servants", true, false);
       setShown("home-tile-newyear", admin, false);
       setShown("home-tile-import", leader, false);      // استيراد كشف Excel: أمين المرحلة (ولأمين الخدمة كمان)
-      setShown("roster-import-btn", leader, false);
       byId("imp-stage-wrap").style.display = admin ? "block" : "none";
       setShown("hub-tile-attendance", leader, false); // تسجيل حضور الخدام للأمناء بس
       setShown("add-servant-btn", leader, false);      // إضافة خادم للأمناء بس
