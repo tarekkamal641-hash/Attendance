@@ -349,6 +349,8 @@
     }
 
     .home-tile-wide { grid-column: 1 / -1; flex-direction: row; min-height: 76px; gap: 14px; }
+    /* آخر بلاطة لو فاضلة لوحدها في الصف: بتاخد العرض كله (بتتحدد بالـ JS حسب البلاطات الظاهرة لكل دور) */
+    .home-tile.tile-span { grid-column: 1 / -1; flex-direction: row; min-height: 76px; gap: 14px; }
 
     .home-tile.active { background: var(--card); color: var(--text); }
     .home-tile-primary.active { background: linear-gradient(160deg, rgba(200,148,79,0.22) 0%, var(--card) 70%); }
@@ -1229,7 +1231,7 @@
     <div class="card">
       <p class="card-title">استيراد كشف مخدومين من Excel</p>
       <div class="note" style="text-align:right; line-height:1.9;">
-        ارفع ملف Excel (‎.xlsx) أو CSV فيه أسماء المخدومين. هتراجع الأسماء قبل الحفظ،
+        ارفع ملف Excel (.xlsx) أو CSV فيه أسماء المخدومين. هتراجع الأسماء قبل الحفظ،
         واللي موجود بالفعل في المرحلة مش هيتضاف تاني. ممكن تحمّل النموذج وتملاه، أو ترفع كشفك زي ما هو وتختار كل عمود معناه إيه.
       </div>
       <button class="secondary" id="imp-template" type="button">⬇️ تحميل نموذج الكشف (Excel)</button>
@@ -3935,7 +3937,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       }
 
       function parseCsv(text) {
-        text = text.replace(/^﻿/, "");
+        text = text.replace(/^\uFEFF/, "");
         var firstLine = text.split(/\r?\n/)[0] || "";
         var delim = [",", ";", "\t"].sort(function (a, b) { return firstLine.split(b).length - firstLine.split(a).length; })[0];
         var rows = [], row = [], cell = "", q = false;
@@ -3981,7 +3983,7 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
     function impText_(v) {
       if (v === null || v === undefined) return "";
       if (typeof v === "object") return v.date || "";
-      return String(v).replace(/[​-‏‪-‮⁦-⁩﻿]/g, "").replace(/\s+/g, " ").trim();
+      return String(v).replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, "").replace(/\s+/g, " ").trim();
     }
     function impPhone_(v) {
       if (v === null || v === undefined || v === "" || typeof v === "object") return "";
@@ -5769,12 +5771,24 @@ else if (!data["الفصل"]) { msg.textContent = "اختار الفصل أو ا
       var sn = byId("staff-note");
       sn.style.display = staff ? "" : "none";
       sn.textContent = staff ? "دورك: " + ME.role + (ME.stage ? " · " + ME.stage : " · كل الخدمة") + ". من هنا تقدر تتابع الخدام وأعياد ميلادهم وحضورك، وبيانات المخدومين مش متاحة لدورك." : "";
+      layoutHomeGrids();
       byId("as-stage-wrap").style.display = ME.role === ROLE_ADMIN ? "block" : "none"; // أمين المرحلة بيضيف لمرحلته بس
 
       // الإحصائيات
       byId("dash-stage-wrap").style.display = admin ? "" : "none";
       setShown("stage-stats-select", admin, true);
       if (!admin) byId("stage-stats-select").value = ME.stage;
+    }
+
+    // لو عدد البلاطات الظاهرة فردي، آخر واحدة بتاخد عرض الصف كله (مفيش مكان فاضي جنبها)
+    function layoutHomeGrids() {
+      document.querySelectorAll(".home-grid").forEach(function (grid) {
+        var tiles = Array.prototype.filter.call(grid.children, function (t) {
+          t.classList.remove("tile-span");
+          return t.classList.contains("home-tile") && t.style.display !== "none";
+        });
+        if (tiles.length % 2 === 1) tiles[tiles.length - 1].classList.add("tile-span");
+      });
     }
 
     function startApp() {
